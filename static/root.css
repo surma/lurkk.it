@@ -1,0 +1,129 @@
+/**
+ * @license
+ * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at
+ * http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at
+ * http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at
+ * http://polymer.github.io/PATENTS.txt
+ */
+
+:root {
+  --base: 4px;
+  --header-height: 12;
+  --base-font: 4;
+  --side-padding: 4;
+
+  --base-font: calc(var(--base) * 4);
+  --small-font: calc(var(--base-font) * 0.8);
+  --big-font: calc(var(--base-font) * 1.3);
+
+  /* color palette generated here: https://coolors.co/f3f3eb-8b886f-390040-730071-dc9596 */
+  --white: #F3F3EB;
+  --green: #8B886F;
+  --purple: #390040;
+  --pink: #730071;
+  --rose: #DC9596;
+}
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--pink);
+}
+body {
+  min-height: 100vh;
+  padding: 0 calc(var(--base) * var(--side-padding));
+
+  font-size: var(--base-font);
+  font-family: Helvetica, sans-serif;
+  background-color: var(--white);
+  color: var(--purple);
+  line-height: 1.3em;
+
+  display: flex;
+  flex-direction: column;
+}
+a, a:link, a:active, a:hover {
+  color: var(--pink);
+  text-decoration: none;
+}
+a:visited, a:visited:hover {
+  color: var(--rose);
+}
+#header {
+  position: sticky;
+  top: 0;
+  flex: 0 0;
+  margin-left: calc(-1 * var(--base) * var(--side-padding));
+  overflow: hidden;
+
+  width: 100vw;
+  height: calc(var(--base) * var(--header-height));
+  z-index: 2;
+
+  background-color: var(--white);
+  box-shadow: 0px -3px 4px 4px var(--green);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+#header:after {
+  content: '';
+
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 2px;
+
+  background-image: linear-gradient(90deg, var(--pink), var(--rose), var(--pink), var(--rose), var(--pink));
+  opacity: 0;
+  animation: cycle linear 1s infinite;
+  animation-play-state: paused;
+}
+
+#header.loading:after {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@keyframes cycle {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+#header .menu-btn {
+  border: 0;
+  background-color: inherit;
+  height: calc(var(--base) * var(--header-height));
+  width: calc(var(--base) * var(--header-height));
+  fill: var(--purple);
+}
+#sidenav {
+  flex: 1 1;
+}
+main {
+  padding-top: calc(var(--base) * var(--side-padding));
+}
+p:first-child {
+  margin-top: 0;
+}
+p:last-child {
+  margin-bottom: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2em;
+}

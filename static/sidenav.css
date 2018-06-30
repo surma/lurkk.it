@@ -1,0 +1,51 @@
+/**
+ * @license
+ * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at
+ * http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at
+ * http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at
+ * http://polymer.github.io/PATENTS.txt
+ */
+
+:root {
+  --sidenav-bg-color: var(--white);
+  --sidenav-width: 35vw;
+  --sidenav-shadow: var(--green);
+  --sidenav-padding: calc(var(--base) * var(--side-padding));
+}
+
+#sidenav {
+  font-size: var(--small-font);
+}
+
+.favorites {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: calc(var(--base) * var(--side-padding));
+}
+
+.favorites .favorite {
+  padding: 0;
+  margin: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+form .go {
+  border-radius: 2px;
+
+  background-color: transparent;
+  border: 1px solid var(--purple);
+  color: purple;
+}
