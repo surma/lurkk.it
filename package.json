@@ -36,8 +36,7 @@
       "@babel/plugin-syntax-dynamic-import",
       "@babel/plugin-proposal-object-rest-spread",
       "westend/utils/tasks-transform"
-    ],
-    "sourceRoot": "."
+    ]
   },
   "husky": {
     "hooks": {

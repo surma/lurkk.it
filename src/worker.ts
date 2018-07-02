@@ -27,7 +27,6 @@ import { debug } from "westend/src/state-machine/state-machine-debugger.js";
 
 (async function() {
   debug(fsm, { stateName: s => State[s], triggerName: t => Trigger[t] });
-  Object.assign(self as any, { fsm, State, Trigger });
 
   const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
     "fsm-statechange"

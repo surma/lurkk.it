@@ -18,8 +18,7 @@
 
   import * as Model from "../model/model.js";
 
-  import { Effect, Guard, not, NoTrigger} from "westend/src/state-machine/state-machine.js";
-  import {StateMachine } from "westend/src/state-machine/state-machine.js";
+  import { Effect, Guard, not, NoTrigger, StateMachine } from "westend/src/state-machine/state-machine.js";
 
   const topViewPredicate = (f: (view: View) => boolean): Guard<State, TriggerPayloadMap, DataObject> => {
     return (fsm, trigger, payload) => {

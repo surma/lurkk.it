@@ -24,9 +24,9 @@ import {
   Effect,
   Guard,
   not,
-  NoTrigger
+  NoTrigger,
+  StateMachine
 } from "westend/src/state-machine/state-machine.js";
-import { StateMachine } from "westend/src/state-machine/state-machine.js";
 
 const topViewPredicate = (
   f: (view: View) => boolean
