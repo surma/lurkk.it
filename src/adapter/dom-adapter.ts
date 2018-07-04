@@ -16,6 +16,8 @@ import { html, render } from "lit-html";
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { Snapshot } from "westend/src/state-machine/state-machine.js";
+import * as ServiceReady from "westend/utils/service-ready.js";
+
 import {
   DataObject,
   LoadRequest,
@@ -24,7 +26,6 @@ import {
   Trigger,
   TriggerPayload
 } from "../fsm/generated.js";
-import * as ServiceReady from "../util/service-ready.js";
 
 // Child templates
 import mainTemplate from "./templates/main.js";

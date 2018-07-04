@@ -14,7 +14,7 @@
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { Snapshot } from "westend/src/state-machine/state-machine.js";
-import * as ServiceReady from "./util/service-ready.js";
+import * as ServiceReady from "westend/utils/service-ready.js";
 
 import {
   DataObject,
