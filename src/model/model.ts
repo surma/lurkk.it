@@ -210,8 +210,8 @@ function apiCommentsToModel(
 }
 
 export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
-  const rawData = await JSONP.load<ApiSubreddit>(
-    `https://www.reddit.com/r/${id}/.json`
+  const rawData = await fetch(`https://www.reddit.com/r/${id}/.json`).then(r =>
+    r.json()
   );
   return {
     id,
@@ -220,9 +220,9 @@ export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
 }
 
 export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
-  const rawData = await JSONP.load<ApiThread>(
+  const rawData = await fetch(
     `https://www.reddit.com/${id.substr(3)}/.json`
-  );
+  ).then(r => r.json());
   return [
     apiThreadEntityToModel(rawData[0].data.children[0]),
     apiCommentsToModel(rawData[1].data.children, id)
