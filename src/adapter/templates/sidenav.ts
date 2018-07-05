@@ -15,7 +15,7 @@
 import { html, render } from "lit-html/lib/lit-extended.js";
 import { unsafeHTML } from "../../util/lit-helpers.js";
 
-import { go } from "../../components/router.js";
+import { go } from "westend/utils/router.js";
 
 import { State, View, ViewType } from "../../fsm/generated.js";
 

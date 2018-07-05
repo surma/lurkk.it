@@ -30,7 +30,7 @@ import {
 // Child templates
 import mainTemplate from "./templates/main.js";
 
-import * as Router from "../components/router.js";
+import * as Router from "westend/utils/router.js";
 import SwipeableSidenav from "../components/swipeable-sidenav.js";
 
 customElements.define("swipeable-sidenav", SwipeableSidenav);
