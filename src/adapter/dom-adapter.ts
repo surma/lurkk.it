@@ -33,6 +33,9 @@ import mainTemplate from "./templates/main.js";
 import * as Router from "westend/utils/router.js";
 import SwipeableSidenav from "../components/swipeable-sidenav.js";
 
+import * as RequestResponse from "../utils/request-response-bus.js";
+import { FsmReqType, FsmRequest, FsmResponse } from "../worker.js";
+
 customElements.define("swipeable-sidenav", SwipeableSidenav);
 
 const template = mainTemplate;
@@ -42,6 +45,10 @@ export class DomAdapter {
   private navigationBus = MessageBus.get<Router.NavigationMessage>(
     "navigation"
   );
+  private fsmSnapshot = RequestResponse.get<
+    FsmRequest,
+    FsmResponse<State, DataObject>
+  >("fsm-snapshot");
 
   async init() {
     const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
@@ -51,6 +58,11 @@ export class DomAdapter {
     fsmStateChange.listen(this.onFsmStateChange.bind(this));
 
     await ServiceReady.waitFor("fsm-ready");
+    const { snapshot } = await (await this.fsmSnapshot).sendRequest({
+      type: FsmReqType.GET_SNAPSHOT
+    });
+    this.render(snapshot);
+
     if (location.hash === "") {
       Router.go("/r/webdev");
     } else {
@@ -66,7 +78,11 @@ export class DomAdapter {
   }
 
   private onFsmStateChange(msg: Snapshot<State, DataObject>) {
-    render(template(msg), document.body);
+    this.render(msg);
+  }
+
+  private render(snapshot: Snapshot<State, DataObject>) {
+    render(template(snapshot), document.body);
   }
 
   private async onURLChange(url: string) {

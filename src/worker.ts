@@ -15,6 +15,9 @@
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { Snapshot } from "westend/src/state-machine/state-machine.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
+import { debug } from "westend/src/state-machine/state-machine-debugger.js";
+
+import * as RequestResponse from "./utils/request-response-bus.js";
 
 import {
   DataObject,
@@ -23,7 +26,23 @@ import {
   Trigger,
   TriggerPayload
 } from "./fsm/generated.js";
-import { debug } from "westend/src/state-machine/state-machine-debugger.js";
+
+export enum FsmReqType {
+  GET_SNAPSHOT
+}
+
+interface FsmRequestGetSnapshot {
+  type: FsmReqType.GET_SNAPSHOT;
+}
+
+export type FsmRequest = FsmRequestGetSnapshot;
+
+interface FsmResponseGetSnapshot<State, DataObject> {
+  type: FsmReqType.GET_SNAPSHOT;
+  snapshot: Snapshot<State, DataObject>;
+}
+
+export type FsmResponse<State, DataObject> = FsmResponseGetSnapshot<State, DataObject>;
 
 (async function() {
   debug(fsm, { stateName: s => State[s], triggerName: t => Trigger[t] });
@@ -31,7 +50,6 @@ import { debug } from "westend/src/state-machine/state-machine-debugger.js";
   const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
     "fsm-statechange"
   );
-
   fsm.addStateChangeListener(async (newState: State, data: DataObject) => {
     fsmStateChange.send(fsm.snapshot());
   });
@@ -43,5 +61,18 @@ import { debug } from "westend/src/state-machine/state-machine-debugger.js";
     }
     fsm.emitTrigger(triggerPayload.trigger, triggerPayload);
   });
+
+  await RequestResponse.register<FsmRequest, FsmResponse<State, DataObject>>(
+    "fsm-snapshot",
+    async req => {
+      switch (req.type) {
+        case FsmReqType.GET_SNAPSHOT:
+          return {
+            type: FsmReqType.GET_SNAPSHOT,
+            snapshot: fsm.snapshot()
+          };
+      }
+    }
+  );
   await ServiceReady.signal("fsm-ready");
 })();

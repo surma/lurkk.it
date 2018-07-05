@@ -53,7 +53,7 @@ const viewMap = new Map<ViewType, ViewTemplate>([
 const renderView: PartialTemplate = snapshot => {
   const topView = getTopView(snapshot);
   if (!topView) {
-    return html``;
+    return html`Waiting for content...`;
   }
   const viewTemplate = viewMap.get(topView.view);
   if (!viewTemplate) {
