@@ -34,21 +34,20 @@ import * as Router from "westend/utils/router.js";
 import SwipeableSidenav from "../components/swipeable-sidenav.js";
 
 import * as RequestResponse from "../utils/request-response-bus.js";
-import { FsmReqType, FsmRequest, FsmResponse } from "../worker.js";
+import { FsmControlType, FsmRequest, FsmResponse } from "../worker.js";
 
 customElements.define("swipeable-sidenav", SwipeableSidenav);
 
 const template = mainTemplate;
 
 export class DomAdapter {
-  private fsmTrigger = MessageBus.get<TriggerPayload>("fsm-trigger");
   private navigationBus = MessageBus.get<Router.NavigationMessage>(
     "navigation"
   );
-  private fsmSnapshot = RequestResponse.get<
-    FsmRequest,
+  private fsmControl = RequestResponse.get<
+    FsmRequest<TriggerPayload>,
     FsmResponse<State, DataObject>
-  >("fsm-snapshot");
+  >("fsm-control");
 
   async init() {
     const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
@@ -58,10 +57,13 @@ export class DomAdapter {
     fsmStateChange.listen(this.onFsmStateChange.bind(this));
 
     await ServiceReady.waitFor("fsm-ready");
-    const { snapshot } = await (await this.fsmSnapshot).sendRequest({
-      type: FsmReqType.GET_SNAPSHOT
+    const response = await (await this.fsmControl).sendRequest({
+      type: FsmControlType.GET_SNAPSHOT
     });
-    this.render(snapshot);
+    if (response.type !== FsmControlType.GET_SNAPSHOT) {
+      throw new Error(`Unexpected response: ${FsmControlType[response.type]}`);
+    }
+    this.render(response.snapshot);
 
     if (location.hash === "") {
       Router.go("/r/webdev");
@@ -101,9 +103,12 @@ export class DomAdapter {
         type: LoadRequestType.THREAD
       };
     }
-    (await this.fsmTrigger).send({
-      loadRequest: loadRequest!,
-      trigger: Trigger.LOAD_REQUEST
+    (await this.fsmControl).sendRequest({
+      triggerPayload: {
+        loadRequest: loadRequest!,
+        trigger: Trigger.LOAD_REQUEST
+      },
+      type: FsmControlType.EMIT_TRIGGER
     });
   }
 }

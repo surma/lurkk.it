@@ -27,22 +27,32 @@ import {
   TriggerPayload
 } from "./fsm/generated.js";
 
-export enum FsmReqType {
-  GET_SNAPSHOT
+export enum FsmControlType {
+  GET_SNAPSHOT,
+  EMIT_TRIGGER
 }
 
 interface FsmRequestGetSnapshot {
-  type: FsmReqType.GET_SNAPSHOT;
+  type: FsmControlType.GET_SNAPSHOT;
 }
 
-export type FsmRequest = FsmRequestGetSnapshot;
+interface FsmRequestEmitTrigger<TriggerPayload> {
+  type: FsmControlType.EMIT_TRIGGER;
+  triggerPayload: TriggerPayload;
+}
+
+export type FsmRequest<TriggerPayload> = FsmRequestGetSnapshot | FsmRequestEmitTrigger<TriggerPayload>;
 
 interface FsmResponseGetSnapshot<State, DataObject> {
-  type: FsmReqType.GET_SNAPSHOT;
+  type: FsmControlType.GET_SNAPSHOT;
   snapshot: Snapshot<State, DataObject>;
 }
 
-export type FsmResponse<State, DataObject> = FsmResponseGetSnapshot<State, DataObject>;
+interface FsmResponseEmitTrigger {
+  type: FsmControlType.EMIT_TRIGGER;
+}
+
+export type FsmResponse<State, DataObject> = FsmResponseGetSnapshot<State, DataObject> | FsmResponseEmitTrigger;
 
 (async function() {
   debug(fsm, { stateName: s => State[s], triggerName: t => Trigger[t] });
@@ -54,22 +64,19 @@ export type FsmResponse<State, DataObject> = FsmResponseGetSnapshot<State, DataO
     fsmStateChange.send(fsm.snapshot());
   });
 
-  const fsmTrigger = await MessageBus.get<TriggerPayload>("fsm-trigger");
-  fsmTrigger.listen((triggerPayload?: TriggerPayload) => {
-    if (!triggerPayload) {
-      return;
-    }
-    fsm.emitTrigger(triggerPayload.trigger, triggerPayload);
-  });
-
-  await RequestResponse.register<FsmRequest, FsmResponse<State, DataObject>>(
-    "fsm-snapshot",
+  await RequestResponse.register<FsmRequest<TriggerPayload>, FsmResponse<State, DataObject>>(
+    "fsm-control",
     async req => {
       switch (req.type) {
-        case FsmReqType.GET_SNAPSHOT:
+        case FsmControlType.GET_SNAPSHOT:
           return {
-            type: FsmReqType.GET_SNAPSHOT,
+            type: FsmControlType.GET_SNAPSHOT,
             snapshot: fsm.snapshot()
+          };
+        case FsmControlType.EMIT_TRIGGER:
+          fsm.emitTrigger(req.triggerPayload.trigger, req.triggerPayload);
+          return {
+            type: FsmControlType.EMIT_TRIGGER,
           };
       }
     }
