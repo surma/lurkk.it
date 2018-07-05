@@ -13,7 +13,7 @@
  */
 
 import { html, render } from "lit-html/lib/lit-extended.js";
-import { unsafeHTML } from "../../util/lit-helpers.js";
+import { unsafeHTML } from "../../utils/lit-helpers.js";
 
 import { go } from "westend/utils/router.js";
 

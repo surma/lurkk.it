@@ -13,7 +13,7 @@
  */
 
 import { html, render } from "lit-html";
-import { animateTo } from "../util/animation.js";
+import { animateTo } from "../utils/animation.js";
 
 export default class SwipeableSidenav extends HTMLElement {
   static get START_POS() {

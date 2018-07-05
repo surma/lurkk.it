@@ -13,7 +13,7 @@
  */
 
 import { html, render } from "lit-html";
-import { unsafeHTML } from "../../../util/lit-helpers.js";
+import { unsafeHTML } from "../../../utils/lit-helpers.js";
 
 import { ViewType } from "../../../fsm/generated.js";
 import { ViewTemplate } from "../main.js";
