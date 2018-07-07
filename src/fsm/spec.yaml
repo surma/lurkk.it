@@ -18,7 +18,11 @@
 
   import * as Model from "../model/model.js";
 
-  import { Effect, Guard, not, NoTrigger, StateMachine } from "westend/src/state-machine/state-machine.js";
+  import * as FsmUtils from "../utils/fsm-utils.js";
+
+  import * as MessageBus from "westend/src/message-bus/message-bus.js"
+  import { Effect, Guard, not, NoTrigger, StateMachine, Snapshot } from "westend/src/state-machine/state-machine.js";
+  import * as ServiceReady from "westend/utils/service-ready.js";
 
   const topViewPredicate = (f: (view: View) => boolean): Guard<State, TriggerPayloadMap, DataObject> => {
     return (fsm, trigger, payload) => {
@@ -176,3 +180,18 @@ transitions:
     trigger: Trigger.LOAD_REQUEST
     target: State.DISPATCH
     effects: [storeLoadRequest]
+
+--- |
+  (async function () {
+    const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
+      "fsm-statechange"
+    );
+    fsm.addStateChangeListener(async (newState: State, data: DataObject) => {
+      fsmStateChange.send(fsm.snapshot());
+    });
+
+    FsmUtils.exposeGetSnapshot(fsm);
+    FsmUtils.exposeEmitTrigger(fsm);
+
+    await ServiceReady.signal("fsm-ready");
+  })();

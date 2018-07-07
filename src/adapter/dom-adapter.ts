@@ -16,6 +16,7 @@ import { html, render } from "lit-html";
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { Snapshot } from "westend/src/state-machine/state-machine.js";
+import * as Router from "westend/utils/router.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
 import {
@@ -30,11 +31,10 @@ import {
 // Child templates
 import mainTemplate from "./templates/main.js";
 
-import * as Router from "westend/utils/router.js";
 import SwipeableSidenav from "../components/swipeable-sidenav.js";
 
+import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
 import * as RequestResponse from "../utils/request-response-bus.js";
-import { FsmControlType, FsmRequest, FsmResponse } from "../worker.js";
 
 customElements.define("swipeable-sidenav", SwipeableSidenav);
 
@@ -44,10 +44,6 @@ export class DomAdapter {
   private navigationBus = MessageBus.get<Router.NavigationMessage>(
     "navigation"
   );
-  private fsmControl = RequestResponse.get<
-    FsmRequest<TriggerPayload>,
-    FsmResponse<State, DataObject>
-  >("fsm-control");
 
   async init() {
     const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
@@ -57,13 +53,7 @@ export class DomAdapter {
     fsmStateChange.listen(this.onFsmStateChange.bind(this));
 
     await ServiceReady.waitFor("fsm-ready");
-    const response = await (await this.fsmControl).sendRequest({
-      type: FsmControlType.GET_SNAPSHOT
-    });
-    if (response.type !== FsmControlType.GET_SNAPSHOT) {
-      throw new Error(`Unexpected response: ${FsmControlType[response.type]}`);
-    }
-    this.render(response.snapshot);
+    this.render(await getSnapshot<State, DataObject>());
 
     if (location.hash === "") {
       Router.go("/r/webdev");
@@ -103,12 +93,9 @@ export class DomAdapter {
         type: LoadRequestType.THREAD
       };
     }
-    (await this.fsmControl).sendRequest({
-      triggerPayload: {
-        loadRequest: loadRequest!,
-        trigger: Trigger.LOAD_REQUEST
-      },
-      type: FsmControlType.EMIT_TRIGGER
+    await emitTrigger<TriggerPayload>({
+      loadRequest: loadRequest!,
+      trigger: Trigger.LOAD_REQUEST
     });
   }
 }
