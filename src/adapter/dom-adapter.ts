@@ -20,7 +20,15 @@ import * as Router from "westend/utils/router.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
 import {
+  MODEL_CONFIG,
+  ModelConfigRequest,
+  ModelConfigResponse
+} from "../model/model.js";
+
+import {
   DataObject,
+  FSM_READY,
+  FSM_STATECHANGE,
   LoadRequest,
   LoadRequestType,
   State,
@@ -34,7 +42,7 @@ import mainTemplate from "./templates/main.js";
 import SwipeableSidenav from "../components/swipeable-sidenav.js";
 
 import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
-import * as RequestResponse from "../utils/request-response-bus.js";
+import * as RequestResponseBus from "../utils/request-response-bus.js";
 
 customElements.define("swipeable-sidenav", SwipeableSidenav);
 
@@ -46,13 +54,16 @@ export class DomAdapter {
   );
 
   async init() {
+    if (isDebug()) {
+      await this.initDebug();
+    }
     const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
-      "fsm-statechange"
+      FSM_STATECHANGE
     );
 
     fsmStateChange.listen(this.onFsmStateChange.bind(this));
 
-    await ServiceReady.waitFor("fsm-ready");
+    await ServiceReady.waitFor(FSM_READY);
     this.render(await getSnapshot<State, DataObject>());
 
     if (location.hash === "") {
@@ -97,6 +108,14 @@ export class DomAdapter {
       loadRequest: loadRequest!,
       trigger: Trigger.LOAD_REQUEST
     });
+  }
+
+  private async initDebug() {
+    console.log("Initializing in debug mode");
+    await ServiceReady.waitFor("model");
+    (await RequestResponseBus.get<ModelConfigRequest, ModelConfigResponse>(
+      MODEL_CONFIG
+    )).sendRequest({ noApi: true });
   }
 }
 

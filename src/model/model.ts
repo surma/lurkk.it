@@ -12,7 +12,11 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import * as ServiceReady from "westend/utils/service-ready.js";
+
 import * as JSONP from "./jsonp.js";
+
+import * as RequestResponseBus from "../utils/request-response-bus.js";
 
 export type ThreadID = string;
 export type SubredditID = string;
@@ -209,10 +213,14 @@ function apiCommentsToModel(
     }));
 }
 
+export const config = {
+  noApi: false
+};
+
 export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
-  const rawData = await fetch(`https://www.reddit.com/r/${id}/.json`).then(r =>
-    r.json()
-  );
+  const rawData = config.noApi
+    ? await fetch("/subreddit.json").then(r => r.json())
+    : await fetch(`https://www.reddit.com/r/${id}/.json`).then(r => r.json());
   return {
     id,
     items: rawData.data.children.map(apiThreadEntityToModel)
@@ -220,11 +228,27 @@ export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
 }
 
 export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
-  const rawData = await fetch(
-    `https://www.reddit.com/${id.substr(3)}/.json`
-  ).then(r => r.json());
+  const rawData = config.noApi
+    ? await fetch("/thread.json").then(r => r.json())
+    : await fetch(`https://www.reddit.com/${id.substr(3)}/.json`).then(r =>
+        r.json()
+      );
   return [
     apiThreadEntityToModel(rawData[0].data.children[0]),
     apiCommentsToModel(rawData[1].data.children, id)
   ];
+}
+
+export type ModelConfigRequest = Partial<typeof config>;
+export type ModelConfigResponse = void;
+export const MODEL_CONFIG = "model.config";
+
+export async function init() {
+  RequestResponseBus.register<ModelConfigRequest, ModelConfigResponse>(
+    MODEL_CONFIG,
+    async b => {
+      Object.assign(config, b);
+    }
+  );
+  ServiceReady.signal("model");
 }
