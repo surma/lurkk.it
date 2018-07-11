@@ -16,6 +16,7 @@
   // It’s too hard to make generated code linter compliant
   /* tslint:disable */
 
+  import * as Types from "../model/types.js";
   import * as Model from "../model/model.js";
 
   import { Effect, Guard, not, NoTrigger, StateMachine, Snapshot } from "westend/src/state-machine/state-machine.js";
@@ -100,13 +101,13 @@ triggers:
 
   export interface SubredditView {
     view: ViewType.SUBREDDIT;
-    subreddit: Model.Subreddit;
+    subreddit: Types.Subreddit;
   }
 
   export interface ThreadView {
     view: ViewType.THREAD;
-    thread: Model.Thread;
-    comments: Model.Comment[];
+    thread: Types.Thread;
+    comments: Types.Comment[];
   }
 
   export interface EmptyView {
@@ -122,12 +123,12 @@ triggers:
 
   export interface SubredditLoadRequest {
     type: LoadRequestType.SUBREDDIT;
-    id: Model.SubredditID;
+    id: Types.SubredditID;
   }
 
   export interface ThreadLoadRequest {
     type: LoadRequestType.THREAD;
-    id: Model.ThreadID;
+    id: Types.ThreadID;
   }
 
   export type LoadRequest = SubredditLoadRequest | ThreadLoadRequest;

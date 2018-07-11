@@ -15,7 +15,7 @@
 import { html, render, TemplateResult } from "lit-html";
 
 import { ViewType } from "../../../fsm/generated.js";
-import { Comment, Thread } from "../../../model/model.js";
+import { Comment, Thread } from "../../../model/types.js";
 import { decodeHTML } from "../../../utils/dom-helpers.js";
 import { unsafeHTML } from "../../../utils/lit-helpers.js";
 import { ViewTemplate } from "../main.js";

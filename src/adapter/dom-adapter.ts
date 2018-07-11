@@ -115,7 +115,7 @@ export class DomAdapter {
     await ServiceReady.waitFor("model");
     (await RequestResponseBus.get<ModelConfigRequest, ModelConfigResponse>(
       MODEL_CONFIG
-    )).sendRequest({ noApi: true });
+    )).sendRequest({ dataSource: "mock" });
   }
 }
 

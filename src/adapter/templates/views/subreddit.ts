@@ -18,7 +18,7 @@ import { unsafeHTML } from "../../../utils/lit-helpers.js";
 import { ViewType } from "../../../fsm/generated.js";
 import { ViewTemplate } from "../main.js";
 
-import { Thread } from "../../../model/model.js";
+import { Thread } from "../../../model/types.js";
 
 function previewImageURL(item: Thread) {
   if (item.previewImage) {
