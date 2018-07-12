@@ -29,7 +29,7 @@ import {
 } from "../../fsm/generated.js";
 
 import headerTemplate from "./header.js";
-import sidenavTemplate from "./sidenav.js";
+import menuTemplate from "./menu.js";
 
 export function getTopView(snapshot: Snapshot<State, DataObject>): View | null {
   const stack = snapshot.data.stack;
@@ -66,8 +66,8 @@ export default (snapshot: Snapshot<State, DataObject>) => {
   const topView = getTopView(snapshot);
   return html`
     ${headerTemplate(snapshot)}
-    ${sidenavTemplate(snapshot)}
-    <main slot="main">
+    ${menuTemplate(snapshot)}
+    <main>
       ${renderView(snapshot)}
     </main>
   `;

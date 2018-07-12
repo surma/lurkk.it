@@ -33,7 +33,7 @@ import * as FsmUtils from "./utils/fsm-utils.js";
 
 (async function() {
   await Model.init();
-  debug(fsm, { stateName: s => State[s], triggerName: t => Trigger[t] });
+  // debug(fsm, { stateName: s => State[s], triggerName: t => Trigger[t] });
 
   const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
     FSM_STATECHANGE

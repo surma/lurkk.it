@@ -49,6 +49,7 @@ body {
 
   display: flex;
   flex-direction: column;
+  padding-bottom: 50vh;
 }
 a, a:link, a:active, a:hover {
   color: var(--pink);

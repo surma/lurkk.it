@@ -39,12 +39,11 @@ import {
 // Child templates
 import mainTemplate from "./templates/main.js";
 
-import SwipeableSidenav from "../components/swipeable-sidenav.js";
-
 import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
 import * as RequestResponseBus from "../utils/request-response-bus.js";
 
-customElements.define("swipeable-sidenav", SwipeableSidenav);
+import BottomBar from "../components/bottom-bar.js";
+customElements.define("bottom-bar", BottomBar);
 
 const template = mainTemplate;
 

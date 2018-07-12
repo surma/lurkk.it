@@ -11,40 +11,55 @@
  * subject to an additional IP rights grant found at
  * hgtp://polymer.github.io/PATENTS.txt
  */
+import { go } from "westend/utils/router.js";
 
 import { html, render } from "lit-html/lib/lit-extended.js";
 import { unsafeHTML } from "../../utils/lit-helpers.js";
 
-import { go } from "westend/utils/router.js";
+import BottomBar from "../../components/bottom-bar.js";
 
 import { State, View, ViewType } from "../../fsm/generated.js";
 
-import SwipeableSidenav from "../../components/swipeable-sidenav.js";
-
 import { getTopView, PartialTemplate } from "./main.js";
 
-const menuSVG = fetch("icons/menu.svg").then(r => r.text());
-
-export enum SidenavState {
+export enum MenuState {
   OPEN,
   CLOSED
 }
 
-export function setSidenavState(state: SidenavState) {
-  const sidenav = document.querySelector(
-    "swipeable-sidenav"
-  ) as SwipeableSidenav | null;
-  if (!sidenav) {
+export function setMenuState(state: MenuState) {
+  const bottomBar = document.querySelector(
+    "bottom-bar"
+  ) as BottomBar | null;
+  if (!bottomBar) {
     return;
   }
   switch (state) {
-    case SidenavState.OPEN:
-      sidenav.open();
+    case MenuState.OPEN:
+      bottomBar.open();
       break;
-    case SidenavState.CLOSED:
-      sidenav.close();
+    case MenuState.CLOSED:
+      bottomBar.close();
       break;
   }
+}
+
+export function getTitle(topView?: View | null): string {
+  if (!topView) {
+    return "LurkIt";
+  }
+  switch (topView.view) {
+    case ViewType.EMPTY:
+      return "Loading...";
+      break;
+    case ViewType.SUBREDDIT:
+      return `/r/${topView.subreddit.id}`;
+      break;
+    case ViewType.THREAD:
+      return `/r/${topView.thread.subreddit}`;
+      break;
+  }
+  return "";
 }
 
 const defaultSubreddits = [
@@ -63,13 +78,29 @@ function goToSubreddit() {
   if (target.length > 0) {
     go(`/r/${target}`);
     input.value = "";
-    setSidenavState(SidenavState.CLOSED);
+    setMenuState(MenuState.CLOSED);
   }
   return false;
 }
 
 const partial: PartialTemplate = snapshot => html`
-  <swipeable-sidenav id="sidenav">
+  <style>
+    bottom-bar {
+      align-items: stretch;
+      box-shadow: 0px 3px 4px 4px var(--green);
+      display: flex;
+      flex-direction: column;
+      background-color: var(--white);
+      padding: calc(var(--side-padding) * var(--base));
+      padding-top: 0;
+    }
+    bottom-bar > [slot="bar"] {
+      font-size: var(--base-font);
+      padding: calc(var(--side-padding) * var(--base)) 0;
+    }
+  </style>
+  <bottom-bar id="sidenav">
+    <div slot="bar">${getTitle(getTopView(snapshot))}</div>
     <form onsubmit=${() => goToSubreddit()}>
       <input type="text" placeholder="/r/..." class="subreddit">
       <input type="submit" class="go" value="Go">
@@ -80,14 +111,14 @@ const partial: PartialTemplate = snapshot => html`
           <li class="favorite">
             <a
               href="${subreddit}"
-              on-click=${() => setSidenavState(SidenavState.CLOSED)}>
+              on-click=${() => setMenuState(MenuState.CLOSED)}>
                 ${subreddit}
             </a>
           </li>
         `
       )}
     </ul>
-  </swipeable-sidenav>
+  </bottom-bar>
 `;
 
 export default partial;
