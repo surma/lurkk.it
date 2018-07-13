@@ -15,6 +15,8 @@
 import { TemplateResult } from "lit-html";
 import { html, render } from "lit-html/lib/lit-extended.js";
 import { unsafeHTML } from "../../utils/lit-helpers.js";
+import * as ColorTools from "../../utils/color-tools.js";
+
 
 import SubredditView from "./views/subreddit.js";
 import ThreadView from "./views/thread.js";
@@ -62,6 +64,19 @@ const renderView: PartialTemplate = snapshot => {
   return viewTemplate(topView);
 };
 
+
+const primary = "#009B9B";
+const secondary1 = "#FFD200";
+const secondary2 = "#CE0074";
+
+const boxTemplate = (hsl: ColorTools.HSLColor) => {
+  return html`
+    <div style="background-color: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%);">
+      ${ColorTools.RGBtoHex(ColorTools.HSLtoRGB(hsl))}
+    </div>
+  `;
+};
+
 export default (snapshot: Snapshot<State, DataObject>) => {
   const topView = getTopView(snapshot);
   return html`
@@ -70,5 +85,16 @@ export default (snapshot: Snapshot<State, DataObject>) => {
     <main>
       ${renderView(snapshot)}
     </main>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); height: 100vh;">
+      ${
+        ColorTools.generatePalette(primary).map(boxTemplate)
+      }
+      ${
+        ColorTools.generatePalette(secondary1).map(boxTemplate)
+      }
+      ${
+        ColorTools.generatePalette(secondary2).map(boxTemplate)
+      }
+    </div>
   `;
 };
