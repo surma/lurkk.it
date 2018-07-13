@@ -12,7 +12,6 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "lit-html";
 import { animateTo } from "../utils/animation.js";
 
 export default class BottomBar extends HTMLElement {
@@ -30,7 +29,7 @@ export default class BottomBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(this.shadowDom({}), this.shadowRoot!);
+    this.shadowRoot!.innerHTML = this.shadowDom();
 
     this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this));
@@ -90,8 +89,8 @@ export default class BottomBar extends HTMLElement {
     }
   }
 
-  private shadowDom(state: {}) {
-    return html`
+  private shadowDom() {
+    return `
       <style>
         :host {
           height: 100vh;
