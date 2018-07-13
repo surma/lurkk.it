@@ -45,6 +45,9 @@ import * as RequestResponseBus from "../utils/request-response-bus.js";
 import BottomBar from "../components/bottom-bar.js";
 customElements.define("bottom-bar", BottomBar);
 
+import LayerMenu from "../components/layer-menu.js";
+customElements.define("layer-menu", LayerMenu);
+
 const template = mainTemplate;
 
 export class DomAdapter {

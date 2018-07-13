@@ -37,14 +37,16 @@ const template: ViewTemplate = view => {
       ${view.subreddit.items.map(
         item => html`
           <li class="item separator">
-            <a class="title" href="/t/${item.id}">${item.title}</a>
-            <span class="meta">/u/${item.author} (/r/${item.subreddit})</span>
-            <span class="engagement">${item.upvotes - item.downvotes}pts • ${
-          item.numComments
-        } comment${item.numComments === 1 ? "" : "s"}</span>
-            <div class="preview" style$="background-image: url(${previewImageURL(
-              item
-            )})"></div>
+            <layer-menu>
+              <div slot="top" style="background-color: green;">
+                <a class="title" href="/t/${item.id}">${item.title}</a>
+                <span class="meta">/u/${item.author} (/r/${item.subreddit})</span>
+                <span class="engagement">${item.upvotes - item.downvotes}pts • ${item.numComments} comment${item.numComments === 1 ? "" : "s"}</span>
+              </div>
+              <div style="background-color: red; text-align: right;">
+              MUCH MENU
+              </div>
+            </layer-menu>
           </li>
         `
       )}
