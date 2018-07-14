@@ -85,16 +85,21 @@ export default (snapshot: Snapshot<State, DataObject>) => {
     <main>
       ${renderView(snapshot)}
     </main>
-    <div style="display: grid; grid-template-columns: repeat(5, 1fr); height: 100vh;">
-      ${
-        ColorTools.generatePalette(primary).map(boxTemplate)
-      }
-      ${
-        ColorTools.generatePalette(secondary1).map(boxTemplate)
-      }
-      ${
-        ColorTools.generatePalette(secondary2).map(boxTemplate)
-      }
-    </div>
+    <item-stack style="width: 500px; height: 500px">
+      <div style="background-color: blue"></div>
+      <div style="background-color: green"></div>
+      <div style="background-color: red"></div>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr);">
+        ${
+          ColorTools.generatePalette(primary).map(boxTemplate)
+        }
+        ${
+          ColorTools.generatePalette(secondary1).map(boxTemplate)
+        }
+        ${
+          ColorTools.generatePalette(secondary2).map(boxTemplate)
+        }
+      </div>
+    </item>
   `;
 };
