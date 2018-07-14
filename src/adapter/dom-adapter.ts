@@ -42,15 +42,6 @@ import mainTemplate from "./templates/main.js";
 import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
 import * as RequestResponseBus from "../utils/request-response-bus.js";
 
-import BottomBar from "../components/bottom-bar.js";
-customElements.define("bottom-bar", BottomBar);
-
-import LayerMenu from "../components/layer-menu.js";
-customElements.define("layer-menu", LayerMenu);
-
-import ItemStack from "../components/item-stack.js";
-customElements.define("item-stack", ItemStack);
-
 const template = mainTemplate;
 
 export class DomAdapter {

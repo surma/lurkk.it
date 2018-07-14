@@ -17,3 +17,12 @@ export function decodeHTML(input: string): string {
   e.innerHTML = input;
   return e.innerText;
 }
+
+// Same as `customElements.define()`, but doesn’t throw when the element is
+// already defined.
+export function defineCE(name: string, clazz: Constructor<HTMLElement>) {
+  if (customElements.get(name)) {
+    return;
+  }
+  customElements.define(name, clazz);
+}

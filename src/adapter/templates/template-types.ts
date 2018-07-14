@@ -12,25 +12,16 @@
  * hgtp://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "lit-html/lib/lit-extended.js";
-import { unsafeHTML } from "../../utils/lit-helpers.js";
-
+import {TemplateResult} from "lit-html";
 import { Snapshot } from "westend/src/state-machine/state-machine.js";
+import {
+  DataObject,
+  State,
+  Trigger,
+  View,
+  ViewType
+} from "../../fsm/generated.js";
 
-import { DataObject, State, View, ViewType } from "../../fsm/generated.js";
-import { getTopView, PartialTemplate } from "./main.js";
-import { setMenuState, MenuState } from "./menu.js";
+export type ViewTemplate = (view: View) => TemplateResult;
+export type PartialTemplate = (snapshot: Snapshot<State, DataObject>) => TemplateResult;
 
-function spinnerClass(snapshot: Snapshot<State, DataObject>) {
-  const showSpinner = [State.LOAD, State.DISPATCH].includes(
-    snapshot.currentState
-  );
-  if (showSpinner) {
-    return "loading";
-  }
-  return "";
-}
-const partial: PartialTemplate = snapshot => html`
-`;
-
-export default partial;

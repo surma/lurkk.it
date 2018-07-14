@@ -20,7 +20,8 @@ import BottomBar from "../../components/bottom-bar.js";
 
 import { State, View, ViewType } from "../../fsm/generated.js";
 
-import { getTopView, PartialTemplate } from "./main.js";
+import {PartialTemplate} from "./template-types.js";
+import { getTopView} from "./main.js";
 
 export enum MenuState {
   OPEN,

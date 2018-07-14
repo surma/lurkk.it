@@ -14,9 +14,9 @@
 
 import { TemplateResult } from "lit-html";
 import { html, render } from "lit-html/lib/lit-extended.js";
-import { unsafeHTML } from "../../utils/lit-helpers.js";
-import * as ColorTools from "../../utils/color-tools.js";
 
+import {defineCE} from "../../utils/dom-helpers.js";
+import { unsafeHTML } from "../../utils/lit-helpers.js";
 
 import SubredditView from "./views/subreddit.js";
 import ThreadView from "./views/thread.js";
@@ -30,8 +30,15 @@ import {
   ViewType
 } from "../../fsm/generated.js";
 
-import headerTemplate from "./header.js";
+import {ViewTemplate} from "./template-types.js";
+
 import menuTemplate from "./menu.js";
+
+import BottomBar from "../../components/bottom-bar.js";
+defineCE("bottom-bar", BottomBar);
+
+import ItemStack from "../../components/item-stack.js";
+defineCE("item-stack", ItemStack);
 
 export function getTopView(snapshot: Snapshot<State, DataObject>): View | null {
   const stack = snapshot.data.stack;
@@ -41,65 +48,46 @@ export function getTopView(snapshot: Snapshot<State, DataObject>): View | null {
   return stack[stack.length - 1];
 }
 
-export type PartialTemplate = (
-  snapshot: Snapshot<State, DataObject>
-) => TemplateResult;
-export type ViewTemplate = (view: View) => TemplateResult;
-
-const viewMap = new Map<ViewType, ViewTemplate>([
-  [ViewType.EMPTY, view => html``],
-  [ViewType.SUBREDDIT, SubredditView],
-  [ViewType.THREAD, ThreadView]
+const viewMap = new Map<ViewType, () => Promise<ViewTemplate>>([
+  [ViewType.EMPTY, () => Promise.resolve((view: View) => html``)],
+  [ViewType.SUBREDDIT, () => import("./views/subreddit.js").then(m => m.default)],
+  [ViewType.THREAD, () => import("./views/thread.js").then(m => m.default)]
 ]);
 
-const renderView: PartialTemplate = snapshot => {
+async function renderView(snapshot: Snapshot<State, DataObject>): Promise<TemplateResult> {
   const topView = getTopView(snapshot);
   if (!topView) {
     return html`Waiting for content...`;
   }
-  const viewTemplate = viewMap.get(topView.view);
-  if (!viewTemplate) {
+  if (!viewMap.has(topView.view)) {
     return html``;
   }
+  const viewTemplate = await viewMap.get(topView.view)!();
   return viewTemplate(topView);
-};
-
-
-const primary = "#009B9B";
-const secondary1 = "#FFD200";
-const secondary2 = "#CE0074";
-
-const boxTemplate = (hsl: ColorTools.HSLColor) => {
-  return html`
-    <div style="background-color: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%);">
-      ${ColorTools.RGBtoHex(ColorTools.HSLtoRGB(hsl))}
-    </div>
-  `;
 };
 
 export default (snapshot: Snapshot<State, DataObject>) => {
   const topView = getTopView(snapshot);
   return html`
-    ${headerTemplate(snapshot)}
-    ${menuTemplate(snapshot)}
+    <style>
+      main {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+      item-stack {
+        width: 100%;
+        height: 100%;
+      }
+      item-stack > * {
+        overflow: auto;
+      }
+    </style>
     <main>
-      ${renderView(snapshot)}
+      <item-stack>
+        ${renderView(snapshot)}
+      </item-stack>
     </main>
-    <item-stack style="width: 500px; height: 500px">
-      <div style="background-color: blue"></div>
-      <div style="background-color: green"></div>
-      <div style="background-color: red"></div>
-      <div style="display: grid; grid-template-columns: repeat(5, 1fr);">
-        ${
-          ColorTools.generatePalette(primary).map(boxTemplate)
-        }
-        ${
-          ColorTools.generatePalette(secondary1).map(boxTemplate)
-        }
-        ${
-          ColorTools.generatePalette(secondary2).map(boxTemplate)
-        }
-      </div>
-    </item>
+    ${menuTemplate(snapshot)}
   `;
 };

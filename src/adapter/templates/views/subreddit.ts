@@ -13,12 +13,17 @@
  */
 
 import { html, render } from "lit-html";
+
 import { unsafeHTML } from "../../../utils/lit-helpers.js";
+import { defineCE } from "../../../utils/dom-helpers.js";
 
 import { ViewType } from "../../../fsm/generated.js";
-import { ViewTemplate } from "../main.js";
+import { ViewTemplate } from "../template-types.js";
 
 import { Thread } from "../../../model/types.js";
+
+import LayerMenu from "../../../components/layer-menu.js";
+defineCE("layer-menu", LayerMenu);
 
 function previewImageURL(item: Thread) {
   if (item.previewImage) {

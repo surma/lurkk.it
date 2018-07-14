@@ -15,3 +15,7 @@
 interface Event {
   composedPath: () => HTMLElement[];
 }
+
+interface Constructor<T> {
+  new(...args: any[]): T;
+}
