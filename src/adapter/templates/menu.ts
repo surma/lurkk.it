@@ -63,13 +63,6 @@ export function getTitle(topView?: View | null): string {
   return "";
 }
 
-const defaultSubreddits = [
-  "/r/all",
-  "/r/leagueoflegends",
-  "/r/mechanicalkeyboards",
-  "/r/rocketleague"
-];
-
 function goToSubreddit() {
   const input = document.querySelector("input.subreddit")! as HTMLInputElement;
   let target = input.value;
@@ -107,7 +100,7 @@ const partial: PartialTemplate = snapshot => html`
       <input type="submit" class="go" value="Go">
     </form>
     <ul class="favorites">
-      ${defaultSubreddits.map(
+      ${snapshot.data.favorites.map(
         subreddit => html`
           <li class="favorite">
             <a

@@ -135,12 +135,14 @@ triggers:
 
   export interface DataObject {
     loadRequest?: LoadRequest;
+    favorites: Types.SubredditID[];
     stack: View[];
   }
 
   export const fsm = new StateMachine<State, TriggerPayloadMap, DataObject>(
     State.INIT,
     {
+      favorites: ["deine_mudda", "lol"],
       stack: [],
     }
   );
