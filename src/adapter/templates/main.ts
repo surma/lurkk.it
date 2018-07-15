@@ -14,6 +14,7 @@
 
 import { TemplateResult } from "lit-html";
 import { html, render } from "lit-html/lib/lit-extended.js";
+import { repeat} from "lit-html/lib/repeat.js";
 
 import {defineCE} from "../../utils/dom-helpers.js";
 import { unsafeHTML } from "../../utils/lit-helpers.js";
@@ -54,17 +55,24 @@ const viewMap = new Map<ViewType, () => Promise<ViewTemplate>>([
   [ViewType.THREAD, () => import("./views/thread.js").then(m => m.default)]
 ]);
 
-async function renderView(snapshot: Snapshot<State, DataObject>): Promise<TemplateResult> {
-  const topView = getTopView(snapshot);
-  if (!topView) {
-    return html`Waiting for content...`;
-  }
-  if (!viewMap.has(topView.view)) {
+async function renderView(view: View): Promise<TemplateResult> {
+  if (!viewMap.has(view.view)) {
     return html``;
   }
-  const viewTemplate = await viewMap.get(topView.view)!();
-  return viewTemplate(topView);
+  const viewTemplate = await viewMap.get(view.view)!();
+  return viewTemplate(view);
 };
+
+let seenUIDs = new Set<string>();
+function uidNewFunc(el: HTMLElement) {
+  const uid = el.dataset["uid"];
+  if(!uid) {
+    return false;
+  }
+  const isNew = !seenUIDs.has(uid);
+  seenUIDs.add(uid);
+  return isNew;
+}
 
 export default (snapshot: Snapshot<State, DataObject>) => {
   const topView = getTopView(snapshot);
@@ -84,8 +92,8 @@ export default (snapshot: Snapshot<State, DataObject>) => {
       }
     </style>
     <main>
-      <item-stack>
-        ${renderView(snapshot)}
+      <item-stack isNewFunc=${(el: HTMLElement) => uidNewFunc(el)}>
+        ${repeat(snapshot.data.stack, item => item.uid, item => renderView(item))}
       </item-stack>
     </main>
     ${menuTemplate(snapshot)}

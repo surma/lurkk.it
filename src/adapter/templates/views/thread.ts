@@ -80,7 +80,7 @@ const template: ViewTemplate = view => {
   }
 
   return html`
-    <div class="thread separator">
+    <div class="thread" data-uid$="${view.uid}">
       <h1 class="title">
         ${view.thread.title}
       </h1>
@@ -93,8 +93,8 @@ const template: ViewTemplate = view => {
         ${view.thread.numComments} comments
       </div>
       ${renderContent(view.thread)}
+      ${renderComments(view.comments)}
     </div>
-    ${renderComments(view.comments)}
   `;
 };
 

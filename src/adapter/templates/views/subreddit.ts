@@ -38,7 +38,7 @@ const template: ViewTemplate = view => {
   }
 
   return html`
-    <ul class="subreddit">
+    <ul class="subreddit" data-uid$="${view.uid}">
       ${view.subreddit.items.map(
         item => html`
           <li class="item separator">
