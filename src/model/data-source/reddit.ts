@@ -12,7 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Comment, Subreddit, SubredditID, Thread, ThreadID } from "./types.js";
+import { Comment } from "../comment.js";
+import {Subreddit, SubredditID} from "../subreddit.js";
+import {Thread, ThreadID} from "../thread.js";
 
 export interface ApiSubreddit {
   data: {

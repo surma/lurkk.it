@@ -12,20 +12,13 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export {
-  getFavorites,
-  addFavorite,
-  delFavorite,
-  toggleFavorite
-} from "./favorites.js";
-export { loadSubreddit, loadThread } from "./loading.js";
-
-import * as ServiceReady from "westend/utils/service-ready.js";
-import { init as loadingInit } from "./loading.js";
-
-export const READY_CHANNEL = "model.ready";
-
-export async function init() {
-  await loadingInit();
-  ServiceReady.signal(READY_CHANNEL);
+export type CommentID = string;
+export interface Comment {
+  id: CommentID;
+  author: string;
+  body: string;
+  htmlBody: string;
+  downvotes: number;
+  upvotes: number;
+  replies: Comment[];
 }

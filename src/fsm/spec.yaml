@@ -16,184 +16,125 @@
   // It’s too hard to make generated code linter compliant
   /* tslint:disable */
 
-  import * as Types from "../model/types.js";
+  import { Subreddit, SubredditID } from "../model/subreddit.js";
+  import { Thread, ThreadID } from "../model/thread.js";
+  import { View, ViewType } from "../model/view.js";
   import * as Model from "../model/model.js";
 
-  import { Effect, Guard, not, NoTrigger, StateMachine, Snapshot } from "westend/src/state-machine/state-machine.js";
+  import {
+    Effect,
+    Guard,
+    not,
+    NoTrigger,
+    StateMachine,
+    State 
+  } from "westend/src/state-machine/state-machine.js";
 
-  const topViewPredicate = (f: (view: View) => boolean): Guard<State, TriggerPayloadMap, DataObject> => {
-    return (fsm, trigger, payload) => {
-      if(fsm.data.stack.length <= 0) {
-        return false;
-      }
-      return f(fsm.data.stack[fsm.data.stack.length - 1]);
-    };
-  };
-
-  const isLoadRequestOfType = (lrt: LoadRequestType): Guard<State, TriggerPayloadMap, DataObject> => {
-    return (fsm, trigger, payload) => !!fsm.data.loadRequest && fsm.data.loadRequest.type === lrt;
-  }
-
-  const storeLoadRequest: Effect<State, TriggerPayloadMap, DataObject> = async (fsm, trigger, payload) => {
-    fsm.data.loadRequest = payload.loadRequest;
-  };
-
-  const loadThread: Effect<State, TriggerPayloadMap, DataObject> = async (fsm, trigger, payload) => {
-    const loadRequest= fsm.data.loadRequest;
-    if(!loadRequest || loadRequest.type !== LoadRequestType.THREAD) {
-      throw new Error ("loadRequest is not of type THREAD");
-    }
-   
-    // Run this code concurrently to the state machine
-    Promise.resolve().then(async () => {
-      const [thread, comments] = await Model.loadThread(loadRequest.id);
-      fsm.data.stack.push({
-        view: ViewType.THREAD,
-        uid: uuid(),
-        thread,
-        comments
-      });
-      delete fsm.data.loadRequest;
-      fsm.emitTrigger(Trigger.LOADING_DONE);
-    });
-  };
-
-  const loadSubreddit: Effect<State, TriggerPayloadMap, DataObject> = async (fsm, trigger, payload) => {
-    const loadRequest = fsm.data.loadRequest;
-    if(!loadRequest || loadRequest.type !== LoadRequestType.SUBREDDIT) {
-      throw new Error ("loadRequest is not of type SUBREDIT");
-    }
-
-    // Run this code concurently to the state machien
-    Promise.resolve().then(async () => {
-      const subreddit = await Model.loadSubreddit(loadRequest.id);
-      fsm.data.stack.push({
-        view: ViewType.SUBREDDIT,
-        uid: uuid(),
-        subreddit
-      });
-      delete fsm.data.loadRequest;
-      fsm.emitTrigger(Trigger.LOADING_DONE);
-    });
-  };
-
-  function uuid() {
-    let uuid = "";
+  function genUid() {
+    let uid = "";
     for (let i = 0; i < 16; i++) {
-      uuid += String.fromCharCode(Math.floor(97 + Math.random() * 26));
+      uid += String.fromCharCode(Math.floor(97 + Math.random() * 26));
     }
 
-    return uuid;
+    return uid;
   }
 
 ---
 fsm_variable: fsm
 output_file: generated.ts
-states:
-  - name: INIT
-  - name: RECOVER
-  - name: DISPATCH
-  - name: LOAD
-  - name: SUBREDDIT
-  - name: THREAD
+nodes:
+  - name: STACK_VIEW
 
 triggers:
-  - name: LOAD_REQUEST
+  - name: VIEW_SUBREDDIT
     payload:
-      loadRequest: LoadRequest
-  - name: LOADING_DONE
+      id: SubredditID
+  - name: VIEW_THREAD
+    payload:
+      id: ThreadID
+  - name: DISMISS
 
 --- |
-  export enum ViewType {
-    SUBREDDIT,
-    THREAD,
-    EMPTY
+  export enum LoadingType {
+    VIEW,
+    DOWNLOAD
   }
 
-  export interface SubredditView {
-    view: ViewType.SUBREDDIT;
-    uid: string;
-    subreddit: Types.Subreddit;
-  }
-
-  export interface ThreadView {
-    view: ViewType.THREAD;
-    uid: string;
-    thread: Types.Thread;
-    comments: Types.Comment[];
-  }
-
-  export interface EmptyView {
-    view: ViewType.EMPTY;
-    uid: string;
-  }
-
-  export type View = SubredditView | ThreadView | EmptyView;
-
-  export enum LoadRequestType {
-    SUBREDDIT,
-    THREAD
-  }
-
-  export interface SubredditLoadRequest {
-    type: LoadRequestType.SUBREDDIT;
-    id: Types.SubredditID;
-  }
-
-  export interface ThreadLoadRequest {
-    type: LoadRequestType.THREAD;
-    id: Types.ThreadID;
-  }
-
-  export type LoadRequest = SubredditLoadRequest | ThreadLoadRequest;
-
-  export interface DataObject {
-    loadRequest?: LoadRequest;
-    favorites: Types.SubredditID[];
+  export interface Value {
+    loading: LoadingType[];
+    favorites: SubredditID[];
     stack: View[];
   }
 
-  export const fsm = new StateMachine<State, TriggerPayloadMap, DataObject>(
-    State.INIT,
+  export const fsm = new StateMachine<Node, TriggerPayloadMap, Value>(
+    Node.STACK_VIEW,
     {
-      favorites: ["deine_mudda", "lol"],
+      loading: [],
+      favorites: [],
       stack: [],
     }
   );
 
+  type TypedEffect = Effect<Node, TriggerPayloadMap, Value>;
+  type TypedStateMachine = StateMachine<Node, TriggerPayloadMap, Value>;
+
+  function loadingEffect(
+      type: LoadingType,
+      effect: TypedEffect
+  ): TypedEffect {
+    return async function(fsm, trigger, payload) {
+      let value = fsm.value;
+      value.loading.push(type);
+      fsm.setValue(value);
+      await effect(fsm, trigger, payload);
+      value = fsm.value;
+      value.loading = value.loading.filter(f => f !== type);
+      fsm.setValue(value);
+    }
+  }
+
+  const loadThread: TypedEffect = async (fsm, trigger, payload) => {
+    if(!payload) {
+      return;
+    }
+    if(payload.trigger !== Trigger.VIEW_THREAD) {
+      throw new Error("Invalid trigger to load a thread");
+    }
+    const [thread, comments] = await Model.loadThread(payload.id);
+    fsm.value.stack.push({
+      type: ViewType.THREAD,
+      uid: genUid(),
+      thread,
+      comments
+    });
+  }
+
+  const loadSubreddit: TypedEffect = async (fsm, trigger, payload) => {
+    if(!payload) {
+      return;
+    }
+    if(payload.trigger !== Trigger.VIEW_SUBREDDIT) {
+      throw new Error("Invalid trigger to load a thread");
+    }
+    const subreddit = await Model.loadSubreddit(payload.id);
+    fsm.value.stack.push({
+      type: ViewType.SUBREDDIT,
+      uid: genUid(),
+      subreddit
+    });
+  }
+
 ---
 transitions:
-  - origin: State.INIT
-    trigger: Trigger.LOAD_REQUEST
-    target: State.DISPATCH
-    effects: [storeLoadRequest]
-  - origin: State.DISPATCH
-    trigger: NoTrigger
-    target: State.LOAD
-    guards: [isLoadRequestOfType(LoadRequestType.SUBREDDIT)]
-    effects: [loadSubreddit]
-  - origin: State.DISPATCH
-    trigger: NoTrigger
-    target: State.LOAD
-    guards: [isLoadRequestOfType(LoadRequestType.THREAD)]
-    effects: [loadThread]
-  - origin: State.LOAD
-    trigger: Trigger.LOADING_DONE
-    target: State.SUBREDDIT
-    guards: [topViewPredicate(view => view.view === ViewType.SUBREDDIT)]
-  - origin: State.LOAD
-    trigger: Trigger.LOADING_DONE
-    target: State.THREAD
-    guards: [topViewPredicate(view => view.view === ViewType.THREAD)]
-  - origin: State.THREAD
-    trigger: Trigger.LOAD_REQUEST
-    target: State.DISPATCH
-    effects: [storeLoadRequest]
-  - origin: State.SUBREDDIT
-    trigger: Trigger.LOAD_REQUEST
-    target: State.DISPATCH
-    effects: [storeLoadRequest]
+  - origin: STACK_VIEW
+    trigger: VIEW_SUBREDDIT
+    target: STACK_VIEW
+    effects: [loadingEffect(LoadingType.VIEW, loadSubreddit)]
+  - origin: STACK_VIEW
+    trigger: VIEW_THREAD
+    target: STACK_VIEW
+    effects: [loadingEffect(LoadingType.VIEW, loadThread)]
 
 --- |
-  export const FSM_READY = "fsm.ready";
-  export const FSM_STATECHANGE = "fsm.stateChange";
+  export const READY_CHANNEL = "fsm.ready";
+  export const STATECHANGE_CHANNEL = "fsm.stateChange";

@@ -12,17 +12,18 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export function decodeHTML(input: string): string {
-  const e = document.createElement("div");
-  e.innerHTML = input;
-  return e.innerText;
-}
-
-// Same as `customElements.define()`, but doesn’t throw when the element is
-// already defined.
-export function defineCE(name: string, clazz: Constructor<HTMLElement>) {
-  if (customElements.get(name)) {
-    return;
-  }
-  customElements.define(name, clazz);
+export type ThreadID = string;
+export interface Thread {
+  author: string;
+  downvotes: number;
+  id: ThreadID;
+  numComments: number;
+  fullImage?: string;
+  previewImage?: string;
+  subreddit: string;
+  title: string;
+  upvotes: number;
+  body?: string;
+  htmlBody?: string;
+  link?: string;
 }

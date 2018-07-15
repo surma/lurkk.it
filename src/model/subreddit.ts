@@ -9,19 +9,13 @@
  * http://polymer.github.io/CONTRIBUTORS.txt
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at
- * hgtp://polymer.github.io/PATENTS.txt
+ * http://polymer.github.io/PATENTS.txt
  */
 
-import {TemplateResult} from "lit-html";
-import { Snapshot } from "westend/src/state-machine/state-machine.js";
-import {
-  DataObject,
-  State,
-  Trigger,
-  View,
-  ViewType
-} from "../../fsm/generated.js";
+import { Thread } from "./thread.js";
 
-export type ViewTemplate = (view: View) => TemplateResult;
-export type PartialTemplate = (snapshot: Snapshot<State, DataObject>) => TemplateResult;
-
+export type SubredditID = string;
+export interface Subreddit {
+  id: SubredditID;
+  items: Thread[];
+}

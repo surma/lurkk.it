@@ -12,39 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export type ThreadID = string;
-export type SubredditID = string;
-export type CommentID = string;
-
-export interface Subreddit {
-  id: SubredditID;
-  items: Thread[];
-}
-
-export interface Thread {
-  author: string;
-  downvotes: number;
-  id: ThreadID;
-  numComments: number;
-  fullImage?: string;
-  previewImage?: string;
-  subreddit: string;
-  title: string;
-  upvotes: number;
-  body?: string;
-  htmlBody?: string;
-  link?: string;
-}
-
-export interface Comment {
-  id: CommentID;
-  author: string;
-  body: string;
-  htmlBody: string;
-  downvotes: number;
-  upvotes: number;
-  replies: Comment[];
-}
+import {ThreadID, Thread} from "./thread.js";
+import {SubredditID, Subreddit} from "./subreddit.js";
+import {Comment} from "./comment.js";
 
 export interface DataSource {
   loadThread(id: ThreadID): Promise<[Thread, Comment[]]>;

@@ -12,20 +12,29 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export {
-  getFavorites,
-  addFavorite,
-  delFavorite,
-  toggleFavorite
-} from "./favorites.js";
-export { loadSubreddit, loadThread } from "./loading.js";
+import { Comment } from "./comment.js";
+import { Subreddit } from "./subreddit.js";
+import { Thread } from "./thread.js";
 
-import * as ServiceReady from "westend/utils/service-ready.js";
-import { init as loadingInit } from "./loading.js";
-
-export const READY_CHANNEL = "model.ready";
-
-export async function init() {
-  await loadingInit();
-  ServiceReady.signal(READY_CHANNEL);
+export interface ViewBase {
+  type: ViewType;
+  uid: string;
 }
+
+export enum ViewType {
+  SUBREDDIT,
+  THREAD
+}
+
+export interface SubredditView extends ViewBase {
+  type: ViewType.SUBREDDIT;
+  subreddit: Subreddit;
+}
+
+export interface ThreadView extends ViewBase {
+  type: ViewType.THREAD;
+  thread: Thread;
+  comments: Comment[];
+}
+
+export type View = SubredditView | ThreadView;

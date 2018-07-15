@@ -13,59 +13,63 @@
  */
 
 import {
-  Snapshot,
+  State,
   StateMachine
 } from "westend/src/state-machine/state-machine.js";
 
 import * as RequestResponseBus from "../utils/request-response-bus.js";
 
-interface EmitTriggerRequest<TriggerPayload> {
-  trigger: TriggerPayload | "NO_TRIGGER";
+interface EmitTriggerRequest<TriggerPayloadMap> {
+  trigger: keyof TriggerPayloadMap;
+  payload: TriggerPayloadMap[keyof TriggerPayloadMap];
 }
 
 type EmitTriggerResponse = void;
+const EMIT_TRIGGER_CHANNEL = "fsm.emitTrigger";
 
-export function exposeEmitTrigger<State, TriggerPayload, DataObject>(
-  fsm: StateMachine<State, TriggerPayload, DataObject>
+export function exposeEmitTrigger<Node, TriggerPayloadMap, Value>(
+  fsm: StateMachine<Node, TriggerPayloadMap, Value>
 ) {
   RequestResponseBus.register<
-    EmitTriggerRequest<TriggerPayload>,
+    EmitTriggerRequest<TriggerPayloadMap>,
     EmitTriggerResponse
-  >("fsm-emit-trigger", async req => {
-    fsm.emitTrigger((req.trigger as any).trigger, req.trigger);
+  >(EMIT_TRIGGER_CHANNEL, async req => {
+    fsm.emitTrigger(req.trigger, req.payload);
   });
 }
 
-export async function emitTrigger<TriggerPayload>(
-  trigger: TriggerPayload | "NO_TRIGGER"
-) {
+export async function emitTrigger<
+  K extends keyof TriggerPayloadMap,
+  TriggerPayloadMap
+>(trigger: K, payload: TriggerPayloadMap[K]) {
   // FIXME(@surma): This leaks.
   const bus = await RequestResponseBus.get<
-    EmitTriggerRequest<TriggerPayload>,
+    EmitTriggerRequest<TriggerPayloadMap>,
     EmitTriggerResponse
-  >("fsm-emit-trigger");
-  await bus.sendRequest({ trigger });
+  >(EMIT_TRIGGER_CHANNEL);
+  await bus.sendRequest({ trigger, payload });
 }
 
 type GetSnapshotRequest = void;
-type GetSnapshotResponse<State, DataObject> = Snapshot<State, DataObject>;
+type GetSnapshotResponse<Node, Value> = State<Node, Value>;
+const SNAPSHOT_CHANNEL = "fsm.getSnapshot";
 
-export function exposeGetSnapshot<State, TriggerPayload, DataObject>(
-  fsm: StateMachine<State, TriggerPayload, DataObject>
+export function exposeGetSnapshot<Node, TriggerPayloadMap, Value>(
+  fsm: StateMachine<Node, TriggerPayloadMap, Value>
 ) {
   RequestResponseBus.register<
     GetSnapshotRequest,
-    GetSnapshotResponse<State, DataObject>
-  >("fsm-get-snapshot", async req => {
+    GetSnapshotResponse<Node, Value>
+  >(SNAPSHOT_CHANNEL, async req => {
     return await fsm.snapshot();
   });
 }
 
-export async function getSnapshot<State, DataObject>() {
+export async function getSnapshot<Node, Value>() {
   // FIXME(@surma): This leaks.
   const bus = await RequestResponseBus.get<
     GetSnapshotRequest,
-    GetSnapshotResponse<State, DataObject>
-  >("fsm-get-snapshot");
+    GetSnapshotResponse<Node, Value>
+  >(SNAPSHOT_CHANNEL);
   return await bus.sendRequest(void 0);
 }

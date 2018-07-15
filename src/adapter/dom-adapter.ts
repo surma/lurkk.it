@@ -15,103 +15,82 @@
 import { html, render } from "lit-html";
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
-import { Snapshot } from "westend/src/state-machine/state-machine.js";
-import * as Router from "westend/utils/router.js";
+import { State } from "westend/src/state-machine/state-machine.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
-import {
-  MODEL_CONFIG,
-  ModelConfigRequest,
-  ModelConfigResponse
-} from "../model/model.js";
+import { READY_CHANNEL as MODEL_READY_CHANNEL } from "../model/model.js";
 
 import {
-  DataObject,
-  FSM_READY,
-  FSM_STATECHANGE,
-  LoadRequest,
-  LoadRequestType,
-  State,
+  DATA_SOURCE_NAME_CHANNEL,
+  DataSourceNameRequest,
+  DataSourceNameResponse
+} from "../model/loading.js";
+
+import {
+  Node,
+  READY_CHANNEL as FSM_READY_CHANNEL,
+  STATECHANGE_CHANNEL,
   Trigger,
-  TriggerPayload
+  TriggerPayloadMap,
+  Value
 } from "../fsm/generated.js";
-
-// Child templates
-import mainTemplate from "./templates/main.js";
 
 import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
 import * as RequestResponseBus from "../utils/request-response-bus.js";
 
-const template = mainTemplate;
-
 export class DomAdapter {
-  private navigationBus = MessageBus.get<Router.NavigationMessage>(
-    "navigation"
-  );
-
   async init() {
     if (isDebug()) {
       await this.initDebug();
     }
-    const fsmStateChange = await MessageBus.get<Snapshot<State, DataObject>>(
-      FSM_STATECHANGE
+    const fsmStateChange = await MessageBus.get<State<Node, Value>>(
+      STATECHANGE_CHANNEL
     );
 
     fsmStateChange.listen(this.onFsmStateChange.bind(this));
 
-    await ServiceReady.waitFor(FSM_READY);
-    this.render(await getSnapshot<State, DataObject>());
+    await ServiceReady.waitFor(FSM_READY_CHANNEL);
+    this.render(await getSnapshot<Node, Value>());
 
     if (location.hash === "") {
-      Router.go("/r/webdev");
+      await emitTrigger<Trigger.VIEW_SUBREDDIT, TriggerPayloadMap>(
+        Trigger.VIEW_SUBREDDIT,
+        {
+          id: "all",
+          trigger: Trigger.VIEW_SUBREDDIT
+        }
+      );
     } else {
-      Router.notify();
+      await emitTrigger<Trigger.VIEW_SUBREDDIT, TriggerPayloadMap>(
+        Trigger.VIEW_SUBREDDIT,
+        {
+          id: location.hash.substr(4),
+          trigger: Trigger.VIEW_SUBREDDIT
+        }
+      );
     }
-
-    (await this.navigationBus).listen((msg?: Router.NavigationMessage) => {
-      if (!msg) {
-        return;
-      }
-      this.onURLChange(msg.url);
-    });
   }
 
-  private onFsmStateChange(msg: Snapshot<State, DataObject>) {
-    this.render(msg);
+  private onFsmStateChange(snapshot: State<Node, Value>) {
+    this.render(snapshot);
   }
 
-  private render(snapshot: Snapshot<State, DataObject>) {
-    render(template(snapshot), document.body);
-  }
-
-  private async onURLChange(url: string) {
-    const parsedURL = new URL(url);
-    const path = parsedURL.hash.substr(1);
-
-    let loadRequest: LoadRequest;
-    if (path.startsWith("/r/")) {
-      loadRequest = {
-        id: path.substr(3),
-        type: LoadRequestType.SUBREDDIT
-      };
-    } else if (path.startsWith("/t/")) {
-      loadRequest = {
-        id: path.substr(3),
-        type: LoadRequestType.THREAD
-      };
-    }
-    await emitTrigger<TriggerPayload>({
-      loadRequest: loadRequest!,
-      trigger: Trigger.LOAD_REQUEST
-    });
+  private render(snapshot: State<Node, Value>) {
+    render(
+      html`
+      stack: <pre>${JSON.stringify(snapshot.value.stack, null, "  ")}</pre>
+    `,
+      document.body
+    );
   }
 
   private async initDebug() {
     console.log("Initializing in debug mode");
-    await ServiceReady.waitFor("model");
-    (await RequestResponseBus.get<ModelConfigRequest, ModelConfigResponse>(
-      MODEL_CONFIG
-    )).sendRequest({ dataSource: "mock" });
+    await ServiceReady.waitFor(MODEL_READY_CHANNEL);
+    (await RequestResponseBus.get<
+      DataSourceNameRequest,
+      DataSourceNameResponse
+    >(DATA_SOURCE_NAME_CHANNEL)).sendRequest("mock");
   }
 }
 
