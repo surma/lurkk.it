@@ -1,6 +1,6 @@
-const path = require("path");
-const typescript = require("rollup-plugin-typescript2");
-const nodeResolve = require("rollup-plugin-node-resolve");
+import typescript from "rollup-plugin-typescript2";
+import nodeResolve from "rollup-plugin-node-resolve";
+import { terser } from "rollup-plugin-terser";
 
 // Delete 'dist'
 require("rimraf").sync("dist");
@@ -17,7 +17,8 @@ export default {
       // Make sure we are using our version of TypeScript.
       typescript: require("typescript")
     }),
-    nodeResolve()
+    nodeResolve(),
+    terser()
   ],
   experimentalCodeSplitting: true
 };

@@ -14,10 +14,11 @@
     "rollup": "^0.62.0",
     "rollup-plugin-babel": "^4.0.0-beta.7",
     "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-terser": "^1.0.1",
     "rollup-plugin-typescript2": "^0.15.1",
     "tslint": "^5.9.1",
     "typescript": "^2.9.2",
-    "westend": "git+ssh://git@github.com/PolymerLabs/westend.git#valuechange"
+    "westend": "git+ssh://git@github.com/PolymerLabs/westend.git#master"
   },
   "scripts": {
     "build:fsm": "node node_modules/westend/utils/fsm-generator.js -c -- src/fsm/spec.yaml",
