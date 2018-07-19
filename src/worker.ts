@@ -13,9 +13,9 @@
  */
 
 
-import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { State } from "westend/src/state-machine/state-machine.js";
 import { debug } from "westend/src/state-machine/state-machine-debugger.js";
+import * as FsmUtils from "westend/utils/fsm-utils.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
 
@@ -26,23 +26,15 @@ import {
   Node,
   Trigger,
   Value,
-  READY_CHANNEL,
-  STATECHANGE_CHANNEL
+  READY_CHANNEL
 } from "./fsm/generated.js";
 
-import * as FsmUtils from "./utils/fsm-utils.js";
 
 (async function() {
   await Model.init();
-  debug(fsm, { nodeName: n => Node[n], triggerName: t => Trigger[t] });
+  debug(fsm, { nodeName: n => Node[n], triggerName: t => Trigger[t as any] });
 
-  const stateChangeChannel = await MessageBus.get<State<Node, Value>>(
-    STATECHANGE_CHANNEL
-  );
-  fsm.addChangeListener(async (node: Node, value: Value) => {
-    stateChangeChannel.send(fsm.snapshot());
-  });
-
+  FsmUtils.exposeChangeListener(fsm);
   FsmUtils.exposeGetSnapshot(fsm);
   FsmUtils.exposeEmitTrigger(fsm);
 

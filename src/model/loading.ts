@@ -42,7 +42,7 @@ export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
   return dataSource.loadThread(id);
 }
 
-import * as RequestResponseBus from "../utils/request-response-bus.js";
+import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 
 export type DataSourceNameRequest = string;
 export type DataSourceNameResponse = void;

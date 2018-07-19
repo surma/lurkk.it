@@ -16,6 +16,8 @@ import { html, render } from "lit-html";
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import { State } from "westend/src/state-machine/state-machine.js";
+import * as FsmUtils from "westend/utils/fsm-utils.js";
+import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
 import { READY_CHANNEL as MODEL_READY_CHANNEL } from "../model/model.js";
@@ -29,55 +31,73 @@ import {
 import {
   Node,
   READY_CHANNEL as FSM_READY_CHANNEL,
-  STATECHANGE_CHANNEL,
   Trigger,
   TriggerPayloadMap,
   Value
 } from "../fsm/generated.js";
 
-import { emitTrigger, getSnapshot } from "../utils/fsm-utils.js";
-import * as RequestResponseBus from "../utils/request-response-bus.js";
+import {
+  getPath,
+  go,
+  NAVIGATION_CHANNEL,
+  NavigationMessage
+} from "../utils/router.js";
 
 export class DomAdapter {
   async init() {
     if (isDebug()) {
       await this.initDebug();
     }
-    const fsmStateChange = await MessageBus.get<State<Node, Value>>(
-      STATECHANGE_CHANNEL
-    );
-
-    fsmStateChange.listen(this.onFsmStateChange.bind(this));
+    FsmUtils.onChange<Node, Value>(this.onFsmChange.bind(this));
 
     await ServiceReady.waitFor(FSM_READY_CHANNEL);
-    this.render(await getSnapshot<Node, Value>());
+    this.render(await FsmUtils.getSnapshot<Node, Value>());
 
-    if (location.hash === "") {
-      await emitTrigger<Trigger.VIEW_SUBREDDIT, TriggerPayloadMap>(
+    const navigationBus = await MessageBus.get<NavigationMessage>(
+      NAVIGATION_CHANNEL
+    );
+    navigationBus.listen((navigationMsg?: NavigationMessage) => {
+      if (!navigationMsg) {
+        return;
+      }
+      this.onPathChange(navigationMsg.path);
+    });
+    this.onPathChange(getPath());
+    (self as any).go = go;
+  }
+
+  private async onPathChange(path: string) {
+    if (path === "/") {
+      go("/r/all");
+      return;
+    }
+    if (path.startsWith("/r/")) {
+      await FsmUtils.emitTrigger<Trigger.VIEW_SUBREDDIT, TriggerPayloadMap>(
         Trigger.VIEW_SUBREDDIT,
         {
-          id: "all",
-          trigger: Trigger.VIEW_SUBREDDIT
+          id: path.substr(3)
         }
       );
-    } else {
-      await emitTrigger<Trigger.VIEW_SUBREDDIT, TriggerPayloadMap>(
-        Trigger.VIEW_SUBREDDIT,
+      return;
+    } else if (path.startsWith("/t/")) {
+      await FsmUtils.emitTrigger<Trigger.VIEW_THREAD, TriggerPayloadMap>(
+        Trigger.VIEW_THREAD,
         {
-          id: location.hash.substr(4),
-          trigger: Trigger.VIEW_SUBREDDIT
+          id: path.substr(3)
         }
       );
+      return;
     }
   }
 
-  private onFsmStateChange(snapshot: State<Node, Value>) {
+  private onFsmChange(snapshot: State<Node, Value>) {
     this.render(snapshot);
   }
 
   private render(snapshot: State<Node, Value>) {
     render(
       html`
+      node: ${Node[snapshot.currentNode]}
       stack: <pre>${JSON.stringify(snapshot.value.stack, null, "  ")}</pre>
     `,
       document.body

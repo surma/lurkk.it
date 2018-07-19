@@ -75,13 +75,11 @@ triggers:
     }
   );
 
-  type TypedEffect = Effect<Node, TriggerPayloadMap, Value>;
-  type TypedStateMachine = StateMachine<Node, TriggerPayloadMap, Value>;
-
+  type LoadingTriggers = Trigger.VIEW_SUBREDDIT | Trigger.VIEW_THREAD;
   function loadingEffect(
       type: LoadingType,
-      effect: TypedEffect
-  ): TypedEffect {
+      effect: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value>
+  ): Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> {
     return async function(fsm, trigger, payload) {
       let value = fsm.value;
       value.loading.push(type);
@@ -93,11 +91,8 @@ triggers:
     }
   }
 
-  const loadThread: TypedEffect = async (fsm, trigger, payload) => {
-    if(!payload) {
-      return;
-    }
-    if(payload.trigger !== Trigger.VIEW_THREAD) {
+  const loadThread: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    if(trigger !== Trigger.VIEW_THREAD) {
       throw new Error("Invalid trigger to load a thread");
     }
     const [thread, comments] = await Model.loadThread(payload.id);
@@ -109,11 +104,8 @@ triggers:
     });
   }
 
-  const loadSubreddit: TypedEffect = async (fsm, trigger, payload) => {
-    if(!payload) {
-      return;
-    }
-    if(payload.trigger !== Trigger.VIEW_SUBREDDIT) {
+  const loadSubreddit: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    if(trigger !== Trigger.VIEW_SUBREDDIT) {
       throw new Error("Invalid trigger to load a thread");
     }
     const subreddit = await Model.loadSubreddit(payload.id);
@@ -137,4 +129,3 @@ transitions:
 
 --- |
   export const READY_CHANNEL = "fsm.ready";
-  export const STATECHANGE_CHANNEL = "fsm.stateChange";
