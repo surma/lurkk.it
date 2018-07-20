@@ -17,3 +17,4 @@ import { DomAdapter } from "./adapter/dom-adapter.js";
 const worker = new (Worker as any)("worker.js", {type: "module"});
 
 new DomAdapter().init();
+
