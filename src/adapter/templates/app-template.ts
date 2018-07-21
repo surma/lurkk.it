@@ -51,6 +51,12 @@ const template = (state: AppState) => html`
     </item-stack>
   </main>
   <bottom-bar>
+    <div slot="bar">
+      LurkIt
+    </div>
+    <div>
+      To be implemented...
+    </div>
   </bottom-bar>
 `;
 
