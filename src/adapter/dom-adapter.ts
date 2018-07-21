@@ -37,6 +37,9 @@ import {
   Value
 } from "../fsm/generated.js";
 
+import appTemplate from "./templates/app-template.js";
+import { AppState } from "./templates/types.js";
+
 export class DomAdapter {
   async init() {
     if (isDebug()) {
@@ -52,14 +55,8 @@ export class DomAdapter {
     this.render(snapshot);
   }
 
-  private render(snapshot: State<Node, Value>) {
-    render(
-      html`
-      node: ${Node[snapshot.currentNode]}
-      stack: <pre>${JSON.stringify(snapshot.value.stack, null, "  ")}</pre>
-    `,
-      document.body
-    );
+  private render(state: AppState) {
+    render(appTemplate(state), document.body);
   }
 }
 
