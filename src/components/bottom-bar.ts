@@ -13,7 +13,7 @@
  */
 
 import { animateTo } from "../utils/animation.js";
-import shadowStyles from "./bottom-bar-shadowdom.css";
+import shadowStyles from "./bottom-bar-shadowstyles.css";
 
 export default class BottomBar extends HTMLElement {
   animationTime: number = 0.3;

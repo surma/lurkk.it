@@ -13,7 +13,7 @@
  */
 
 import { animateTo } from "../utils/animation.js";
-import shadowStyles from "./layer-menu-shadowdom.css";
+import shadowStyles from "./layer-menu-shadowstyles.css";
 
 export default class LayerMenu extends HTMLElement {
   static get OBSERVED_ATTRIBUTES() {

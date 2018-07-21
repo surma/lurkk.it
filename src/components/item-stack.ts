@@ -13,7 +13,7 @@
  */
 
 import * as AnimationTools from "../utils/animation.js";
-import shadowStyles from "./item-stack-shadowdom.css";
+import shadowStyles from "./item-stack-shadowstyles.css";
 
 export default class ItemStack extends HTMLElement {
   margin: number = 20;
