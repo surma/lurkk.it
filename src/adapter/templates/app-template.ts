@@ -40,17 +40,24 @@ async function renderView(view: View): Promise<TemplateResult> {
 
 const template = (state: AppState) => html`
   <style>
-    #main {
+    main {
       width: 100vw;
       height: 100vh;
+
+      display: grid;
+    }
+    main > * {
+      grid-area: 1/1;
     }
   </style>
-  <item-stack id="main" keep-root>
-    <div>Welcome to LurkIt</div>
-    ${
-      state.value.stack.map(item => renderView(item))
-    }
-  </item-stack>
+  <main>
+    <div id="root">Welcome to LurkIt</div>
+    <item-stack>
+      ${
+        state.value.stack.map(item => renderView(item))
+      }
+    </item-stack>
+  </main>
   <bottom-bar>
   </bottom-bar>
 `;
