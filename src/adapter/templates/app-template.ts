@@ -16,10 +16,10 @@ import { html, TemplateResult } from "lit-html";
 
 import {defineCE} from "../../utils/dom-helpers.js";
 
-import BottomBar from "../../components/bottom-bar.js";
+import BottomBar from "../../components/bottom-bar";
 defineCE("bottom-bar", BottomBar);
 
-import ItemStack from "../../components/item-stack.js";
+import ItemStack from "../../components/item-stack";
 defineCE("item-stack", ItemStack);
 
 import {AppState, ViewRenderer} from "./types.js";

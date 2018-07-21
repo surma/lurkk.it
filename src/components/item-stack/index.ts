@@ -14,9 +14,9 @@
 
 import { render } from "lit-html";
 
-import * as AnimationTools from "../utils/animation.js";
-import shadowDomTemplate from "./item-stack-shadowdom-template.html";
-import shadowStyles from "./item-stack-shadowstyles.css";
+import * as AnimationTools from "../../utils/animation.js";
+import shadowDomTemplate from "./shadowdom-template.html";
+import shadowDomStyles from "./shadowdom-styles.css";
 
 export default class ItemStack extends HTMLElement {
   margin: number = 20;
@@ -32,7 +32,7 @@ export default class ItemStack extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
+    render(shadowDomTemplate({ styles: shadowDomStyles }), this.shadowRoot!);
     this.shadowRoot!.querySelector("slot")!.addEventListener(
       "slotchange",
       this.onSlotChange.bind(this)

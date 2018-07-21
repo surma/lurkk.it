@@ -14,9 +14,9 @@
 
 import { render } from "lit-html";
 
-import { animateTo } from "../utils/animation.js";
-import shadowDomTemplate from "./layer-menu-shadowdom-template.html";
-import shadowStyles from "./layer-menu-shadowstyles.css";
+import { animateTo } from "../../utils/animation.js";
+import shadowDomTemplate from "./shadowdom-template.html";
+import shadowDomStyles from "./shadowdom-styles.css";
 
 export default class LayerMenu extends HTMLElement {
   static get OBSERVED_ATTRIBUTES() {
@@ -36,7 +36,7 @@ export default class LayerMenu extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
+    render(shadowDomTemplate({ styles: shadowDomStyles }), this.shadowRoot!);
     this.topElementContainer = this.shadowRoot!.querySelector(
       "#top"
     ) as HTMLElement;

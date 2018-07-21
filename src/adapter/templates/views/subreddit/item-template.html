@@ -13,5 +13,6 @@
 -->
 
 <div>
-  ${state.items}
+  <a href="/t/${state.id}">${state.title}</a> by ${state.author}
+  ${state.upvotes - state.downvotes}, ${state.numComments} comment${state.numComments === 1 ? "" : "s"}
 </div>

@@ -14,9 +14,9 @@
 
 import { render } from "lit-html";
 
-import { animateTo } from "../utils/animation.js";
-import shadowDomTemplate from "./bottom-bar-shadowdom-template.html";
-import shadowStyles from "./bottom-bar-shadowstyles.css";
+import { animateTo } from "../../utils/animation.js";
+import shadowDomTemplate from "./shadowdom-template.html";
+import shadowDomStyles from "./shadowdom-styles.css";
 
 export default class BottomBar extends HTMLElement {
   animationTime: number = 0.3;
@@ -33,7 +33,7 @@ export default class BottomBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
+    render(shadowDomTemplate({ styles: shadowDomStyles }), this.shadowRoot!);
 
     this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this));

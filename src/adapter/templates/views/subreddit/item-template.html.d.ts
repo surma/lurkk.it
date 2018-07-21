@@ -12,18 +12,6 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "lit-html";
-
-import {View,ViewType} from "../../../../model/view.js";
-import template from "./template.html";
-import itemTemplate from "./item-template.html";
-
-
-export default (view: View) => {
-  if(view.type !== ViewType.SUBREDDIT) {
-    throw new Error("View is not of type SUBREDDIT");
-  }
-  return template({
-    items: view.subreddit.items.map(itemTemplate)
-  });
-};
+import {TemplateResult} from "lit-html";
+declare const template: (state: any) => TemplateResult;
+export default template;
