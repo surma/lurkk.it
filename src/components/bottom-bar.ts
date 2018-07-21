@@ -12,7 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import { render } from "lit-html";
+
 import { animateTo } from "../utils/animation.js";
+import shadowDomTemplate from "./bottom-bar-shadowdom-template.html";
 import shadowStyles from "./bottom-bar-shadowstyles.css";
 
 export default class BottomBar extends HTMLElement {
@@ -30,7 +33,7 @@ export default class BottomBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.innerHTML = this.shadowDom();
+    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
 
     this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this));
@@ -88,14 +91,6 @@ export default class BottomBar extends HTMLElement {
     } else {
       await this.close();
     }
-  }
-
-  private shadowDom() {
-    return `
-      <style>${shadowStyles}</style>
-      <slot name="bar"></slot>
-      <slot></slot>
-    `;
   }
 
   private onSlotChange(ev: Event) {

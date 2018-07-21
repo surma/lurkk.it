@@ -12,7 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import { render } from "lit-html";
+
 import { animateTo } from "../utils/animation.js";
+import shadowDomTemplate from "./layer-menu-shadowdom-template.html";
 import shadowStyles from "./layer-menu-shadowstyles.css";
 
 export default class LayerMenu extends HTMLElement {
@@ -33,7 +36,7 @@ export default class LayerMenu extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.innerHTML = this.shadowDom();
+    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
     this.topElementContainer = this.shadowRoot!.querySelector(
       "#top"
     ) as HTMLElement;
@@ -116,16 +119,6 @@ export default class LayerMenu extends HTMLElement {
     } else {
       await this.close();
     }
-  }
-
-  private shadowDom() {
-    return `
-      <style>${shadowStyles}</style>
-      <div id="top">
-        <slot name="top"></slot>
-      </div>
-      <slot></slot>
-    `;
   }
 
   private onTouchStart(ev: TouchEvent) {

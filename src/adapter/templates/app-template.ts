@@ -26,8 +26,8 @@ import {AppState, ViewRenderer} from "./types.js";
 import {ViewType, View} from "../../model/view.js";
 
 const viewRenderers = new Map<ViewType, () => Promise<ViewRenderer>>([
-  [ViewType.THREAD, () => import("./views/thread.js").then(m => m.default)],
-  [ViewType.SUBREDDIT, () => import("./views/subreddit.js").then(m => m.default)],
+  [ViewType.THREAD, () => import("./views/thread/renderer.js").then(m => m.default)],
+  [ViewType.SUBREDDIT, () => import("./views/subreddit/renderer.js").then(m => m.default)],
 ]);
 
 async function renderView(view: View): Promise<TemplateResult> {
@@ -39,25 +39,9 @@ async function renderView(view: View): Promise<TemplateResult> {
 }
 
 import styles from "./app-template.css";
+import appTemplate from "./app-template.html";
 
-const template = (state: AppState) => html`
-  <style>${styles}</style>
-  <main>
-    <div id="root">Welcome to LurkIt</div>
-    <item-stack>
-      ${
-        state.value.stack.map(item => renderView(item))
-      }
-    </item-stack>
-  </main>
-  <bottom-bar>
-    <div slot="bar">
-      LurkIt
-    </div>
-    <div>
-      To be implemented...
-    </div>
-  </bottom-bar>
-`;
-
-export default template;
+export default (state: AppState) => appTemplate({
+  styles,
+  views:  state.value.stack.map(renderView)
+});

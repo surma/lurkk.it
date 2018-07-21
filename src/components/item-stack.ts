@@ -12,7 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import { render } from "lit-html";
+
 import * as AnimationTools from "../utils/animation.js";
+import shadowDomTemplate from "./item-stack-shadowdom-template.html";
 import shadowStyles from "./item-stack-shadowstyles.css";
 
 export default class ItemStack extends HTMLElement {
@@ -29,7 +32,7 @@ export default class ItemStack extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot!.innerHTML = this.shadowDom();
+    render(shadowDomTemplate({ shadowStyles }), this.shadowRoot!);
     this.shadowRoot!.querySelector("slot")!.addEventListener(
       "slotchange",
       this.onSlotChange.bind(this)
@@ -140,12 +143,5 @@ export default class ItemStack extends HTMLElement {
         transition: ""
       });
     });
-  }
-
-  private shadowDom() {
-    return `
-      <style>${shadowStyles}</style>
-      <slot></slot>
-    `;
   }
 }
