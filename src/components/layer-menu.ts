@@ -13,6 +13,7 @@
  */
 
 import { animateTo } from "../utils/animation.js";
+import shadowStyles from "./layer-menu-shadowdom.css";
 
 export default class LayerMenu extends HTMLElement {
   static get OBSERVED_ATTRIBUTES() {
@@ -119,20 +120,7 @@ export default class LayerMenu extends HTMLElement {
 
   private shadowDom() {
     return `
-      <style>
-        :host {
-          display: grid;
-          overflow: hidden;
-        }
-        #top {
-          will-change: transform;
-          z-index: 2;
-          grid-area: 1/1;
-        }
-        ::slotted(*) {
-          grid-area: 1/1;
-        }
-      </style>
+      <style>${shadowStyles}</style>
       <div id="top">
         <slot name="top"></slot>
       </div>

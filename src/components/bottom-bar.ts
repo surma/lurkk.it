@@ -13,6 +13,7 @@
  */
 
 import { animateTo } from "../utils/animation.js";
+import shadowStyles from "./bottom-bar-shadowdom.css";
 
 export default class BottomBar extends HTMLElement {
   animationTime: number = 0.3;
@@ -91,18 +92,7 @@ export default class BottomBar extends HTMLElement {
 
   private shadowDom() {
     return `
-      <style>
-        :host {
-          height: 100vh;
-          left: 0;
-          right: 0;
-          overflow: hidden;
-          position: fixed;
-          top: 100vh;
-          will-change: transform;
-          z-index: 9;
-        }
-      </style>
+      <style>${shadowStyles}</style>
       <slot name="bar"></slot>
       <slot></slot>
     `;

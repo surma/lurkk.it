@@ -13,6 +13,7 @@
  */
 
 import * as AnimationTools from "../utils/animation.js";
+import shadowStyles from "./item-stack-shadowdom.css";
 
 export default class ItemStack extends HTMLElement {
   margin: number = 20;
@@ -143,15 +144,7 @@ export default class ItemStack extends HTMLElement {
 
   private shadowDom() {
     return `
-      <style>
-        :host {
-          display: grid;
-        }
-        ::slotted(*) {
-          grid-area: 1/1;
-          will-change: transform;
-        }
-      </style>
+      <style>${shadowStyles}</style>
       <slot></slot>
     `;
   }

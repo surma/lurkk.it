@@ -38,18 +38,10 @@ async function renderView(view: View): Promise<TemplateResult> {
   return viewRenderer(view);
 }
 
-const template = (state: AppState) => html`
-  <style>
-    main {
-      width: 100vw;
-      height: 100vh;
+import styles from "./app-template.css";
 
-      display: grid;
-    }
-    main > * {
-      grid-area: 1/1;
-    }
-  </style>
+const template = (state: AppState) => html`
+  <style>${styles}</style>
   <main>
     <div id="root">Welcome to LurkIt</div>
     <item-stack>

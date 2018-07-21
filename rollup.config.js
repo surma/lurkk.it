@@ -1,5 +1,6 @@
 import typescript from "rollup-plugin-typescript2";
 import nodeResolve from "rollup-plugin-node-resolve";
+import css from "./utils/rollup-plugin-css";
 import { terser } from "rollup-plugin-terser";
 
 // Delete 'dist'
@@ -12,6 +13,7 @@ export default {
     format: "es"
   },
   plugins: [
+    css(),
     typescript({
       clean: true,
       // Make sure we are using our version of TypeScript.
