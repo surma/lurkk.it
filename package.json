@@ -30,7 +30,7 @@
     "fmt": "prettier --write src/**/*.ts *.{js,json,md}",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fmt_test": "test $(prettier -l src/**/*.ts *.{js,json,md} | wc -l) -eq 0",
-    "test": "npm run build && npm run fmt_test && npm run lint"
+    "test": "npm run fmt_test && npm run lint && npm run build"
   },
   "husky": {
     "hooks": {
