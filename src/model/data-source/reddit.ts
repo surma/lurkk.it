@@ -129,6 +129,7 @@ export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
   const thread: Thread = {
     author: te.data.author,
     body: te.data.selftext,
+    created: te.data.created_utc,
     downvotes: te.data.downs,
     htmlBody: te.data.selftext_html,
     id: te.data.name,
@@ -136,7 +137,7 @@ export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
     numComments: te.data.num_comments,
     subreddit: te.data.subreddit,
     title: te.data.title,
-    upvotes: te.data.ups
+    upvotes: te.data.ups,
   };
 
   if (te.data.preview && te.data.preview.images.length >= 1) {

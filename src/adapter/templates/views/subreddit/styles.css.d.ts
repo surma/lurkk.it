@@ -12,19 +12,5 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export type ThreadID = string;
-export interface Thread {
-  author: string;
-  created: number;
-  downvotes: number;
-  id: ThreadID;
-  numComments: number;
-  fullImage?: string;
-  previewImage?: string;
-  subreddit: string;
-  title: string;
-  upvotes: number;
-  body?: string;
-  htmlBody?: string;
-  link?: string;
-}
+declare const styles: string;
+export default styles;

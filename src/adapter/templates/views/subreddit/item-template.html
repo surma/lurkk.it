@@ -12,7 +12,21 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<div>
-  <a href="/t/${state.id}">${state.title}</a> by ${state.author}
-  ${state.upvotes - state.downvotes}, ${state.numComments} comment${state.numComments === 1 ? "" : "s"}
-</div>
+<layer-menu class="item">
+  <div slot="top" class="top">
+    <div class="preview" style="background-image: url(${state.previewImage});"></div>
+    <a href="/t/${state.id}" class="title">${state.title}</a>
+    <div class="meta">
+      /u/${state.author} •
+      /r/${state.subreddit} •
+      ${state.elapsed}
+    </div>
+    <div class="engagement">
+      ${state.points} ${state.pointLabel} •
+      ${state.numComments} ${state.commentLabel}
+      ${state.domain}
+    </div>
+  </div>
+  <div class="bottom"></div>
+
+</layer-menu>

@@ -18,12 +18,26 @@ import {View,ViewType} from "../../../../model/view.js";
 import template from "./template.html";
 import itemTemplate from "./item-template.html";
 
+import {defineCE, injectStyles} from "../../../../utils/dom-helpers.js";
+
+import LayerMenu from "../../../../components/layer-menu";
+defineCE("layer-menu", LayerMenu);
+
+import styles from "./styles.css";
 
 export default (view: View) => {
+  injectStyles("subreddit", styles);
   if(view.type !== ViewType.SUBREDDIT) {
     throw new Error("View is not of type SUBREDDIT");
   }
   return template({
-    items: view.subreddit.items.map(itemTemplate)
+    items: view.subreddit.items.map(item => itemTemplate({
+      ...item,
+      points: item.upvotes - item.downvotes,
+      pointLabel: 'points' + ((item.upvotes - item.downvotes) === 1 ? '': 's'),
+      commentLabel: 'comment' + (item.numComments === 1 ? '': 's'),
+      domain: item.link && ' • ' + new URL(item.link).host,
+      elapsed: item.created
+    }))
   });
 };

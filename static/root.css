@@ -14,20 +14,54 @@
 
 :root {
   --base: 4px;
-  --base-font: 4;
-  --side-padding: 2;
+  --padding: 2;
+  --base-font: 3.5;
+  --small-font: calc(var(--base-font) * 0.8);
+  --big-font: calc(var(--base-font) * 1.3);
+  --opacity-step: 0.77;
 
-  --font-base: 4;
-  --small-font: 0.8;
-  --big-font: 1.3;
+  --primary-dd: #003434;
+  --primary-d: #006767;
+  --primary: #009b9b;
+  --primary-b: #001e1e;
+  --primary-w: #e0ffff;
+  --secondary1-dd: #564700;
+  --secondary1-d: #aa8c00;
+  --secondary1: #ffd100;
+  --secondary1-b: #1e1900;
+  --secondary1-w: #fff9e0;
+  --secondary2-dd: #460027;
+  --secondary2-d: #8a004d;
+  --secondary2: #ce0074;
+  --secondary2-b: #1e0011;
+  --secondary2-w: #ffe0f1;
+}
 
-  --primary: #009B9B;
-  --seconadry1: #FFD200;
-  --secondary2: #CE0074;
+* {
+  box-sizing: border-box;
 }
 
 html, body {
   margin: 0;
   padding: 0;
 }
+html {
+  background-color: var(--secondary1);
+}
+body {
+  background-color: var(--primary-b);
+  color: var(--primary-w);
+  font-family: Helvetica;
+  font-size: calc(var(--base) * var(--base-font));
+  line-height: 1.2;
+}
 
+a {
+  color: var(--secondary1);
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--secondary2);
+  color: var(--secondary2-w);
+}

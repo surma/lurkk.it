@@ -26,3 +26,13 @@ export function defineCE(name: string, clazz: Constructor<HTMLElement>) {
   }
   customElements.define(name, clazz);
 }
+
+export function injectStyles(id: string, stylesheet: string) {
+  if (document.querySelector(`#style-${id}`)) {
+    return;
+  }
+  const style = document.createElement("style");
+  style.innerHTML = stylesheet;
+  style.id = `style-${id}`;
+  document.head.appendChild(style);
+}
