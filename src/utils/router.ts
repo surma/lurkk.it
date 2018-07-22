@@ -14,8 +14,13 @@
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 
+export enum NavigationType {
+  NAVIGATION,
+  BACK
+}
 export interface NavigationMessage {
   path: string;
+  type: NavigationType;
 }
 
 export const NAVIGATION_CHANNEL = "navigation";
@@ -76,9 +81,10 @@ export function getPath(): string {
   return location.hash.substr(1) || "/";
 }
 
-window.addEventListener("popstate", notify);
-export async function notify() {
+window.addEventListener("popstate", _ => notify(NavigationType.BACK));
+export async function notify(type: NavigationType = NavigationType.NAVIGATION) {
   (await bus).send({
-    path: getPath()
+    path: getPath(),
+    type
   });
 }

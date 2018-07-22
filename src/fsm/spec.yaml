@@ -22,8 +22,10 @@
   import * as Model from "../model/model.js";
 
   import {
+    AnyNode,
     Effect,
     Guard,
+    Loopback,
     not,
     NoTrigger,
     StateMachine,
@@ -116,6 +118,9 @@ triggers:
     });
   }
 
+  const dismiss: Effect<Node, Trigger.DISMISS, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    fsm.value.stack.pop();
+  }
 ---
 transitions:
   - origin: STACK_VIEW
@@ -126,6 +131,10 @@ transitions:
     trigger: VIEW_THREAD
     target: STACK_VIEW
     effects: [loadingEffect(LoadingType.VIEW, loadThread)]
+  - origin: AnyNode
+    trigger: DISMISS
+    target: Loopback
+    effects: [dismiss]
 
 --- |
   export const READY_CHANNEL = "fsm.ready";

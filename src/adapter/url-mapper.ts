@@ -15,6 +15,8 @@
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
 
+import ItemStack from "../components/item-stack";
+
 import {
   Node,
   READY_CHANNEL as FSM_READY_CHANNEL,
@@ -27,7 +29,8 @@ import {
   getPath,
   go,
   NAVIGATION_CHANNEL,
-  NavigationMessage
+  NavigationMessage,
+  NavigationType
 } from "../utils/router.js";
 
 async function onPathChange(path: string) {
@@ -58,8 +61,17 @@ export async function init() {
   const navigationBus = await MessageBus.get<NavigationMessage>(
     NAVIGATION_CHANNEL
   );
-  navigationBus.listen((navigationMsg?: NavigationMessage) => {
+  navigationBus.listen(async (navigationMsg?: NavigationMessage) => {
     if (!navigationMsg) {
+      return;
+    }
+    if (navigationMsg.type === NavigationType.BACK) {
+      const itemStack = document.querySelector("item-stack") as ItemStack;
+      await itemStack.dismiss();
+      await FsmUtils.emitTrigger<Trigger.DISMISS, TriggerPayloadMap>(
+        Trigger.DISMISS,
+        {}
+      );
       return;
     }
     onPathChange(navigationMsg.path);
