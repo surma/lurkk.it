@@ -31,10 +31,10 @@ export default function (opts = {}) {
       if (!id.endsWith('template.html')) {
         return;
       }
-      const minified = htmlMinifier.minify(code, {...defaultOpts, ...opts});
+      code = htmlMinifier.minify(code, {...defaultOpts, ...opts});
       return `
-        import {html} from "lit-html";
-        export default state => html\`${minified}\`;
+        import {html} from "lit-html/lib/lit-extended.js";
+        export default state => html\`${code}\`;
       `;
     }
   };

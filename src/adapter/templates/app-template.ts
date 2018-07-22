@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, TemplateResult } from "lit-html";
+import { TemplateResult } from "lit-html";
 
 import {defineCE} from "../../utils/dom-helpers.js";
 
@@ -41,7 +41,18 @@ async function renderView(view: View): Promise<TemplateResult> {
 import styles from "./app-template.css";
 import appTemplate from "./app-template.html";
 
+const seenItems = new Set<string>();
+function isNewFunc(item: HTMLElement) {
+  if(!('viewId' in item.dataset)) {
+    return false;
+  }
+  const viewId = item.dataset.viewId!;
+  const isSeen = seenItems.has(viewId);
+  seenItems.add(viewId);
+  return !isSeen;
+}
 export default (state: AppState) => appTemplate({
   styles,
-  views:  state.value.stack.map(renderView)
+  views:  state.value.stack.map(renderView),
+  isNewFunc
 });

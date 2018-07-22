@@ -24,8 +24,8 @@ export default function () {
       if (!id.endsWith('.css')) {
         return;
       }
-      const minified = cssMinifier.minify(code);
-      return `export default ${JSON.stringify(minified.styles)};`;
+      code = cssMinifier.minify(code).styles;
+      return `export default ${JSON.stringify(code)};`;
     }
   };
 }

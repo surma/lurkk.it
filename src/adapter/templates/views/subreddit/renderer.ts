@@ -12,8 +12,6 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "lit-html";
-
 import {View,ViewType} from "../../../../model/view.js";
 import template from "./template.html";
 import itemTemplate from "./item-template.html";
@@ -32,6 +30,7 @@ export default (view: View) => {
     throw new Error("View is not of type SUBREDDIT");
   }
   return template({
+    ...view,
     items: view.subreddit.items.map(item => itemTemplate({
       ...item,
       points: item.upvotes - item.downvotes,

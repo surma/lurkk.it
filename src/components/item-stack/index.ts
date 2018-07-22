@@ -18,16 +18,29 @@ import * as AnimationTools from "../../utils/animation.js";
 import shadowDomTemplate from "./shadowdom-template.html";
 import shadowDomStyles from "./shadowdom-styles.css";
 
+export interface IsNewFunc {
+  (el: HTMLElement): boolean;
+}
+
+export function newWeakSetNewFunc(): IsNewFunc {
+  const seenItems = new WeakSet<HTMLElement>();
+  return (el: HTMLElement) => {
+    const isNew = !seenItems.has(el);
+    seenItems.add(el);
+    return isNew;
+  };
+}
+
 export default class ItemStack extends HTMLElement {
   margin: number = 20;
   autoAnimateThreshold: number = 50;
   animationTime: number = 0.3;
   animationEasing: string = "ease-in-out";
+  isNewFunc: IsNewFunc = newWeakSetNewFunc();
 
   private dragStart?: number;
   private dragDelta?: number;
   private dismissedItems = new WeakSet<HTMLElement>();
-  private seenItems = new WeakSet<HTMLElement>();
 
   constructor() {
     super();
@@ -127,10 +140,9 @@ export default class ItemStack extends HTMLElement {
     const items = (ev.target! as HTMLSlotElement)
       .assignedNodes()
       .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
-    const newItems = items.filter(item => !this.seenItems.has(item));
+    const newItems = items.filter(item => this.isNewFunc(item));
 
     newItems.forEach(async item => {
-      this.seenItems.add(item);
       item.style.transform = "translateX(100%)";
       await AnimationTools.requestAnimationFramePromise();
       await AnimationTools.animateTo(
