@@ -17,5 +17,5 @@ interface Event {
 }
 
 interface Constructor<T> {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }

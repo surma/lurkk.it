@@ -12,32 +12,33 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {View,ViewType} from "../../../../model/view.js";
-import template from "./template.html";
-import itemTemplate from "./item-template.html";
-
-import {defineCE, injectStyles} from "../../../../utils/dom-helpers.js";
-import {ago} from "../../../../utils/mini-moment.js";
+import { View, ViewType } from "../../../../model/view.js";
+import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 
 import LayerMenu from "../../../../components/layer-menu";
 defineCE("layer-menu", LayerMenu);
 
+import itemTemplate from "./item-template.html";
 import styles from "./styles.css";
+import template from "./template.html";
 
 export default (view: View) => {
   injectStyles("subreddit", styles);
-  if(view.type !== ViewType.SUBREDDIT) {
+  if (view.type !== ViewType.SUBREDDIT) {
     throw new Error("View is not of type SUBREDDIT");
   }
   return template({
     ...view,
-    items: view.subreddit.items.map(item => itemTemplate({
-      ...item,
-      points: item.upvotes - item.downvotes,
-      pointLabel: 'points' + ((item.upvotes - item.downvotes) === 1 ? '': 's'),
-      commentLabel: 'comment' + (item.numComments === 1 ? '': 's'),
-      domain: item.link && ' • ' + new URL(item.link).host,
-      elapsed: ago(item.created)
-    }))
+    items: view.subreddit.items.map(item =>
+      itemTemplate({
+        ...item,
+        commentLabel: "comment" + (item.numComments === 1 ? "" : "s"),
+        domain: item.link && " • " + new URL(item.link).host,
+        elapsed: ago(item.created),
+        pointLabel: "points" + (item.upvotes - item.downvotes === 1 ? "" : "s"),
+        points: item.upvotes - item.downvotes
+      })
+    )
   });
 };

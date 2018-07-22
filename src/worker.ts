@@ -12,23 +12,14 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-
-import { State } from "westend/src/state-machine/state-machine.js";
 import { debug } from "westend/src/state-machine/state-machine-debugger.js";
+import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
-
 import * as Model from "./model/model.js";
 
-import {
-  fsm,
-  Node,
-  Trigger,
-  Value,
-  READY_CHANNEL
-} from "./fsm/generated.js";
-
+import { fsm, Node, READY_CHANNEL, Trigger, Value } from "./fsm/generated.js";
 
 (async function() {
   await Model.init();

@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {ThreadID, Thread} from "./thread.js";
-import {SubredditID, Subreddit} from "./subreddit.js";
-import {Comment} from "./comment.js";
+import { Comment } from "../comment.js";
+import { Subreddit, SubredditID } from "../subreddit.js";
+import { Thread, ThreadID } from "../thread.js";
 
 export interface DataSource {
   loadThread(id: ThreadID): Promise<[Thread, Comment[]]>;

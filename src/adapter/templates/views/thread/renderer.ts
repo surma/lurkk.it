@@ -12,11 +12,11 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {View, ViewType} from "../../../../model/view.js";
+import { View, ViewType } from "../../../../model/view.js";
 import template from "./template.html";
 
 export default (view: View) => {
-  if(view.type !== ViewType.THREAD) {
+  if (view.type !== ViewType.THREAD) {
     throw new Error("View is not of type THREAD");
   }
   return template({

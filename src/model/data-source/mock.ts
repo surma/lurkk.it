@@ -12,10 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { apiCommentsToComment, apiThreadEntityToThread } from "./reddit.js";
 import { Comment } from "../comment.js";
-import {Subreddit, SubredditID} from "../subreddit.js";
-import {Thread, ThreadID} from "../thread.js";
+import { Subreddit, SubredditID } from "../subreddit.js";
+import { Thread, ThreadID } from "../thread.js";
+import { apiCommentsToComment, apiThreadEntityToThread } from "./reddit.js";
 
 export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
   const rawData = await fetch("/subreddit.json").then(r => r.json());

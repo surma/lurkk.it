@@ -15,8 +15,8 @@
 import { render } from "lit-html";
 
 import { animateTo } from "../../utils/animation.js";
-import shadowDomTemplate from "./shadowdom-template.html";
 import shadowDomStyles from "./shadowdom-styles.css";
+import shadowDomTemplate from "./shadowdom-template.html";
 
 export default class LayerMenu extends HTMLElement {
   static get OBSERVED_ATTRIBUTES() {

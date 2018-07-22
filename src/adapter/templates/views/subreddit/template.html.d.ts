@@ -12,6 +12,6 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {TemplateResult} from "lit-html";
+import { TemplateResult } from "lit-html";
 declare const template: (state: any) => TemplateResult;
 export default template;

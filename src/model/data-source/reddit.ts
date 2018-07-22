@@ -13,8 +13,8 @@
  */
 
 import { Comment } from "../comment.js";
-import {Subreddit, SubredditID} from "../subreddit.js";
-import {Thread, ThreadID} from "../thread.js";
+import { Subreddit, SubredditID } from "../subreddit.js";
+import { Thread, ThreadID } from "../thread.js";
 
 export interface ApiSubreddit {
   data: {
@@ -137,7 +137,7 @@ export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
     numComments: te.data.num_comments,
     subreddit: te.data.subreddit,
     title: te.data.title,
-    upvotes: te.data.ups,
+    upvotes: te.data.ups
   };
 
   if (te.data.preview && te.data.preview.images.length >= 1) {

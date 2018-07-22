@@ -12,11 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {TemplateResult} from "lit-html";
-import {State as FsmState} from "westend/src/state-machine/state-machine.js";
-import {Node,Value} from "../../fsm/generated.js";
-import {View} from "../../model/view.js";
-export type AppState = FsmState<Node,Value>;
+import { TemplateResult } from "lit-html";
+import { State as FsmState } from "westend/src/state-machine/state-machine.js";
+import { Node, Value } from "../../fsm/generated.js";
+import { View } from "../../model/view.js";
+export type AppState = FsmState<Node, Value>;
 
 export type ViewRenderer = (view: View) => TemplateResult;
-

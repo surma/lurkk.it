@@ -15,8 +15,8 @@
 import { render } from "lit-html";
 
 import * as AnimationTools from "../../utils/animation.js";
-import shadowDomTemplate from "./shadowdom-template.html";
 import shadowDomStyles from "./shadowdom-styles.css";
+import shadowDomTemplate from "./shadowdom-template.html";
 
 export interface IsNewFunc {
   (el: HTMLElement): boolean;

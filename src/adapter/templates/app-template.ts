@@ -14,7 +14,7 @@
 
 import { TemplateResult } from "lit-html";
 
-import {defineCE} from "../../utils/dom-helpers.js";
+import { defineCE } from "../../utils/dom-helpers.js";
 
 import BottomBar from "../../components/bottom-bar";
 defineCE("bottom-bar", BottomBar);
@@ -22,16 +22,22 @@ defineCE("bottom-bar", BottomBar);
 import ItemStack from "../../components/item-stack";
 defineCE("item-stack", ItemStack);
 
-import {AppState, ViewRenderer} from "./types.js";
-import {ViewType, View} from "../../model/view.js";
+import { View, ViewType } from "../../model/view.js";
+import { AppState, ViewRenderer } from "./types.js";
 
 const viewRenderers = new Map<ViewType, () => Promise<ViewRenderer>>([
-  [ViewType.THREAD, () => import("./views/thread/renderer.js").then(m => m.default)],
-  [ViewType.SUBREDDIT, () => import("./views/subreddit/renderer.js").then(m => m.default)],
+  [
+    ViewType.THREAD,
+    () => import("./views/thread/renderer.js").then(m => m.default)
+  ],
+  [
+    ViewType.SUBREDDIT,
+    () => import("./views/subreddit/renderer.js").then(m => m.default)
+  ]
 ]);
 
 async function renderView(view: View): Promise<TemplateResult> {
-  if(!viewRenderers.has(view.type)) {
+  if (!viewRenderers.has(view.type)) {
     throw new Error("Unknown view type");
   }
   const viewRenderer = await viewRenderers.get(view.type)!();
@@ -43,7 +49,7 @@ import appTemplate from "./app-template.html";
 
 const seenItems = new Set<string>();
 function isNewFunc(item: HTMLElement) {
-  if(!('viewId' in item.dataset)) {
+  if (!("viewId" in item.dataset)) {
     return false;
   }
   const viewId = item.dataset.viewId!;
@@ -51,8 +57,9 @@ function isNewFunc(item: HTMLElement) {
   seenItems.add(viewId);
   return !isSeen;
 }
-export default (state: AppState) => appTemplate({
-  styles,
-  views:  state.value.stack.map(renderView),
-  isNewFunc
-});
+export default (state: AppState) =>
+  appTemplate({
+    isNewFunc,
+    styles,
+    views: state.value.stack.map(renderView)
+  });
