@@ -19,6 +19,7 @@ import template from "./template.html";
 import itemTemplate from "./item-template.html";
 
 import {defineCE, injectStyles} from "../../../../utils/dom-helpers.js";
+import {ago} from "../../../../utils/mini-moment.js";
 
 import LayerMenu from "../../../../components/layer-menu";
 defineCE("layer-menu", LayerMenu);
@@ -37,7 +38,7 @@ export default (view: View) => {
       pointLabel: 'points' + ((item.upvotes - item.downvotes) === 1 ? '': 's'),
       commentLabel: 'comment' + (item.numComments === 1 ? '': 's'),
       domain: item.link && ' • ' + new URL(item.link).host,
-      elapsed: item.created
+      elapsed: ago(item.created)
     }))
   });
 };
