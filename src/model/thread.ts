@@ -16,8 +16,10 @@ export type ThreadID = string;
 export interface Thread {
   author: string;
   created: number;
+  domain: string;
   downvotes: number;
   id: ThreadID;
+  isLink: boolean;
   numComments: number;
   fullImage?: string;
   previewImage?: string;

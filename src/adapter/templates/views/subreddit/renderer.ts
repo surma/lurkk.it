@@ -14,7 +14,7 @@
 
 import { View, ViewType } from "../../../../model/view.js";
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
-import { ago } from "../../../../utils/mini-moment.js";
+import { computeAdditionalThreadData } from "../../../../utils/model-helpers.js";
 
 import LayerMenu from "../../../../components/layer-menu";
 defineCE("layer-menu", LayerMenu);
@@ -33,17 +33,7 @@ export default (view: View) => {
     items: view.subreddit.items.map(item =>
       itemTemplate({
         ...item,
-        commentLabel: "comment" + (item.numComments === 1 ? "" : "s"),
-        domain:
-          item.link &&
-          " • " +
-            new URL(item.link).host
-              .split(".")
-              .slice(-2)
-              .join("."),
-        elapsed: ago(item.created),
-        pointLabel: "points" + (item.upvotes - item.downvotes === 1 ? "" : "s"),
-        points: item.upvotes - item.downvotes
+        ...computeAdditionalThreadData(item)
       })
     )
   });

@@ -12,18 +12,16 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-main {
-  width: 100vw;
-  height: 100vh;
+import { Thread } from "../model/thread.js";
 
-  display: grid;
-}
+import { ago } from "../utils/mini-moment.js";
 
-main > * {
-  grid-area: 1/1;
-}
-
-.view {
-  width: 100vw;
-  padding-bottom: 50vh;
+export function computeAdditionalThreadData(thread: Thread) {
+  const points = thread.upvotes - thread.downvotes;
+  return {
+    commentLabel: "comment" + (thread.numComments === 1 ? "" : "s"),
+    elapsed: ago(thread.created),
+    pointLabel: "points" + (points === 1 ? "" : "s"),
+    points
+  };
 }

@@ -50,6 +50,7 @@ export interface ApiThreadEntity {
     locked: boolean;
     media_embed: {};
     id: string;
+    is_self: boolean;
     name: string;
     num_comments: number;
     preview: {
@@ -130,9 +131,11 @@ export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
     author: te.data.author,
     body: te.data.selftext,
     created: te.data.created_utc,
+    domain: te.data.domain,
     downvotes: te.data.downs,
     htmlBody: te.data.selftext_html,
     id: te.data.name,
+    isLink: !te.data.is_self,
     link: te.data.url,
     numComments: te.data.num_comments,
     subreddit: te.data.subreddit,

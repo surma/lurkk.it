@@ -18,7 +18,7 @@
       class="button back"
       on-click=${state.back}
       >
-      ${state.unsafeHTML(state.icons.backSVG)}
+      ${state.icons.backSVG}
     </button>
     <form on-submit="${state.go}">
       <input placeholder="/r/..." class="input" value="${state.searchBarValue}"/>
@@ -33,20 +33,20 @@
       ?hidden=${state.hasDownload}
       on-click=${state.download}
       >
-      ${state.unsafeHTML(state.icons.downloadSVG)}
+      ${state.icons.downloadSVG}
     </button>
     <button
       class="button favorite"
       ?hidden=${state.hasFavorite}
       on-click=${state.download}
       >
-      ${state.unsafeHTML(state.icons.starOffSVG)}
+      ${state.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
       on-click=${state.refresh}
       >
-      ${state.unsafeHTML(state.icons.refreshSVG)}
+      ${state.icons.refreshSVG}
     </button>
   </div>
   <div class="main">

@@ -12,18 +12,5 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-main {
-  width: 100vw;
-  height: 100vh;
-
-  display: grid;
-}
-
-main > * {
-  grid-area: 1/1;
-}
-
-.view {
-  width: 100vw;
-  padding-bottom: 50vh;
-}
+declare const styles: string;
+export default styles;

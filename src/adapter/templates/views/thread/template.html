@@ -12,6 +12,18 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<div data-view-id$="${state.uid}">
-  THREAD ${state.title}
+<div class="view thread" data-view-id$="${state.uid}">
+  <div class="post">
+    <header class="header">
+      <h1 class="title">${state.thread.title}</h1>
+      <p class="meta">/u/${state.thread.author} • /r/${state.thread.subreddit} • ${state.thread.elapsed}</p>
+      <p class="engagement">${state.thread.points} ${state.thread.pointLabel} • ${state.thread.numComments} ${state.thread.commentLabel}</p>
+    </header>
+    <div class$="${['content', state.thread.isLink ? 'link' : ''].join(' ')}">
+      ${state.thread.content}
+    </div>
+  </div>
+  <ul class="comments">
+    ${state.comments.map(comment => state.commentTemplate({...comment, commentTemplate: state.commentTemplate, unsafeHTML: state.unsafeHTML}))}
+  </ul>
 </div>

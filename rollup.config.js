@@ -20,7 +20,7 @@ export default {
       typescript: require("typescript")
     }),
     nodeResolve(),
-    terser(),
+    // terser(),
     css(),
     markup()
   ],

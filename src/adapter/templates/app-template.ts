@@ -104,18 +104,17 @@ export default (state: AppState) =>
       return false;
     },
     icons: {
-      backSVG,
-      downloadSVG,
-      offlineSVG,
-      refreshSVG,
-      starOffSVG,
-      starOnSVG
+      backSVG: unsafeHTML(backSVG),
+      downloadSVG: unsafeHTML(downloadSVG),
+      offlineSVG: unsafeHTML(offlineSVG),
+      refreshSVG: unsafeHTML(refreshSVG),
+      starOffSVG: unsafeHTML(starOffSVG),
+      starOnSVG: unsafeHTML(starOnSVG)
     },
     isNewFunc,
     searchBarValue: extractSearchBarValue(state.value.stack.slice(-1)[0]),
     toggleBar() {
       (this as BottomBar).toggle();
     },
-    unsafeHTML,
     views: state.value.stack.map(renderView)
   });
