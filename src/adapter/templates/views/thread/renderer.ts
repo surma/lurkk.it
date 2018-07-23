@@ -24,11 +24,15 @@ import { unsafeHTML } from "../../../../utils/lit-helpers.js";
 
 function generateContent(thread: Thread) {
   if (thread.isLink) {
-    return html`<a href="${thread.link}"><img src="${
+    return html`<a href="${
+      thread.link
+    }" class="content link" style="background-image: url(${
       thread.previewImage
-    }"></a>`;
+    });"></a>`;
   } else {
-    return unsafeHTML(thread.htmlBody!);
+    return html`<div class="content text">${unsafeHTML(
+      thread.htmlBody!
+    )}</div>`;
   }
 }
 

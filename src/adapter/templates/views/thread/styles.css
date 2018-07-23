@@ -41,10 +41,15 @@
 .thread .post .content {
   background-color: var(--primary-dd);
   padding: calc(2 * var(--base) * var(--padding)) calc(var(--base) * var(--padding));
+  width: 100%;
 }
 
 .thread .post .content.link {
+  display: block;
   padding: 0;
+  background-size: cover;
+  background-position: 50% 50%;
+  min-height: 25vh;
 }
 
 .thread .post .title {
