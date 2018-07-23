@@ -12,8 +12,9 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<bottom-bar id="bottom-bar" on-dblclick=${state.toggleBar}>
+<bottom-bar id="bottom-bar" on-dblclick=${state.toggleBar} loading?="${state.loading}">
   <div slot="bar" class="bar">
+    <div class="loader"></div>
     <button
       class="button back"
       on-click=${state.back}

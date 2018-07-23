@@ -112,6 +112,7 @@ export default (state: AppState) =>
       starOnSVG: unsafeHTML(starOnSVG)
     },
     isNewFunc,
+    loading: state.value.loading.length > 0,
     searchBarValue: extractSearchBarValue(state.value.stack.slice(-1)[0]),
     toggleBar() {
       (this as BottomBar).toggle();

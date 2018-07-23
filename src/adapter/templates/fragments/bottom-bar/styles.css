@@ -25,6 +25,7 @@
   flex-direction: row;
   align-items: stretch;
   justify-content: flex-start;
+  position: relative;
 }
 
 #bottom-bar .bar > * {
@@ -77,4 +78,33 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#bottom-bar .loader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 2px;
+  width: calc(200% + 10px);
+  background: none;
+}
+
+#bottom-bar[loading] .loader {
+  background-image: linear-gradient(
+    90deg, 
+    var(--primary-dd) 0%,
+    var(--primary-dd) calc(50% - 3 * var(--base) * var(--padding)),
+    var(--secondary1) 50%,
+    var(--primary-dd) 50%
+  );
+  animation: slide 1s ease-in-out infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(calc(50% + 10px));
+  }
 }
