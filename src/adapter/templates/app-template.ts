@@ -66,7 +66,10 @@ function isNewFunc(item: HTMLElement) {
   return !isSeen;
 }
 
-function extractSearchBarValue(view: View): string {
+function extractSearchBarValue(view?: View): string {
+  if (!view) {
+    return "";
+  }
   switch (view.type) {
     case ViewType.SUBREDDIT:
       return `/r/${view.subreddit.id}`;
