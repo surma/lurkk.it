@@ -17,7 +17,7 @@
 }
 
 #bottom-bar .bar {
-  background-color: var(--primary-d);
+  background-color: var(--primary-dd);
   padding: calc(var(--base) * var(--padding)) 0;
   font-size: calc(var(--base)* var(--big-font));
 
@@ -43,7 +43,7 @@
   border: 2px solid var(--secondary1);
   font-size: inherit;
   box-shadow: 0 0 14px -3px var(--primary-b) inset;
-  background-color: var(--primary-wt);
+  background-color: var(--primary-d);
   color: var(--primary-w);
   padding-left: calc(var(--base) * var(--padding));
   min-width: 0;
