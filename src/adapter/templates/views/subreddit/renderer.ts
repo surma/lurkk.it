@@ -34,7 +34,13 @@ export default (view: View) => {
       itemTemplate({
         ...item,
         commentLabel: "comment" + (item.numComments === 1 ? "" : "s"),
-        domain: item.link && " • " + new URL(item.link).host,
+        domain:
+          item.link &&
+          " • " +
+            new URL(item.link).host
+              .split(".")
+              .slice(-2)
+              .join("."),
         elapsed: ago(item.created),
         pointLabel: "points" + (item.upvotes - item.downvotes === 1 ? "" : "s"),
         points: item.upvotes - item.downvotes

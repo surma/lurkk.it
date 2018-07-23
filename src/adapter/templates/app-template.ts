@@ -113,6 +113,9 @@ export default (state: AppState) =>
     },
     isNewFunc,
     searchBarValue: extractSearchBarValue(state.value.stack.slice(-1)[0]),
+    toggleBar() {
+      (this as BottomBar).toggle();
+    },
     unsafeHTML,
     views: state.value.stack.map(renderView)
   });

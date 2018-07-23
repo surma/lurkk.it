@@ -71,3 +71,10 @@
   border-bottom-left-radius: 0px;
 }
 
+#bottom-bar .main {
+  background-color: var(--primary-d);
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

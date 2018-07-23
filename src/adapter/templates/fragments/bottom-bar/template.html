@@ -12,7 +12,7 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<bottom-bar id="bottom-bar">
+<bottom-bar id="bottom-bar" on-dblclick=${state.toggleBar}>
   <div slot="bar" class="bar">
     <button
       class="button back"
@@ -49,7 +49,7 @@
       ${state.unsafeHTML(state.icons.refreshSVG)}
     </button>
   </div>
-  <div>
+  <div class="main">
     To be implemented...
   </div>
 </bottom-bar>
