@@ -12,11 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { render } from "lit-html";
-
 import * as AnimationTools from "../../utils/animation.js";
 import shadowDomStyles from "./shadowdom-styles.css";
-import shadowDomTemplate from "./shadowdom-template.html";
+import shadowDom from "./shadowdom.html";
 
 export interface IsNewFunc {
   (el: HTMLElement): boolean;
@@ -45,7 +43,7 @@ export default class ItemStack extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(shadowDomTemplate({ styles: shadowDomStyles }), this.shadowRoot!);
+    this.shadowRoot!.innerHTML = `<style>${shadowDomStyles}</style>${shadowDom}`;
     this.shadowRoot!.querySelector("slot")!.addEventListener(
       "slotchange",
       this.onSlotChange.bind(this)

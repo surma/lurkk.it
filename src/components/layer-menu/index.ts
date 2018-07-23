@@ -12,11 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { render } from "lit-html";
-
 import { animateTo } from "../../utils/animation.js";
 import shadowDomStyles from "./shadowdom-styles.css";
-import shadowDomTemplate from "./shadowdom-template.html";
+import shadowDom from "./shadowdom.html";
 
 export default class LayerMenu extends HTMLElement {
   static get OBSERVED_ATTRIBUTES() {
@@ -36,7 +34,7 @@ export default class LayerMenu extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    render(shadowDomTemplate({ styles: shadowDomStyles }), this.shadowRoot!);
+    this.shadowRoot!.innerHTML = `<style>${shadowDomStyles}</style>${shadowDom}`;
     this.topElementContainer = this.shadowRoot!.querySelector(
       "#top"
     ) as HTMLElement;
