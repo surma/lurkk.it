@@ -1,0 +1,73 @@
+/**
+ * @license
+ * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at
+ * http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at
+ * http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at
+ * http://polymer.github.io/PATENTS.txt
+ */
+
+#bottom-bar {
+  --primary-btn-padding: 3;
+}
+
+#bottom-bar .bar {
+  background-color: var(--primary-d);
+  padding: calc(var(--base) * var(--padding)) 0;
+  font-size: calc(var(--base)* var(--big-font));
+
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+#bottom-bar .bar > * {
+  flex: 0 0;
+}
+
+#bottom-bar .bar form {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1;
+}
+
+#bottom-bar .bar .input {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  border: 2px solid var(--secondary1);
+  font-size: inherit;
+  box-shadow: 0 0 14px -3px var(--primary-b) inset;
+  background-color: var(--primary-wt);
+  color: var(--primary-w);
+  padding-left: calc(var(--base) * var(--padding));
+  min-width: 0;
+  position: relative;
+}
+
+#bottom-bar .button {
+  border: 0;
+  background: none;
+  font-size: inherit;
+  fill: var(--primary-w);
+  padding: 0 calc(var(--base) * var(--padding));
+}
+
+#bottom-bar .button--primary {
+  border-radius: 2px;
+  background-color: var(--secondary1);
+  color: var(--secondary1-b);
+  font-weight: bold;
+  padding: calc(var(--base) * var(--padding)) calc(var(--base) * var(--padding) * var(--primary-btn-padding));
+}
+
+#bottom-bar .go {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+

@@ -1,0 +1,55 @@
+<!--
+ @license
+ Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+ This code may only be used under the BSD style license found at
+ http://polymer.github.io/LICENSE.txt
+ The complete set of authors may be found at
+ http://polymer.github.io/AUTHORS.txt
+ The complete set of contributors may be found at
+ http://polymer.github.io/CONTRIBUTORS.txt
+ Code distributed by Google as part of the polymer project is also
+ subject to an additional IP rights grant found at
+ http://polymer.github.io/PATENTS.txt
+-->
+
+<bottom-bar id="bottom-bar">
+  <div slot="bar" class="bar">
+    <button
+      class="button back"
+      on-click=${state.back}
+      >
+      ${state.unsafeHTML(state.icons.backSVG)}
+    </button>
+    <form on-submit="${state.go}">
+      <input placeholder="/r/..." class="input" value="${state.searchBarValue}"/>
+      <input
+        type="submit"
+        class="button button--primary go"
+        value="Go"
+        />
+    </form>
+    <button
+      class="button download"
+      ?hidden=${state.hasDownload}
+      on-click=${state.download}
+      >
+      ${state.unsafeHTML(state.icons.downloadSVG)}
+    </button>
+    <button
+      class="button favorite"
+      ?hidden=${state.hasFavorite}
+      on-click=${state.download}
+      >
+      ${state.unsafeHTML(state.icons.starOffSVG)}
+    </button>
+    <button
+      class="button refresh"
+      on-click=${state.refresh}
+      >
+      ${state.unsafeHTML(state.icons.refreshSVG)}
+    </button>
+  </div>
+  <div>
+    To be implemented...
+  </div>
+</bottom-bar>

@@ -14,7 +14,8 @@
 
 import { TemplateResult } from "lit-html";
 
-import { defineCE } from "../../utils/dom-helpers.js";
+import { defineCE, injectStyles } from "../../utils/dom-helpers.js";
+import { unsafeHTML } from "../../utils/lit-helpers.js";
 
 import BottomBar from "../../components/bottom-bar";
 defineCE("bottom-bar", BottomBar);
@@ -24,6 +25,8 @@ defineCE("item-stack", ItemStack);
 
 import { View, ViewType } from "../../model/view.js";
 import { AppState, ViewRenderer } from "./types.js";
+
+import { go } from "../../utils/router.js";
 
 const viewRenderers = new Map<ViewType, () => Promise<ViewRenderer>>([
   [
@@ -46,6 +49,11 @@ async function renderView(view: View): Promise<TemplateResult> {
 
 import styles from "./app-template.css";
 import appTemplate from "./app-template.html";
+injectStyles("app", styles);
+
+import bottomBarStyles from "./fragments/bottom-bar/styles.css";
+import bottomBar from "./fragments/bottom-bar/template.html";
+injectStyles("bottom-bar", bottomBarStyles);
 
 const seenItems = new Set<string>();
 function isNewFunc(item: HTMLElement) {
@@ -57,9 +65,51 @@ function isNewFunc(item: HTMLElement) {
   seenItems.add(viewId);
   return !isSeen;
 }
+
+function extractSearchBarValue(view: View): string {
+  switch (view.type) {
+    case ViewType.SUBREDDIT:
+      return `/r/${view.subreddit.id}`;
+    case ViewType.THREAD:
+      return `/r/${view.thread.subreddit}`;
+    default:
+      return "";
+  }
+}
+
+import backSVG from "../../icons/back.svg";
+import downloadSVG from "../../icons/download.svg";
+import offlineSVG from "../../icons/offline.svg";
+import refreshSVG from "../../icons/refresh.svg";
+import starOffSVG from "../../icons/star_off.svg";
+import starOnSVG from "../../icons/star_on.svg";
+
 export default (state: AppState) =>
   appTemplate({
+    bottomBar,
+    go(evt: Event) {
+      const input = (this as HTMLElement)
+        .closest(".bar")!
+        .querySelector(".input")! as HTMLInputElement;
+      let target = input.value;
+      if (!target.startsWith("/r/")) {
+        target = `/r/${target}`;
+      }
+      go(target);
+      this.blur();
+      evt.preventDefault();
+      return false;
+    },
+    icons: {
+      backSVG,
+      downloadSVG,
+      offlineSVG,
+      refreshSVG,
+      starOffSVG,
+      starOnSVG
+    },
     isNewFunc,
-    styles,
+    searchBarValue: extractSearchBarValue(state.value.stack.slice(-1)[0]),
+    unsafeHTML,
     views: state.value.stack.map(renderView)
   });

@@ -23,19 +23,27 @@ const defaultOpts = {
   removeRedundantAttributes: true
 };
 
+const suffixes = [
+  'template.html',
+  '.html',
+  '.svg'
+];
 export default function (opts = {}) {
   return {
     name: 'template',
 
     transform(code, id) {
-      if (!id.endsWith('template.html')) {
+      if (!suffixes.some(suffix => id.endsWith(suffix))) {
         return;
       }
       code = htmlMinifier.minify(code, {...defaultOpts, ...opts});
-      return `
-        import {html} from "lit-html/lib/lit-extended.js";
-        export default state => html\`${code}\`;
-      `;
+      if(id.endsWith('template.html')) {
+        return `
+          import {html} from "lit-html/lib/lit-extended.js";
+          export default state => html\`${code}\`;
+        `;
+      }
+      return `export default \`${code}\`;`;
     }
   };
 }
