@@ -80,6 +80,32 @@ function extractSearchBarValue(view?: View): string {
   }
 }
 
+function open() {
+  const input = document.querySelector(
+    "#bottom-bar .input"
+  )! as HTMLInputElement;
+  let target = input.value;
+  if (!target.startsWith("/r/")) {
+    target = `/r/${target}`;
+  }
+  go(target);
+  input.blur();
+  return false;
+}
+
+function isLoading(state: AppState) {
+  return state.value.loading.length > 0;
+}
+
+function topView(state: AppState) {
+  return state.value.stack[state.value.stack.length - 1];
+}
+
+function toggleBar() {
+  const bottomBar = document.querySelector("#bottom-bar")! as BottomBar;
+  bottomBar.toggle();
+}
+
 import backSVG from "../../icons/back.svg";
 import downloadSVG from "../../icons/download.svg";
 import offlineSVG from "../../icons/offline.svg";
@@ -88,21 +114,9 @@ import starOffSVG from "../../icons/star_off.svg";
 import starOnSVG from "../../icons/star_on.svg";
 
 export default (state: AppState) =>
-  appTemplate({
+  appTemplate(state, {
     bottomBar,
-    go(evt: Event) {
-      const input = (this as HTMLElement)
-        .closest(".bar")!
-        .querySelector(".input")! as HTMLInputElement;
-      let target = input.value;
-      if (!target.startsWith("/r/")) {
-        target = `/r/${target}`;
-      }
-      go(target);
-      this.blur();
-      evt.preventDefault();
-      return false;
-    },
+    extractSearchBarValue,
     icons: {
       backSVG: unsafeHTML(backSVG),
       downloadSVG: unsafeHTML(downloadSVG),
@@ -111,11 +125,10 @@ export default (state: AppState) =>
       starOffSVG: unsafeHTML(starOffSVG),
       starOnSVG: unsafeHTML(starOnSVG)
     },
+    isLoading,
     isNewFunc,
-    loading: state.value.loading.length > 0,
-    searchBarValue: extractSearchBarValue(state.value.stack.slice(-1)[0]),
-    toggleBar() {
-      (this as BottomBar).toggle();
-    },
-    views: state.value.stack.map(renderView)
+    open,
+    renderView,
+    toggleBar,
+    topView
   });

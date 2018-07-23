@@ -16,6 +16,9 @@ import { Comment } from "../comment.js";
 import { Subreddit, SubredditID } from "../subreddit.js";
 import { Thread, ThreadID } from "../thread.js";
 
+import { decodeHTML } from "../../utils/dom-helpers.js";
+import { ago } from "../../utils/mini-moment.js";
+
 export interface ApiSubreddit {
   data: {
     modhash: string;
@@ -53,12 +56,14 @@ export interface ApiThreadEntity {
     is_self: boolean;
     name: string;
     num_comments: number;
+    over_18: boolean;
     preview: {
       enabled: boolean;
       images: ApiPreviewImage[];
     };
+    score: number;
     selftext: string;
-    selftext_html: string;
+    selftext_html: string | null;
     spoiler: boolean;
     stickied: boolean;
     subreddit: string;
@@ -86,6 +91,7 @@ export interface ApiComment {
     link_id: string;
     name: string;
     parent_id: string;
+    score: number;
     subreddit: string;
     subreddit_id: string;
     ups: number;
@@ -128,16 +134,19 @@ export function sanitizeUrl(url: string) {
 
 export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
   const thread: Thread = {
+    ago: ago(te.data.created_utc),
     author: te.data.author,
     body: te.data.selftext,
     created: te.data.created_utc,
     domain: te.data.domain,
     downvotes: te.data.downs,
-    htmlBody: te.data.selftext_html,
+    htmlBody: decodeHTML(te.data.selftext_html || ""),
     id: te.data.name,
     isLink: !te.data.is_self,
     link: te.data.url,
+    nsfw: te.data.over_18,
     numComments: te.data.num_comments,
+    points: te.data.score,
     subreddit: te.data.subreddit,
     title: te.data.title,
     upvotes: te.data.ups
@@ -164,12 +173,14 @@ export function apiCommentsToComment(
     .filter(comment => comment.kind === "t1")
     .filter(comment => comment.data.parent_id === parentId)
     .map(comment => ({
+      ago: ago(comment.data.created_utc),
       author: comment.data.author,
       body: comment.data.body,
       comment: comment.data.body,
       downvotes: comment.data.downs,
-      htmlBody: comment.data.body_html,
+      htmlBody: decodeHTML(comment.data.body_html),
       id: comment.data.name,
+      points: comment.data.score,
       replies:
         comment.data.replies === ""
           ? []

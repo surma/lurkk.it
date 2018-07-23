@@ -40,7 +40,7 @@ export default function (opts = {}) {
       if(id.endsWith('template.html')) {
         return `
           import {html} from "lit-html/lib/lit-extended.js";
-          export default state => html\`${code}\`;
+          export default (state, funcs) => html\`${code}\`;
         `;
       }
       return `export default \`${code}\`;`;

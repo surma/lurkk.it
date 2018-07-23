@@ -14,11 +14,13 @@
 
 export type CommentID = string;
 export interface Comment {
-  id: CommentID;
+  ago: string;
   author: string;
   body: string;
-  htmlBody: string;
   downvotes: number;
-  upvotes: number;
+  htmlBody: string;
+  id: CommentID;
+  points: number;
   replies: Comment[];
+  upvotes: number;
 }

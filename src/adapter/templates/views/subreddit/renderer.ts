@@ -13,8 +13,10 @@
  */
 
 import { View, ViewType } from "../../../../model/view.js";
+
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
-import { computeAdditionalThreadData } from "../../../../utils/model-helpers.js";
+import { pluralize } from "../../../../utils/lang-helpers.js";
+import { unsafeHTML } from "../../../../utils/lit-helpers.js";
 
 import LayerMenu from "../../../../components/layer-menu";
 defineCE("layer-menu", LayerMenu);
@@ -29,12 +31,9 @@ export default (view: View) => {
     throw new Error("View is not of type SUBREDDIT");
   }
   return template({
-    ...view,
     items: view.subreddit.items.map(item =>
-      itemTemplate({
-        ...item,
-        ...computeAdditionalThreadData(item)
-      })
-    )
+      itemTemplate(item, { pluralize, unsafeHTML })
+    ),
+    uid: view.uid
   });
 };

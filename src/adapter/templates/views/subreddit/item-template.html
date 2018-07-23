@@ -19,11 +19,11 @@
     <div class="meta">
       /u/${state.author} •
       /r/${state.subreddit} •
-      ${state.elapsed}
+      ${state.ago}
     </div>
     <div class="engagement">
-      ${state.points} ${state.pointLabel} •
-      ${state.numComments} ${state.commentLabel}
+      ${state.points} ${funcs.pluralize("point", state.pointLabel)} •
+      ${state.numComments} ${funcs.pluralize("comment", state.umComments)}
       ${state.domain}
     </div>
   </div>

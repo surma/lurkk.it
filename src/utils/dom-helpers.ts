@@ -12,10 +12,20 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+// TODO (@surma): Does this need to be more complete?
+// Like https://dev.w3.org/html5/html-author/charref
+const entities = new Map<RegExp, string>([
+  [/&amp;/gi, "&"],
+  [/&lt;/gi, "<"],
+  [/&gt;/gi, ">"],
+  [/&quot;/gi, '"']
+]);
+
 export function decodeHTML(input: string): string {
-  const e = document.createElement("div");
-  e.innerHTML = input;
-  return e.innerText;
+  for (const [pattern, replacement] of entities.entries()) {
+    input = input.replace(pattern, replacement);
+  }
+  return input;
 }
 
 // Same as `customElements.define()`, but doesn’t throw when the element is

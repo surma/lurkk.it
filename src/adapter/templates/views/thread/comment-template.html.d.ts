@@ -13,5 +13,5 @@
  */
 
 import { TemplateResult } from "lit-html";
-declare const template: (state: any) => TemplateResult;
+declare const template: (state: any, funcs: any) => TemplateResult;
 export default template;

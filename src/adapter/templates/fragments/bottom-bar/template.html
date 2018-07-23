@@ -12,16 +12,16 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<bottom-bar id="bottom-bar" on-dblclick=${state.toggleBar} loading?="${state.loading}">
+<bottom-bar id="bottom-bar" on-dblclick=${funcs.toggleBar} loading?="${funcs.isLoading(state)}">
   <div slot="bar" class="bar">
     <div class="loader"></div>
     <button
       class="button back"
-      on-click=${state.back}
+      on-click=${funcs.back}
       >
-      ${state.icons.backSVG}
+      ${funcs.icons.backSVG}
     </button>
-    <form on-submit="${state.go}">
+    <form on-submit="${funcs.open}">
       <input placeholder="/r/..." class="input" value="${state.searchBarValue}"/>
       <input
         type="submit"
@@ -34,20 +34,20 @@
       ?hidden=${state.hasDownload}
       on-click=${state.download}
       >
-      ${state.icons.downloadSVG}
+      ${funcs.icons.downloadSVG}
     </button>
     <button
       class="button favorite"
       ?hidden=${state.hasFavorite}
       on-click=${state.download}
       >
-      ${state.icons.starOffSVG}
+      ${funcs.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
       on-click=${state.refresh}
       >
-      ${state.icons.refreshSVG}
+      ${funcs.icons.refreshSVG}
     </button>
   </div>
   <div class="main">

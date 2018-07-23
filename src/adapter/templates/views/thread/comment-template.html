@@ -14,12 +14,12 @@
 
 <li class="comment">
   <div class="content">
-    ${state.content}
+    ${funcs.unsafeHTML(state.htmlBody)}
   </div>
   <div class="meta">
-    /u/${state.author} • ${state.points} ${state.pointLabel}
+    /u/${state.author} • ${state.points} ${funcs.pluralize("point", state.points)}
   </div>
   <ul class="comments replies">
-    ${state.replies.map(comment => state.commentTemplate({...comment, commentTemplate: state.commentTemplate, unsafeHTML: state.unsafeHTML}))}
+    ${state.replies.map(comment => funcs.commentTemplate(comment, funcs))}
   </ul>
 </li>

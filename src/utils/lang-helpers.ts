@@ -12,16 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Thread } from "../model/thread.js";
-
-import { ago } from "../utils/mini-moment.js";
-
-export function computeAdditionalThreadData(thread: Thread) {
-  const points = thread.upvotes - thread.downvotes;
-  return {
-    commentLabel: "comment" + (thread.numComments === 1 ? "" : "s"),
-    elapsed: ago(thread.created),
-    pointLabel: "points" + (points === 1 ? "" : "s"),
-    points
-  };
+export function pluralize(word: string, num: number): string {
+  if (num === 1) {
+    return word;
+  }
+  return word + "s";
 }
