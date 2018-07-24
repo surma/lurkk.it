@@ -48,9 +48,15 @@ export default class ItemStack extends HTMLElement {
       "slotchange",
       this.onSlotChange.bind(this)
     );
-    this.addEventListener("touchstart", this.onTouchStart.bind(this));
-    this.addEventListener("touchmove", this.onTouchMove.bind(this));
-    this.addEventListener("touchend", this.onTouchEnd.bind(this));
+    this.addEventListener("touchstart", this.onTouchStart.bind(this), {
+      passive: true
+    });
+    this.addEventListener("touchmove", this.onTouchMove.bind(this), {
+      passive: true
+    });
+    this.addEventListener("touchend", this.onTouchEnd.bind(this), {
+      passive: true
+    });
   }
 
   get topItem(): HTMLElement | null {
@@ -97,7 +103,6 @@ export default class ItemStack extends HTMLElement {
       return;
     }
     this.dragStart = client;
-    ev.preventDefault();
     ev.stopPropagation();
   }
 
@@ -108,7 +113,6 @@ export default class ItemStack extends HTMLElement {
     if (this.dragStart === undefined) {
       return;
     }
-    ev.preventDefault();
     ev.stopPropagation();
 
     const client = ev.touches[0].clientX;
@@ -127,7 +131,6 @@ export default class ItemStack extends HTMLElement {
     if (this.dragStart === undefined) {
       return;
     }
-    ev.preventDefault();
     ev.stopPropagation();
 
     if (this.dragDelta! > this.autoAnimateThreshold) {

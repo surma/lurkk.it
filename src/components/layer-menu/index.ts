@@ -40,9 +40,15 @@ export default class LayerMenu extends HTMLElement {
     ) as HTMLElement;
     this.slideWidth = "50%";
 
-    this.addEventListener("touchstart", this.onTouchStart.bind(this));
-    this.addEventListener("touchmove", this.onTouchMove.bind(this));
-    this.addEventListener("touchend", this.onTouchEnd.bind(this));
+    this.addEventListener("touchstart", this.onTouchStart.bind(this), {
+      passive: true
+    });
+    this.addEventListener("touchmove", this.onTouchMove.bind(this), {
+      passive: true
+    });
+    this.addEventListener("touchend", this.onTouchEnd.bind(this), {
+      passive: true
+    });
   }
 
   connectedCallback() {
@@ -136,7 +142,7 @@ export default class LayerMenu extends HTMLElement {
     if (this.isOpen && this.dragDelta < 0) {
       return;
     }
-    ev.preventDefault();
+    ev.stopPropagation();
 
     const start = this.isOpen ? -this.slideWidth : 0;
     const min = this.isOpen ? 0 : -this._slideWidth;
