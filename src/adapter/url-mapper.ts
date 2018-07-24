@@ -67,7 +67,12 @@ export async function init() {
     }
     if (navigationMsg.type === NavigationType.BACK) {
       const itemStack = document.querySelector("item-stack") as ItemStack;
-      await itemStack.dismiss();
+      // FIXME (@surma): This does the right thing most of the time, but a quick
+      // double-tap of the back button will break it. I should probably just
+      // switch to observables so I can queue up these events properly.
+      if (!itemStack.hasDismissedItems) {
+        await itemStack.dismiss();
+      }
       await FsmUtils.emitTrigger<Trigger.DISMISS, TriggerPayloadMap>(
         Trigger.DISMISS,
         {}

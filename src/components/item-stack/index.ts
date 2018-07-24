@@ -64,6 +64,11 @@ export default class ItemStack extends HTMLElement {
     return last as HTMLElement;
   }
 
+  get hasDismissedItems(): boolean {
+    const last = this.lastElementChild as HTMLElement;
+    return this.dismissedItems.has(last);
+  }
+
   async dismiss() {
     const item = this.topItem;
     if (!item) {
@@ -76,7 +81,6 @@ export default class ItemStack extends HTMLElement {
       { transform: "translateX(100%)" }
     );
     item.style.display = "none";
-    this.dispatchEvent(new CustomEvent("dismiss", { bubbles: true }));
   }
 
   private onTouchStart(ev: TouchEvent) {
@@ -122,7 +126,8 @@ export default class ItemStack extends HTMLElement {
     ev.stopPropagation();
 
     if (this.dragDelta! > this.autoAnimateThreshold) {
-      this.dismiss();
+      await this.dismiss();
+      this.dispatchEvent(new CustomEvent("dismissgesture", { bubbles: true }));
     } else {
       const el = this.topItem;
       await AnimationTools.animateTo(
