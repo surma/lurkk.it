@@ -17,7 +17,7 @@ import shadowDomStyles from "./shadowdom-styles.css";
 import shadowDom from "./shadowdom.html";
 
 export default class LayerMenu extends HTMLElement {
-  static get OBSERVED_ATTRIBUTES() {
+  static get observedAttributes() {
     return ["slide-width"];
   }
 
@@ -45,6 +45,10 @@ export default class LayerMenu extends HTMLElement {
     this.addEventListener("touchend", this.onTouchEnd.bind(this));
   }
 
+  connectedCallback() {
+    this.recalcSlideWidth(this.getAttribute("slide-width") || "50%");
+  }
+
   attributeChangedCallback(name: string, newVal: string) {
     switch (name) {
       case "slide-width":
@@ -58,19 +62,11 @@ export default class LayerMenu extends HTMLElement {
   }
 
   set slideWidth(val: string | number) {
-    if (!isNaN(Number(val))) {
+    if (isNumber(val)) {
       this._slideWidth = Number(val);
       return;
     }
-    Object.assign(this.topElementContainer.style, {
-      transform: "",
-      transition: ""
-    });
-    const startRect = this.topElementContainer.getBoundingClientRect();
-    this.topElementContainer.style.transform = `translateX(${val})`;
-    const endRect = this.topElementContainer.getBoundingClientRect();
-    this._slideWidth = Math.abs(endRect.right - startRect.right);
-    this.topElementContainer.style.transform = "";
+    this.recalcSlideWidth(val);
   }
 
   get isOpen() {
@@ -164,4 +160,19 @@ export default class LayerMenu extends HTMLElement {
     }
     this.dragStart = undefined;
   }
+
+  private recalcSlideWidth(val: string) {
+    Object.assign(this.topElementContainer.style, {
+      transform: "",
+      transition: ""
+    });
+    const startRect = this.topElementContainer.getBoundingClientRect();
+    this.topElementContainer.style.transform = `translateX(${val})`;
+    const endRect = this.topElementContainer.getBoundingClientRect();
+    this._slideWidth = Math.abs(endRect.right - startRect.right);
+    this.topElementContainer.style.transform = "";
+  }
+}
+function isNumber(n: number | string): n is number {
+  return !isNaN(Number(n));
 }
