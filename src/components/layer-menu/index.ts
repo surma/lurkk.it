@@ -18,15 +18,17 @@ import shadowDom from "./shadowdom.html";
 
 export default class LayerMenu extends HTMLElement {
   static get observedAttributes() {
-    return ["slide-width"];
+    return ["slide-width", "slide-zone"];
   }
 
-  // tslint:disable-next-line:variable-name proxied variable
-  _slideWidth: number = 10;
   animationTime: number = 0.3;
   animationEasing: string = "ease-in-out";
   autoAnimateThreshold: number = 50;
 
+  // tslint:disable-next-line:variable-name proxied variable
+  private _slideWidth: number = 0;
+  // tslint:disable-next-line:variable-name proxied variable
+  private _slideZone: number = 0;
   private dragStart?: number;
   private dragDelta?: number;
   private topElementContainer: HTMLElement;
@@ -40,25 +42,29 @@ export default class LayerMenu extends HTMLElement {
     ) as HTMLElement;
     this.slideWidth = "50%";
 
-    this.addEventListener("touchstart", this.onTouchStart.bind(this), {
-      passive: true
-    });
+    this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this), {
       passive: true
     });
-    this.addEventListener("touchend", this.onTouchEnd.bind(this), {
-      passive: true
-    });
+    this.addEventListener("touchend", this.onTouchEnd.bind(this));
   }
 
   connectedCallback() {
-    this.recalcSlideWidth(this.getAttribute("slide-width") || "50%");
+    this._slideWidth = this.recalcSlideWidth(
+      this.getAttribute("slide-width") || "50%"
+    );
+    this._slideZone = this.recalcSlideZoneStart(
+      this.getAttribute("slide-zone") || "20%"
+    );
   }
 
   attributeChangedCallback(name: string, newVal: string) {
     switch (name) {
       case "slide-width":
         this.slideWidth = newVal;
+        break;
+      case "slide-zone":
+        this.slideZone = newVal;
         break;
     }
   }
@@ -72,7 +78,19 @@ export default class LayerMenu extends HTMLElement {
       this._slideWidth = Number(val);
       return;
     }
-    this.recalcSlideWidth(val);
+    this._slideWidth = this.recalcSlideWidth(val);
+  }
+
+  get slideZone() {
+    return this._slideZone;
+  }
+
+  set slideZone(val: string | number) {
+    if (isNumber(val)) {
+      this._slideZone = Number(val);
+      return;
+    }
+    this._slideZone = this.recalcSlideZoneStart(val);
   }
 
   get isOpen() {
@@ -126,6 +144,10 @@ export default class LayerMenu extends HTMLElement {
       return;
     }
     const client = ev.touches[0].clientX;
+    if (client < this._slideZone) {
+      return;
+    }
+    ev.preventDefault();
     this.dragStart = client;
     this.dragDelta = 0;
   }
@@ -181,8 +203,20 @@ export default class LayerMenu extends HTMLElement {
     const startRect = this.topElementContainer.getBoundingClientRect();
     this.topElementContainer.style.transform = `translateX(${val})`;
     const endRect = this.topElementContainer.getBoundingClientRect();
-    this._slideWidth = Math.abs(endRect.right - startRect.right);
+    const result = Math.abs(endRect.right - startRect.right);
     this.topElementContainer.style.transform = "";
+    return result;
+  }
+
+  private recalcSlideZoneStart(val: string) {
+    Object.assign(this.topElementContainer.style, {
+      transform: "",
+      transition: ""
+    });
+    this.topElementContainer.style.transform = `translateX(-${val})`;
+    const endRect = this.topElementContainer.getBoundingClientRect();
+    this.topElementContainer.style.transform = "";
+    return endRect.right;
   }
 }
 function isNumber(n: number | string): n is number {

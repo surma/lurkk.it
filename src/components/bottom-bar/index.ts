@@ -33,15 +33,11 @@ export default class BottomBar extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot!.innerHTML = `<style>${shadowDomStyles}</style>${shadowDom}`;
 
-    this.addEventListener("touchstart", this.onTouchStart.bind(this), {
-      passive: true
-    });
+    this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this), {
       passive: true
     });
-    this.addEventListener("touchend", this.onTouchEnd.bind(this), {
-      passive: true
-    });
+    this.addEventListener("touchend", this.onTouchEnd.bind(this));
 
     this.barSlot = this.shadowRoot!.querySelector(
       `slot[name="bar"]`
@@ -127,6 +123,7 @@ export default class BottomBar extends HTMLElement {
     if (this.isClosed && !this.isBarElement(ev.composedPath()[0])) {
       return;
     }
+    ev.preventDefault();
     this.dragStartY = clientY;
     this.dragDelta = 0;
   }
