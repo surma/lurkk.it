@@ -18,7 +18,7 @@
     <button
       class="button back"
       on-click=${funcs.back}
-      >
+    >
       ${funcs.icons.backSVG}
     </button>
     <form on-submit="${funcs.open}">
@@ -27,26 +27,26 @@
         type="submit"
         class="button button--primary go"
         value="Go"
-        />
+      />
     </form>
     <button
       class="button download"
       ?hidden=${state.hasDownload}
       on-click=${state.download}
-      >
+    >
       ${funcs.icons.downloadSVG}
     </button>
     <button
       class="button favorite"
       ?hidden=${state.hasFavorite}
       on-click=${state.download}
-      >
+    >
       ${funcs.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
       on-click=${state.refresh}
-      >
+    >
       ${funcs.icons.refreshSVG}
     </button>
   </div>

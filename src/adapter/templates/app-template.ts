@@ -115,6 +115,7 @@ import starOnSVG from "../../icons/star_on.svg";
 
 export default (state: AppState) =>
   appTemplate(state, {
+    back: () => history.back(),
     bottomBar,
     extractSearchBarValue,
     icons: {

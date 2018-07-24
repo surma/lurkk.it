@@ -14,7 +14,10 @@
 
 <main>
   <div id="root">Welcome to LurkIt</div>
-  <item-stack isNewFunc=${funcs.isNewFunc} on-dismissgesture="${() => history.back()}">
+  <item-stack
+    isNewFunc=${funcs.isNewFunc}
+    on-dismissgesture=${funcs.back}
+  >
     ${state.value.stack.map(funcs.renderView)}
   </item-stack>
 </main>

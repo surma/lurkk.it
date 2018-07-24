@@ -35,7 +35,7 @@ import {
 
 async function onPathChange(path: string) {
   if (path === "/") {
-    go("/r/all");
+    go("/r/all", { replace: true });
     return;
   }
   if (path.startsWith("/r/")) {
@@ -80,8 +80,8 @@ export async function init() {
       const currentPath = getPath();
       if (itemStack.numItems === 0 && currentPath !== "/") {
         onPathChange(currentPath);
-        return;
       }
+      return;
     }
     onPathChange(navigationMsg.path);
   });

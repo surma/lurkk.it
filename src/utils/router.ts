@@ -30,14 +30,20 @@ const bus = MessageBus.get<NavigationMessage>(NAVIGATION_CHANNEL);
 // tslint:disable-next-line:class-name these could get confusing otherwise
 export interface go_opts {
   notify?: boolean;
+  replace?: boolean;
 }
 // tslint:disable-next-line:variable-name these could get confusing otherwise
 const go_defaultOpts: go_opts = {
-  notify: true
+  notify: true,
+  replace: false
 };
 export function go(path: string, opts: go_opts = {}) {
   opts = { ...go_defaultOpts, ...opts };
-  history.pushState(null, "", `#${path}`);
+  if (opts.replace) {
+    history.replaceState(null, "", `#${path}`);
+  } else {
+    history.pushState(null, "", `#${path}`);
+  }
 
   if (opts.notify) {
     notify();
