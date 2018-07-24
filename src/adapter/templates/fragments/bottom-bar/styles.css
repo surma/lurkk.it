@@ -47,8 +47,9 @@
   background-color: var(--primary-d);
   color: var(--primary-w);
   padding-left: calc(var(--base) * var(--padding));
-  min-width: 0;
+  width: 0;
   position: relative;
+  flex: 1 1;
 }
 
 #bottom-bar .button {
@@ -57,6 +58,7 @@
   font-size: inherit;
   fill: var(--primary-w);
   padding: 0 calc(var(--base) * var(--padding));
+  flex: 0 0;
 }
 
 #bottom-bar .button--primary {
@@ -91,7 +93,7 @@
 
 #bottom-bar[loading] .loader {
   background-image: linear-gradient(
-    90deg, 
+    90deg,
     var(--primary-dd) 0%,
     var(--primary-dd) calc(50% - 3 * var(--base) * var(--padding)),
     var(--secondary1) 50%,
