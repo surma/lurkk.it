@@ -156,19 +156,15 @@ export default class LayerMenu extends HTMLElement {
     if (this.dragStart === undefined) {
       return;
     }
+    ev.stopPropagation();
     const client = ev.touches[0].clientX;
     this.dragDelta = client - this.dragStart;
-    if (this.isClosed && this.dragDelta > 0) {
-      return;
-    }
-    if (this.isOpen && this.dragDelta < 0) {
-      return;
-    }
-    ev.stopPropagation();
 
-    const start = this.isOpen ? -this.slideWidth : 0;
-    const min = this.isOpen ? 0 : -this._slideWidth;
-    const max = this.isOpen ? this._slideWidth : 0;
+    // FIXME (@surma): I subtract 1 from slideWidth so that there’s still a
+    // transition left to do. Otherwise `transitionend` will never fire.
+    const start = this.isOpen ? -(this._slideWidth - 1) : 0;
+    const min = this.isOpen ? 0 : -(this._slideWidth - 1);
+    const max = this.isOpen ? this._slideWidth - 1 : 0;
     const actualDelta = Math.min(Math.max(this.dragDelta, min), max);
     Object.assign(this.topElementContainer.style, {
       transform: `translateX(calc(${start}px + ${actualDelta}px))`,
