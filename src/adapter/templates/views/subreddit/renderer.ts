@@ -32,7 +32,13 @@ export default (view: View) => {
   }
   return template({
     items: view.subreddit.items.map(item =>
-      itemTemplate(item, { pluralize, unsafeHTML })
+      itemTemplate(item, {
+        pluralize,
+        unsafeHTML,
+        close() {
+          this.close();
+        }
+      })
     ),
     uid: view.uid
   });

@@ -154,13 +154,19 @@ export default class LayerMenu extends HTMLElement {
     });
   }
 
-  private onTouchEnd(ev: TouchEvent) {
+  private async onTouchEnd(ev: TouchEvent) {
     if (this.dragStart === undefined) {
       return;
     }
 
     if (Math.abs(this.dragDelta!) > this.autoAnimateThreshold) {
-      this.toggle();
+      if (this.isOpen) {
+        await this.close();
+        this.dispatchEvent(new CustomEvent("closegesture"));
+      } else {
+        await this.open();
+        this.dispatchEvent(new CustomEvent("opengesture"));
+      }
     } else {
       this.reset();
     }
