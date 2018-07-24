@@ -101,9 +101,10 @@ function topView(state: AppState) {
   return state.value.stack[state.value.stack.length - 1];
 }
 
-function toggleBar() {
+function toggleBar(evt: Event) {
   const bottomBar = document.querySelector("#bottom-bar")! as BottomBar;
   bottomBar.toggle();
+  evt.preventDefault();
 }
 
 import backSVG from "../../icons/back.svg";

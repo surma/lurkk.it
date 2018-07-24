@@ -12,7 +12,11 @@
  http://polymer.github.io/PATENTS.txt
 -->
 
-<bottom-bar id="bottom-bar" loading?="${funcs.isLoading(state)}">
+<bottom-bar
+  id="bottom-bar"
+  loading?="${funcs.isLoading(state)}"
+  on-dblclick="${funcs.toggleBar}"
+>
   <div slot="bar" class="bar">
     <div class="loader"></div>
     <button

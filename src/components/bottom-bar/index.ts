@@ -122,6 +122,7 @@ export default class BottomBar extends HTMLElement {
       return;
     }
     this.dragStartY = clientY;
+    this.dragDelta = 0;
   }
 
   private onTouchMove(ev: TouchEvent) {
