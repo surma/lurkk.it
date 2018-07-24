@@ -18,7 +18,7 @@
   right: 0;
   overflow: hidden;
   position: fixed;
-  top: 100vh;
+  bottom: -100vh;
   will-change: transform;
   z-index: 9;
 
