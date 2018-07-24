@@ -77,7 +77,11 @@ export async function init() {
         Trigger.DISMISS,
         {}
       );
-      return;
+      const currentPath = getPath();
+      if (itemStack.numItems === 0 && currentPath !== "/") {
+        onPathChange(currentPath);
+        return;
+      }
     }
     onPathChange(navigationMsg.path);
   });

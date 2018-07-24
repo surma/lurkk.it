@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "lit-html/lib/lit-extended.js";
+import { render } from "lit-html/lib/lit-extended.js";
 
 import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
@@ -32,8 +32,6 @@ import {
 import {
   Node,
   READY_CHANNEL as FSM_READY_CHANNEL,
-  Trigger,
-  TriggerPayloadMap,
   Value
 } from "../fsm/generated.js";
 

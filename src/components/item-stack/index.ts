@@ -69,6 +69,11 @@ export default class ItemStack extends HTMLElement {
     return this.dismissedItems.has(last);
   }
 
+  get numItems(): number {
+    const childEls = Array.from(this.children) as HTMLElement[];
+    return childEls.filter(el => !this.dismissedItems.has(el)).length;
+  }
+
   async dismiss() {
     const item = this.topItem;
     if (!item) {
