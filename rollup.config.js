@@ -11,16 +11,22 @@ export default {
   input: ["src/bootstrap.ts", "src/worker.ts"],
   output: {
     dir: "dist",
-    format: "es"
+    format: "es",
+    sourcemap: process.env.SOURCEMAPS ? "inline" : false
   },
   plugins: [
     typescript({
       clean: true,
       // Make sure we are using our version of TypeScript.
-      typescript: require("typescript")
+      typescript: require("typescript"),
+      tsconfigOverride: {
+        compilerOptions: {
+          sourceMap: true
+        }
+      }
     }),
     nodeResolve(),
-    // terser(),
+    terser(),
     css(),
     markup()
   ],
