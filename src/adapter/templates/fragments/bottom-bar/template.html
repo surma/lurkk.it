@@ -22,7 +22,7 @@
       ${funcs.icons.backSVG}
     </button>
     <form on-submit="${funcs.open}">
-      <input placeholder="/r/..." class="input" value="${state.searchBarValue}"/>
+      <input placeholder="/r/..." class="input" value="${funcs.extractSearchBarValue(funcs.topView(state))}"/>
       <input
         type="submit"
         class="button button--primary go"
