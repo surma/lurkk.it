@@ -27,6 +27,7 @@
     "copy-static": "rsync -r static/* dist",
     "build": "npm run build:fsm && rollup -c && npm run copy-static",
     "serve": "http-server dist -c0",
+    "deploy": "npm run build && firebase deploy",
     "fmt": "prettier --write 'src/**/*.ts' *.{js,json,md}",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "fmt_test": "test $(prettier -l 'src/**/*.ts' *.{js,json,md} | wc -l) -eq 0",
