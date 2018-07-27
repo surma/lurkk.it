@@ -14,6 +14,10 @@
 
 import { TemplateResult } from "lit-html";
 
+import { emitTrigger } from "westend/utils/fsm-utils.js";
+
+import { Trigger, TriggerPayloadMap } from "../../fsm/generated.js";
+
 import { defineCE, injectStyles } from "../../utils/dom-helpers.js";
 import { unsafeHTML } from "../../utils/lit-helpers.js";
 
@@ -107,6 +111,12 @@ function toggleBar(evt: Event) {
   evt.preventDefault();
 }
 
+async function refresh() {
+  const itemStack = document.querySelector("item-stack")! as ItemStack;
+  await itemStack.dismiss();
+  emitTrigger<Trigger.REFRESH, TriggerPayloadMap>(Trigger.REFRESH, {});
+}
+
 import backSVG from "../../icons/back.svg";
 import downloadSVG from "../../icons/download.svg";
 import offlineSVG from "../../icons/offline.svg";
@@ -130,6 +140,7 @@ export default (state: AppState) =>
     isLoading,
     isNewFunc,
     open,
+    refresh,
     renderView,
     toggleBar,
     topView

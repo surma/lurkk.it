@@ -20,6 +20,7 @@ import { apiCommentsToComment, apiThreadEntityToThread } from "./reddit.js";
 export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
   const rawData = await fetch("/subreddit.json").then(r => r.json());
   return {
+    cachedAt: -1,
     id,
     items: rawData.data.children.map(apiThreadEntityToThread)
   };

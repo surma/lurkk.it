@@ -35,21 +35,21 @@
     </form>
     <button
       class="button download"
-      ?hidden=${state.hasDownload}
-      on-click=${state.download}
+      hidden?=${state.hasDownload}
+      on-click=${funcs.download}
     >
       ${funcs.icons.downloadSVG}
     </button>
     <button
       class="button favorite"
-      ?hidden=${state.hasFavorite}
-      on-click=${state.download}
+      hidden?=${state.hasFavorite}
+      on-click=${funcs.download}
     >
       ${funcs.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
-      on-click=${state.refresh}
+      on-click=${funcs.refresh}
     >
       ${funcs.icons.refreshSVG}
     </button>

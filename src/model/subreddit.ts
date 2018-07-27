@@ -16,6 +16,7 @@ import { Thread } from "./thread.js";
 
 export type SubredditID = string;
 export interface Subreddit {
+  cachedAt: number;
   id: SubredditID;
   items: Thread[];
 }

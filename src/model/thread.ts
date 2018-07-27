@@ -18,6 +18,7 @@ export interface Thread {
   author: string;
   body?: string;
   created: number;
+  cachedAt: number;
   domain: string;
   downvotes: number;
   fullImage?: string;
@@ -26,8 +27,8 @@ export interface Thread {
   isLink: boolean;
   link?: string;
   nsfw: boolean;
-  points: number;
   numComments: number;
+  points: number;
   previewImage?: string;
   subreddit: string;
   title: string;

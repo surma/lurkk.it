@@ -137,6 +137,7 @@ export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
     ago: ago(te.data.created_utc),
     author: te.data.author,
     body: te.data.selftext,
+    cachedAt: -1,
     created: te.data.created_utc,
     domain: te.data.domain,
     downvotes: te.data.downs,
@@ -197,6 +198,7 @@ export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
     r.json()
   );
   return {
+    cachedAt: -1,
     id,
     items: rawData.data.children.map(apiThreadEntityToThread)
   };

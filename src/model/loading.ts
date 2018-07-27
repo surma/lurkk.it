@@ -13,6 +13,11 @@
  */
 
 import { Comment } from "./comment.js";
+import {
+  CacheableDataSource,
+  cacheWrapper,
+  isCacheableDataSource
+} from "./data-source/cache-wrapper.js";
 import { DataSource } from "./data-source/data-source.js";
 import { Subreddit, SubredditID } from "./subreddit.js";
 import { Thread, ThreadID } from "./thread.js";
@@ -20,26 +25,43 @@ import { Thread, ThreadID } from "./thread.js";
 import * as RedditDataSource from "./data-source/reddit.js";
 
 export const dataSources = new Map<string, Promise<DataSource>>([
-  ["reddit", Promise.resolve(RedditDataSource)],
+  ["reddit", Promise.resolve(cacheWrapper(RedditDataSource))],
   ["mock", import("./data-source/mock.js")]
 ]);
 
 export let dataSourceName = "reddit";
 
-export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
+function getDataSource(): Promise<DataSource> {
   if (!dataSources.has(dataSourceName)) {
     throw new Error(`Invalid data source ${dataSourceName}`);
   }
-  const dataSource = await dataSources.get(dataSourceName)!;
+  return dataSources.get(dataSourceName)!;
+}
+
+export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
+  const dataSource = await getDataSource();
   return dataSource.loadSubreddit(id);
 }
 
 export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
-  if (!dataSources.has(dataSourceName)) {
-    throw new Error(`Invalid data source ${dataSourceName}`);
-  }
-  const dataSource = await dataSources.get(dataSourceName)!;
+  const dataSource = await getDataSource();
   return dataSource.loadThread(id);
+}
+
+export async function refreshThread(id: ThreadID): Promise<void> {
+  const dataSource = await getDataSource();
+  if (!isCacheableDataSource(dataSource)) {
+    return;
+  }
+  await dataSource.refreshThread(id);
+}
+
+export async function refreshSubreddit(id: SubredditID): Promise<void> {
+  const dataSource = await getDataSource();
+  if (!isCacheableDataSource(dataSource)) {
+    return;
+  }
+  await dataSource.refreshSubreddit(id);
 }
 
 import * as RequestResponseBus from "westend/utils/request-response-bus.js";

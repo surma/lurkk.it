@@ -29,7 +29,7 @@
     not,
     NoTrigger,
     StateMachine,
-    State 
+    State
   } from "westend/src/state-machine/state-machine.js";
 
   function genUid() {
@@ -55,15 +55,13 @@ triggers:
     payload:
       id: ThreadID
   - name: DISMISS
+  - name: REFRESH
 
 --- |
-  export enum LoadingType {
-    VIEW,
-    DOWNLOAD
-  }
+  export type LoadingEntry = string;
 
   export interface Value {
-    loading: LoadingType[];
+    loading: LoadingEntry[];
     favorites: SubredditID[];
     stack: View[];
   }
@@ -77,26 +75,20 @@ triggers:
     }
   );
 
-  type LoadingTriggers = Trigger.VIEW_SUBREDDIT | Trigger.VIEW_THREAD;
-  function loadingEffect(
-      type: LoadingType,
-      effect: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value>
-  ): Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> {
-    return async function(fsm, trigger, payload) {
-      let value = fsm.value;
-      value.loading.push(type);
-      fsm.setValue(value);
-      await effect(fsm, trigger, payload);
-      value = fsm.value;
-      value.loading = value.loading.filter(f => f !== type);
-      fsm.setValue(value);
-    }
+  function showLoadingBar(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
+    const value = fsm.value;
+    value.loading.push(loadingEntry);
+    fsm.setValue(value);
   }
 
-  const loadThread: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
-    if(trigger !== Trigger.VIEW_THREAD) {
-      throw new Error("Invalid trigger to load a thread");
-    }
+  function hideLoadingBar(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
+    const value = fsm.value;
+    value.loading = value.loading.filter(f => f !== loadingEntry);
+    fsm.setValue(value);
+  }
+
+  const loadThread: Effect<Node, Trigger.VIEW_THREAD, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    showLoadingBar(fsm, payload.id);
     const [thread, comments] = await Model.loadThread(payload.id);
     fsm.value.stack.push({
       type: ViewType.THREAD,
@@ -104,37 +96,70 @@ triggers:
       thread,
       comments
     });
+    hideLoadingBar(fsm, payload.id);
   }
 
-  const loadSubreddit: Effect<Node, LoadingTriggers, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
-    if(trigger !== Trigger.VIEW_SUBREDDIT) {
-      throw new Error("Invalid trigger to load a thread");
-    }
+  const loadSubreddit: Effect<Node, Trigger.VIEW_SUBREDDIT, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    showLoadingBar(fsm, payload.id);
     const subreddit = await Model.loadSubreddit(payload.id);
     fsm.value.stack.push({
       type: ViewType.SUBREDDIT,
       uid: genUid(),
       subreddit
     });
+    hideLoadingBar(fsm, payload.id);
   }
 
   const dismiss: Effect<Node, Trigger.DISMISS, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
     fsm.value.stack.pop();
+  }
+
+  const refresh: Effect<Node, Trigger.REFRESH, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    if(fsm.value.stack.length <= 0) {
+      return;
+    }
+    showLoadingBar(fsm, "refresh");
+    const topView = fsm.value.stack.pop()!;
+    fsm.setValue(fsm.value);
+    let id;
+    switch(topView.type) {
+      case ViewType.THREAD:
+        id = topView.thread.id;
+        await Model.refreshThread(id);
+        fsm.emitTrigger<Trigger.VIEW_THREAD>(
+          Trigger.VIEW_THREAD,
+          { id }
+        );
+        break;
+      case ViewType.SUBREDDIT:
+        id = topView.subreddit.id;
+        await Model.refreshSubreddit(id);
+        fsm.emitTrigger<Trigger.VIEW_SUBREDDIT>(
+          Trigger.VIEW_SUBREDDIT,
+          { id }
+        );
+        break;
+    }
+    hideLoadingBar(fsm, "refresh");
   }
 ---
 transitions:
   - origin: STACK_VIEW
     trigger: VIEW_SUBREDDIT
     target: STACK_VIEW
-    effects: [loadingEffect(LoadingType.VIEW, loadSubreddit)]
+    effects: [loadSubreddit]
   - origin: STACK_VIEW
     trigger: VIEW_THREAD
     target: STACK_VIEW
-    effects: [loadingEffect(LoadingType.VIEW, loadThread)]
+    effects: [loadThread]
   - origin: AnyNode
     trigger: DISMISS
     target: Loopback
     effects: [dismiss]
+  - origin: AnyNode
+    trigger: REFRESH
+    target: Loopback
+    effects: [refresh]
 
 --- |
   export const READY_CHANNEL = "fsm.ready";

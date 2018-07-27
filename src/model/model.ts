@@ -18,7 +18,12 @@ export {
   delFavorite,
   toggleFavorite
 } from "./favorites.js";
-export { loadSubreddit, loadThread } from "./loading.js";
+export {
+  loadSubreddit,
+  loadThread,
+  refreshThread,
+  refreshSubreddit
+} from "./loading.js";
 
 import * as ServiceReady from "westend/utils/service-ready.js";
 import { init as loadingInit } from "./loading.js";
