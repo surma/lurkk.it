@@ -69,9 +69,13 @@
 }
 
 .thread .comments .comment {
-  padding: calc(var(--base) * var(--padding));
-  padding-bottom: 0;
+  padding-left: calc(var(--base) * var(--padding));
   overflow-x: auto;
+}
+
+.thread .comment > .comments {
+  border-left: 1px solid var(--primary-dd);
+  margin-top: calc(var(--base) * var(--padding));
 }
 
 .thread .content b, strong {
