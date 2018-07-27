@@ -18,7 +18,7 @@ export function requestAnimationFramePromise() {
 
 export function transitionEndPromise(elem: Element, duration: number = 0) {
   const tep = new Promise(resolve => {
-    elem.addEventListener("transitionend", function l(ev) {
+    elem.addEventListener("transitionend", function l(ev: Event) {
       if (ev.target !== elem) {
         return;
       }

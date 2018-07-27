@@ -12,15 +12,11 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { DomAdapter } from "./adapter/dom-adapter.js";
+declare var window: Window;
 
-const worker = new (Worker as any)("worker.js", { type: "module" });
-
-new DomAdapter().init();
-
-async function init() {
-  const { default: initSW } = await import("./utils/sw-loader.js");
-  await initSW();
+export default async function init() {
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+  await window.navigator.serviceWorker.register("sw.js");
 }
-
-init();

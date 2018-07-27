@@ -8,7 +8,7 @@ import { terser } from "rollup-plugin-terser";
 require("rimraf").sync("dist");
 
 export default {
-  input: ["src/bootstrap.ts", "src/worker.ts"],
+  input: ["src/bootstrap.ts", "src/worker.ts", "src/sw.ts"],
   output: {
     dir: "dist",
     format: "es",
