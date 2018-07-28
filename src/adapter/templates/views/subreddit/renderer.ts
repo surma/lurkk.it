@@ -12,6 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import { emitTrigger } from "westend/utils/fsm-utils.js";
+
+import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
+
 import { View, ViewType } from "../../../../model/view.js";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
@@ -25,6 +29,13 @@ import itemTemplate from "./item-template.html";
 import styles from "./styles.css";
 import template from "./template.html";
 
+function downloadThread(this: LayerMenu, ev: Event) {
+  this.close();
+  emitTrigger<Trigger.DOWNLOAD, TriggerPayloadMap>(Trigger.DOWNLOAD, {
+    ids: [this.dataset.threadId!]
+  });
+}
+
 export default (view: View) => {
   injectStyles("subreddit", styles);
   if (view.type !== ViewType.SUBREDDIT) {
@@ -33,11 +44,9 @@ export default (view: View) => {
   return template({
     items: view.subreddit.items.map(item =>
       itemTemplate(item, {
+        downloadThread,
         pluralize,
-        unsafeHTML,
-        close() {
-          this.close();
-        }
+        unsafeHTML
       })
     ),
     uid: view.uid

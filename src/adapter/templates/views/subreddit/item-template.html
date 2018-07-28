@@ -16,7 +16,8 @@
   class="item"
   slide-width="20%"
   slide-zone="20%"
-  on-opengesture="${funcs.close}"
+  on-opengesture="${funcs.downloadThread}"
+  data-thread-id$="${state.id}"
 >
   <div slot="top" class="top">
     <div class="preview" style="background-image: url(${state.previewImage});"></div>

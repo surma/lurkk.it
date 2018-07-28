@@ -56,6 +56,9 @@ triggers:
       id: ThreadID
   - name: DISMISS
   - name: REFRESH
+  - name: DOWNLOAD
+    payload:
+      ids: ThreadID[]
 
 --- |
   export type LoadingEntry = string;
@@ -142,6 +145,16 @@ triggers:
     }
     hideLoadingBar(fsm, "refresh");
   }
+
+  const download: Effect<Node, Trigger.DOWNLOAD, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    for(const id of payload.ids) {
+      Promise.resolve().then(async () => {
+        showLoadingBar(fsm, `download-${id}`);
+        await Model.refreshThread(id);
+        hideLoadingBar(fsm, `download-${id}`);
+      });
+    }
+  }
 ---
 transitions:
   - origin: STACK_VIEW
@@ -160,6 +173,10 @@ transitions:
     trigger: REFRESH
     target: Loopback
     effects: [refresh]
+  - origin: AnyNode
+    trigger: DOWNLOAD
+    target: Loopback
+    effects: [download]
 
 --- |
   export const READY_CHANNEL = "fsm.ready";
