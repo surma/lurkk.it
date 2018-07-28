@@ -44,6 +44,16 @@
   grid-template-columns: 1fr minmax(calc(var(--base) * var(--item-height)), auto);
 }
 
+.subreddit .item .bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: var(--primary1);
+  fill: var(--primary1-b);
+  padding-right: calc(var(--base) * var(--padding));
+}
+
 .subreddit .item .top .preview {
   background-size: cover;
   background-position: 50% 50%;
@@ -117,3 +127,4 @@
 .subreddit .item[downloading] .dlbadge.downloading {
   visibility: visible;
 }
+
