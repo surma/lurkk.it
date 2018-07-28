@@ -14,13 +14,17 @@
 
 <layer-menu
   class="item"
+  downloaded?="${state.cachedAt >= 0}"
   slide-width="20%"
   slide-zone="20%"
   on-opengesture="${funcs.downloadThread}"
   data-thread-id$="${state.id}"
 >
   <div slot="top" class="top">
-    <div class="preview" style="background-image: url(${state.previewImage});"></div>
+    <div class="preview" style="background-image: url(${state.previewImage});">
+      <div class="dlbadge offline">${funcs.offlineSVG}</div>
+      <div class="dlbadge download">${funcs.downloadSVG}</div>
+    </div>
     <a href="/t/${state.id}" class="title">${state.title}</a>
     <div class="meta">
       /u/${state.author} •

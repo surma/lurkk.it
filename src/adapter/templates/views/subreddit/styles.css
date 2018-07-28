@@ -12,6 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+:root {
+  --badge-size: 0.6;
+  --badge-icon-size: 0.8;
+}
 .view.subreddit {
   background-color: var(--primary-b);
 
@@ -41,12 +45,13 @@
 }
 
 .subreddit .item .top .preview {
-  background-size: contain;
+  background-size: cover;
   background-position: 50% 50%;
   background-repeat: no-repeat;
   grid-area: 1 / -1 / -1 / -2;
   border-radius: 2px;
   min-height: calc(var(--base) * var(--item-height));
+  position: relative;
 }
 
 .subreddit .item .top .title {
@@ -79,4 +84,36 @@
 
 .subreddit .item .bottom {
   background-color: var(--secondary1);
+}
+
+.subreddit .item .dlbadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(var(--base) * var(--item-height) * var(--badge-size));
+  height: calc(var(--base) * var(--item-height) * var(--badge-size));
+  background-color: var(--secondary1);
+  fill: var(--secondary1-b);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  box-shadow: 0 0 4px 4px red;
+  display: grid;
+  visibility: hidden;
+}
+
+.subreddit .item .dlbadge svg {
+  /* Width = Height = Radius of triangle incircle = side length / (1 + sqrt(2)/2) */
+  --size: calc(var(--base) * var(--item-height) * var(--badge-size) / (1 + var(--sqrt2) / 2));
+  position: absolute;
+  top: calc(var(--size) * (1 - var(--badge-icon-size)) / 2);
+  right: calc(var(--size) * (1 - var(--badge-icon-size)) / 2);
+  width: calc(var(--size) * var(--badge-icon-size));
+  height: calc(var(--size) * var(--badge-icon-size));
+}
+
+.subreddit .item[downloaded] .dlbadge.offline {
+  visibility: visible;
+}
+
+.subreddit .item[downloading] .dlbadge.downloading {
+  visibility: visible;
 }

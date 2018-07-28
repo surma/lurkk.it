@@ -25,7 +25,7 @@
   --primary: #009b9b;
   --primary-b: #001e1e;
   --primary-w: #e0ffff;
-  --primary-wt: #e0ffff40; // Meh
+  --primary-wt: #e0ffff40; /* Meh */
   --secondary1-dd: #564700;
   --secondary1-d: #aa8c00;
   --secondary1: #ffd100;
@@ -36,6 +36,10 @@
   --secondary2: #ce0074;
   --secondary2-b: #1e0011;
   --secondary2-w: #ffe0f1;
+}
+
+:root {
+  --sqrt2: 1.4142;
 }
 
 * {

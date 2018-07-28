@@ -151,6 +151,16 @@ triggers:
       Promise.resolve().then(async () => {
         showLoadingBar(fsm, `download-${id}`);
         await Model.refreshThread(id);
+        const cacheDate = await Model.cacheDate(id);
+        fsm.value.stack
+          .forEach(view => {
+            if(view.type !== ViewType.SUBREDDIT) {
+              return;
+            }
+            view.subreddit.items
+              .filter(item => item.id === id)
+              .forEach(item => item.cachedAt = cacheDate);
+          });
         hideLoadingBar(fsm, `download-${id}`);
       });
     }

@@ -23,6 +23,7 @@ type ThreadData = [Thread, Comment[]];
 export interface CacheableDataSource extends DataSource {
   refreshSubreddit(id: SubredditID): Promise<void>;
   refreshThread(id: ThreadID): Promise<void>;
+  cacheDate(id: ThreadID): Promise<number>;
 }
 export function cacheWrapper(source: DataSource): CacheableDataSource {
   return {
@@ -39,14 +40,16 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
     },
     async loadSubreddit(id: SubredditID): Promise<Subreddit> {
       const key = `subreddit-${id}`;
-      const cached = (await get(key)) as Subreddit;
-      if (!cached) {
-        const live = await source.loadSubreddit(id);
-        live.cachedAt = Date.now();
-        await set(key, live);
-        return live;
+      let result = (await get(key)) as Subreddit;
+      if (!result) {
+        result = await source.loadSubreddit(id);
+        result.cachedAt = Date.now();
+        await set(key, result);
       }
-      return cached;
+      for (const item of result.items) {
+        item.cachedAt = await this.cacheDate(item.id);
+      }
+      return result;
     },
     async refreshSubreddit(id: SubredditID): Promise<void> {
       const key = `subreddit-${id}`;
@@ -69,6 +72,14 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
         console.error("Could not refresh thread:", e);
         await set(key, old);
       }
+    },
+    async cacheDate(id: ThreadID): Promise<number> {
+      const key = `thread-${id}`;
+      const thread = (await get(key)) as ThreadData | null;
+      if (!thread) {
+        return -1;
+      }
+      return thread[0].cachedAt;
     }
   };
 }

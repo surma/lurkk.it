@@ -22,7 +22,8 @@ export {
   loadSubreddit,
   loadThread,
   refreshThread,
-  refreshSubreddit
+  refreshSubreddit,
+  cacheDate
 } from "./loading.js";
 
 import * as ServiceReady from "westend/utils/service-ready.js";

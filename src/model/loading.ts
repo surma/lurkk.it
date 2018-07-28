@@ -64,6 +64,14 @@ export async function refreshSubreddit(id: SubredditID): Promise<void> {
   await dataSource.refreshSubreddit(id);
 }
 
+export async function cacheDate(id: SubredditID): Promise<number> {
+  const dataSource = await getDataSource();
+  if (!isCacheableDataSource(dataSource)) {
+    return -1;
+  }
+  return dataSource.cacheDate(id);
+}
+
 import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 
 export type DataSourceNameRequest = string;

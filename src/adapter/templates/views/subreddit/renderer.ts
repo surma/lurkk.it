@@ -25,6 +25,9 @@ import { unsafeHTML } from "../../../../utils/lit-helpers.js";
 import LayerMenu from "../../../../components/layer-menu";
 defineCE("layer-menu", LayerMenu);
 
+import downloadSVG from "../../../../icons/download.svg";
+import offlineSVG from "../../../../icons/offline.svg";
+
 import itemTemplate from "./item-template.html";
 import styles from "./styles.css";
 import template from "./template.html";
@@ -44,7 +47,9 @@ export default (view: View) => {
   return template({
     items: view.subreddit.items.map(item =>
       itemTemplate(item, {
+        downloadSVG: unsafeHTML(downloadSVG),
         downloadThread,
+        offlineSVG: unsafeHTML(offlineSVG),
         pluralize,
         unsafeHTML
       })
