@@ -15,12 +15,13 @@
 import * as FsmUtils from "westend/utils/fsm-utils.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
-import * as Model from "./model/model.js";
+import { init as modelInit } from "./model/model.js";
 
-import { fsm, READY_CHANNEL } from "./fsm/generated.js";
+import { fsm, init as fsmInit, READY_CHANNEL } from "./fsm/generated.js";
 
 (async function() {
-  await Model.init();
+  await modelInit();
+  await fsmInit();
 
   FsmUtils.exposeChangeListener(fsm);
   FsmUtils.exposeGetSnapshot(fsm);

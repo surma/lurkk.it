@@ -78,8 +78,9 @@
   background-color: var(--primary-d);
   flex-grow: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: calc(var(--base) * var(--padding));
 }
 
 #bottom-bar .loader {
@@ -101,6 +102,15 @@
     var(--primary-dd) 100%
   );
   animation: slide 1s linear infinite;
+}
+
+#bottom-bar .favorite.favorited {
+  fill: var(--secondary1);
+}
+
+#bottom-bar .main h1 {
+  font-size: calc(var(--base) * var(--big-font));
+  margin-bottom: calc(var(--base) * var(--padding));
 }
 
 @keyframes slide {

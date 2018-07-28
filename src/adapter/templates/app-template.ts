@@ -14,9 +14,14 @@
 
 import { TemplateResult } from "lit-html";
 
-import { emitTrigger } from "westend/utils/fsm-utils.js";
+import { emitTrigger, getSnapshot } from "westend/utils/fsm-utils.js";
 
-import { Trigger, TriggerPayloadMap } from "../../fsm/generated.js";
+import {
+  Node,
+  Trigger,
+  TriggerPayloadMap,
+  Value
+} from "../../fsm/generated.js";
 
 import { defineCE, injectStyles } from "../../utils/dom-helpers.js";
 import { unsafeHTML } from "../../utils/lit-helpers.js";
@@ -101,7 +106,7 @@ function isLoading(state: AppState) {
   return state.value.loading.length > 0;
 }
 
-function topView(state: AppState) {
+function topView(state: AppState): View | undefined {
   return state.value.stack[state.value.stack.length - 1];
 }
 
@@ -115,6 +120,36 @@ async function refresh() {
   const itemStack = document.querySelector("item-stack")! as ItemStack;
   await itemStack.dismiss();
   emitTrigger<Trigger.REFRESH, TriggerPayloadMap>(Trigger.REFRESH, {});
+}
+
+function showFavorite(view?: View) {
+  if (!view) {
+    return false;
+  }
+  return view.type === ViewType.SUBREDDIT;
+}
+
+async function toggleFavorite() {
+  // FIXME (@surma): This shouldn’t be necessary.
+  const state = await getSnapshot<Node, Value>();
+  const topV = topView(state);
+  if (!topV || topV.type !== ViewType.SUBREDDIT) {
+    return;
+  }
+  emitTrigger<Trigger.TOGGLE_FAVORITE, TriggerPayloadMap>(
+    Trigger.TOGGLE_FAVORITE,
+    {
+      id: topV.subreddit.id
+    }
+  );
+}
+
+function isFavoriteSubreddit(state: AppState) {
+  const view = topView(state);
+  if (!view || view.type !== ViewType.SUBREDDIT) {
+    return;
+  }
+  return state.value.favorites.includes(view.subreddit.id);
 }
 
 import backSVG from "../../icons/back.svg";
@@ -137,11 +172,14 @@ export default (state: AppState) =>
       starOffSVG: unsafeHTML(starOffSVG),
       starOnSVG: unsafeHTML(starOnSVG)
     },
+    isFavoriteSubreddit,
     isLoading,
     isNewFunc,
     open,
     refresh,
     renderView,
+    showFavorite,
     toggleBar,
+    toggleFavorite,
     topView
   });

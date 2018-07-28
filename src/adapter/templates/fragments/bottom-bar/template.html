@@ -41,11 +41,10 @@
       ${funcs.icons.downloadSVG}
     </button>
     <button
-      class="button favorite"
-      hidden?=${state.hasFavorite}
-      on-click=${funcs.download}
+      className="${'button favorite' + (funcs.showFavorite(funcs.topView(state)) ? '' : ' invisible ') + (funcs.isFavoriteSubreddit(state) ? ' favorited ' : '')}"
+      on-click=${funcs.toggleFavorite}
     >
-      ${funcs.icons.starOffSVG}
+      ${funcs.isFavoriteSubreddit(state) ? funcs.icons.starOnSVG : funcs.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
@@ -55,6 +54,11 @@
     </button>
   </div>
   <div class="main">
-    To be implemented...
+    <div class="favorites">
+      <h1>Favorites</h1>
+      <ul>
+          ${state.value.favorites.sort().map(i => html`<li><a on-click="${funcs.toggleBar}" href="/r/${i}">/r/${i}</a></li>`)}
+      </ul>
+    </div>
   </div>
 </bottom-bar>

@@ -71,3 +71,6 @@ a {
   color: var(--secondary2-w);
 }
 
+.invisible {
+  visibility: hidden;
+}

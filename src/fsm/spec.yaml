@@ -59,6 +59,9 @@ triggers:
   - name: DOWNLOAD
     payload:
       ids: ThreadID[]
+  - name: TOGGLE_FAVORITE
+    payload:
+      id: SubredditID
 
 --- |
   export type LoadingEntry = string;
@@ -165,6 +168,12 @@ triggers:
       });
     }
   }
+
+  const toggleFavorite: Effect<Node, Trigger.TOGGLE_FAVORITE, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
+    await Model.toggleFavorite(payload.id);
+    fsm.value.favorites = await Model.getFavorites();
+  }
+
 ---
 transitions:
   - origin: STACK_VIEW
@@ -187,6 +196,14 @@ transitions:
     trigger: DOWNLOAD
     target: Loopback
     effects: [download]
+  - origin: AnyNode
+    trigger: TOGGLE_FAVORITE
+    target: Loopback
+    effects: [toggleFavorite]
 
 --- |
   export const READY_CHANNEL = "fsm.ready";
+
+  export async function init() {
+    fsm.value.favorites = await Model.getFavorites();
+  }

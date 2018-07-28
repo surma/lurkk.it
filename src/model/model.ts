@@ -33,5 +33,6 @@ export const READY_CHANNEL = "model.ready";
 
 export async function init() {
   await loadingInit();
+
   ServiceReady.signal(READY_CHANNEL);
 }
