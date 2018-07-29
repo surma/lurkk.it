@@ -54,10 +54,10 @@
     </button>
   </div>
   <div class="main">
-    <div class="favorites">
+    <div class="section--favorites">
       <h1>Favorites</h1>
-      <ul>
-          ${state.value.favorites.sort().map(i => html`<li><a on-click="${funcs.toggleBar}" href="/r/${i}">/r/${i}</a></li>`)}
+      <ul class="favorites">
+        ${state.value.favorites.sort().map(i => html`<a class="favorite" on-click="${funcs.toggleBar}" href="/r/${i}">/r/${i}</a>`)}
       </ul>
     </div>
   </div>

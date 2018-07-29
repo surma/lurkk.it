@@ -78,9 +78,9 @@
   background-color: var(--primary-d);
   flex-grow: 1;
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-end;
-  padding: calc(var(--base) * var(--padding));
+  align-items: stretch;
 }
 
 #bottom-bar .loader {
@@ -111,6 +111,18 @@
 #bottom-bar .main h1 {
   font-size: calc(var(--base) * var(--big-font));
   margin-bottom: calc(var(--base) * var(--padding));
+  padding-left: calc(var(--base) * var(--padding));
+}
+
+#bottom-bar .favorites .favorite {
+  padding: calc(var(--base) * var(--padding));
+  border-bottom: 1px solid #000;
+  border-image: linear-gradient(90deg,var(--primary) 0,var(--primary-d) 66%) 1;
+  display: block;
+}
+
+#bottom-bar .favorites .favorite:last-child {
+  border-bottom: 0;
 }
 
 @keyframes slide {
