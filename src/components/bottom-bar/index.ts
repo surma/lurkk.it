@@ -123,8 +123,9 @@ export default class BottomBar extends HTMLElement {
     if (ev.touches.length > 1) {
       return;
     }
+    const touchElem = ev.composedPath()[0];
     const clientY = ev.touches[0].clientY;
-    if (this.isClosed && !this.isBarElement(ev.composedPath()[0])) {
+    if (this.isClosed && !this.isBarElement(touchElem)) {
       return;
     }
     this.dragStartY = clientY;

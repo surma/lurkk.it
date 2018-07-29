@@ -14,6 +14,7 @@
 
 #bottom-bar {
   --primary-btn-padding: 3;
+  --dismiss-zone: 10;
 }
 
 #bottom-bar .bar {
@@ -110,8 +111,12 @@
 
 #bottom-bar .main h1 {
   font-size: calc(var(--base) * var(--big-font));
-  margin-bottom: calc(var(--base) * var(--padding));
-  padding-left: calc(var(--base) * var(--padding));
+  padding: calc(var(--base) * var(--padding));
+}
+
+#bottom-bar .panel {
+  overflow: auto;
+  margin-right: calc(var(--base) * var(--dismiss-zone));
 }
 
 #bottom-bar .favorites .favorite {

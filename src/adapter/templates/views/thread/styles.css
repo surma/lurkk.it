@@ -66,6 +66,7 @@
 
 .thread > .comments {
   padding-top: calc(var(--base) * var(--padding));
+  padding-right: calc(var(--base) * var(--padding));
 }
 
 .thread .comments .comment {

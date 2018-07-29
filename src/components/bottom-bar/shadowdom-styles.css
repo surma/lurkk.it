@@ -26,6 +26,12 @@
   flex-direction: column;
 }
 
+slot[name="bar"]::slotted(*) {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
 slot:not([name="bar"])::slotted(*) {
-  flex-grow: 1 1;
+  flex-shrink: 1;
+  flex-grow: 1;
 }
