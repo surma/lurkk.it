@@ -17,8 +17,7 @@ import shadowDomStyles from "./shadowdom-styles.css";
 import shadowDom from "./shadowdom.html";
 
 export default class BottomBar extends HTMLElement {
-  animationTime: number = 0.3;
-  animationEasing: string = "ease-in-out";
+  animationTime: number = 0.7;
   autoAnimateThreshold: number = 50;
 
   private bar?: HTMLElement;
@@ -27,6 +26,7 @@ export default class BottomBar extends HTMLElement {
   private elementSize: DOMRect | ClientRect = new DOMRect(0, 0, 0, 0);
   private dragStartY?: number;
   private dragDelta?: number;
+  private lastDragDelta?: number;
 
   constructor() {
     super();
@@ -60,24 +60,16 @@ export default class BottomBar extends HTMLElement {
   }
 
   async open() {
-    await animateTo(
-      this,
-      `transform ${this.animationTime}s ${this.animationEasing}`,
-      {
-        transform: "translateY(-100vh)"
-      }
-    );
+    await animateTo(this, `transform ${this.animationTime}s ${this.easing()}`, {
+      transform: "translateY(-100vh)"
+    });
     this.setAttribute("open", "");
   }
 
   async close() {
-    await animateTo(
-      this,
-      `transform ${this.animationTime}s ${this.animationEasing}`,
-      {
-        transform: `translateY(-${this.barSize.height}px)`
-      }
-    );
+    await animateTo(this, `transform ${this.animationTime}s ${this.easing()}`, {
+      transform: `translateY(-${this.barSize.height}px)`
+    });
     this.removeAttribute("open");
   }
 
@@ -95,6 +87,14 @@ export default class BottomBar extends HTMLElement {
     } else {
       await this.close();
     }
+  }
+
+  private easing() {
+    let velocity = 50;
+    if (this.dragDelta && this.lastDragDelta) {
+      velocity = Math.abs(this.dragDelta - this.lastDragDelta) * 60;
+    }
+    return `cubic-bezier(${1 / velocity}, 1, ${1 / velocity}, 1)`;
   }
 
   private onSlotChange(ev: Event) {
@@ -140,7 +140,10 @@ export default class BottomBar extends HTMLElement {
     ev.stopPropagation();
 
     const clientY = ev.touches[0].clientY;
-    this.dragDelta = clientY - this.dragStartY;
+    [this.lastDragDelta, this.dragDelta] = [
+      this.dragDelta,
+      clientY - this.dragStartY
+    ];
     const start = this.isOpen ? "-100vh" : `-${this.barSize.height}px`;
     const min = this.isOpen
       ? 0
