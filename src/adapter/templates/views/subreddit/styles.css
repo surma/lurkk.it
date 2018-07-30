@@ -59,7 +59,8 @@
   background-position: 50% 50%;
   background-repeat: no-repeat;
   grid-area: 1 / -1 / -1 / -2;
-  border-radius: 2px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
   min-height: calc(var(--base) * var(--item-height));
   position: relative;
 }
