@@ -19,7 +19,7 @@
     "rollup-plugin-terser": "^1.0.1",
     "rollup-plugin-typescript2": "^0.16.1",
     "tslint": "^5.9.1",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.1",
     "westend": "git+ssh://git@github.com/PolymerLabs/westend.git#master"
   },
   "scripts": {
