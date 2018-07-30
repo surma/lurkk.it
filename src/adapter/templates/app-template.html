@@ -18,7 +18,7 @@
     isNewFunc=${funcs.isNewFunc}
     on-dismissgesture=${funcs.back}
   >
-    ${state.value.stack.map(funcs.renderView)}
+    ${state.value.stack.slice(-2).map(funcs.renderView)}
   </item-stack>
 </main>
 ${funcs.bottomBar(state, funcs)}

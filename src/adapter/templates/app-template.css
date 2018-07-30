@@ -32,4 +32,5 @@ main > * {
   overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 10%;
+  contain: strict;
 }

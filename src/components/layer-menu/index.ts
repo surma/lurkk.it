@@ -25,10 +25,9 @@ export default class LayerMenu extends HTMLElement {
   animationEasing: string = "ease-in-out";
   autoAnimateThreshold: number = 50;
 
-  // tslint:disable-next-line:variable-name proxied variable
-  private _slideWidth: number = 0;
-  // tslint:disable-next-line:variable-name proxied variable
-  private _slideZone: number = 0;
+  slideWidth: number = 0;
+  slideZone: number = 0;
+
   private dragStart?: number;
   private dragDelta?: number;
   private topElementContainer: HTMLElement;
@@ -40,7 +39,6 @@ export default class LayerMenu extends HTMLElement {
     this.topElementContainer = this.shadowRoot!.querySelector(
       "#top"
     ) as HTMLElement;
-    this.slideWidth = "50%";
 
     this.addEventListener("touchstart", this.onTouchStart.bind(this));
     this.addEventListener("touchmove", this.onTouchMove.bind(this), {
@@ -49,48 +47,19 @@ export default class LayerMenu extends HTMLElement {
     this.addEventListener("touchend", this.onTouchEnd.bind(this));
   }
 
-  connectedCallback() {
-    this._slideWidth = this.recalcSlideWidth(
-      this.getAttribute("slide-width") || "50%"
-    );
-    this._slideZone = this.recalcSlideZoneStart(
-      this.getAttribute("slide-zone") || "20%"
-    );
-  }
-
-  attributeChangedCallback(name: string, newVal: string) {
+  attributeChangedCallback(name: string, oldVal: string, newVal: string) {
     switch (name) {
       case "slide-width":
-        this.slideWidth = newVal;
+        if (isNumber(newVal)) {
+          this.slideWidth = Number(newVal);
+        }
         break;
       case "slide-zone":
-        this.slideZone = newVal;
+        if (isNumber(newVal)) {
+          this.slideZone = Number(newVal);
+        }
         break;
     }
-  }
-
-  get slideWidth() {
-    return this._slideWidth;
-  }
-
-  set slideWidth(val: string | number) {
-    if (isNumber(val)) {
-      this._slideWidth = Number(val);
-      return;
-    }
-    this._slideWidth = this.recalcSlideWidth(val);
-  }
-
-  get slideZone() {
-    return this._slideZone;
-  }
-
-  set slideZone(val: string | number) {
-    if (isNumber(val)) {
-      this._slideZone = Number(val);
-      return;
-    }
-    this._slideZone = this.recalcSlideZoneStart(val);
   }
 
   get isOpen() {
@@ -106,7 +75,7 @@ export default class LayerMenu extends HTMLElement {
       this.topElementContainer,
       `transform ${this.animationTime}s ${this.animationEasing}`,
       {
-        transform: `translateX(${-this._slideWidth}px)`
+        transform: `translateX(${-this.slideWidth}px)`
       }
     );
     this.setAttribute("open", "");
@@ -144,7 +113,7 @@ export default class LayerMenu extends HTMLElement {
       return;
     }
     const client = ev.touches[0].clientX;
-    if (client < this._slideZone) {
+    if (client < this.slideZone) {
       return;
     }
     ev.preventDefault();
@@ -162,9 +131,9 @@ export default class LayerMenu extends HTMLElement {
 
     // FIXME (@surma): I subtract 1 from slideWidth so that there’s still a
     // transition left to do. Otherwise `transitionend` will never fire.
-    const start = this.isOpen ? -(this._slideWidth - 1) : 0;
-    const min = this.isOpen ? 0 : -(this._slideWidth - 1);
-    const max = this.isOpen ? this._slideWidth - 1 : 0;
+    const start = this.isOpen ? -(this.slideWidth - 1) : 0;
+    const min = this.isOpen ? 0 : -(this.slideWidth - 1);
+    const max = this.isOpen ? this.slideWidth - 1 : 0;
     const actualDelta = Math.min(Math.max(this.dragDelta, min), max);
     Object.assign(this.topElementContainer.style, {
       transform: `translateX(calc(${start}px + ${actualDelta}px))`,
@@ -189,30 +158,6 @@ export default class LayerMenu extends HTMLElement {
       this.reset();
     }
     this.dragStart = undefined;
-  }
-
-  private recalcSlideWidth(val: string) {
-    Object.assign(this.topElementContainer.style, {
-      transform: "",
-      transition: ""
-    });
-    const startRect = this.topElementContainer.getBoundingClientRect();
-    this.topElementContainer.style.transform = `translateX(${val})`;
-    const endRect = this.topElementContainer.getBoundingClientRect();
-    const result = Math.abs(endRect.right - startRect.right);
-    this.topElementContainer.style.transform = "";
-    return result;
-  }
-
-  private recalcSlideZoneStart(val: string) {
-    Object.assign(this.topElementContainer.style, {
-      transform: "",
-      transition: ""
-    });
-    this.topElementContainer.style.transform = `translateX(-${val})`;
-    const endRect = this.topElementContainer.getBoundingClientRect();
-    this.topElementContainer.style.transform = "";
-    return endRect.right;
   }
 }
 function isNumber(n: number | string): n is number {
