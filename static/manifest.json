@@ -1,7 +1,7 @@
 {
   "name": "LurkkIt",
   "short_name": "LurkkIt",
-  "theme_color": "#009b9b",
+  "theme_color": "#003434",
   "background_color": "#003434",
   "display": "standalone",
   "Scope": "/",
