@@ -14,7 +14,7 @@
 
 #bottom-bar {
   --primary-btn-padding: 3;
-  --dismiss-zone: 10;
+  --dismiss-zone: 30;
 }
 
 #bottom-bar .bar {
@@ -82,6 +82,7 @@
   flex-direction: column;
   justify-content: flex-end;
   align-items: stretch;
+  padding-right: calc(var(--base) * var(--dismiss-zone));
 }
 
 #bottom-bar .loader {
@@ -116,7 +117,6 @@
 
 #bottom-bar .panel {
   overflow: auto;
-  margin-right: calc(var(--base) * var(--dismiss-zone));
 }
 
 #bottom-bar .favorites .favorite {
