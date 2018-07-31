@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { animateTo } from "../../utils/animation.js";
+import { animateTo } from "../../../../utils/animation.js";
 import shadowDomStyles from "./shadowdom-styles.css";
 import shadowDom from "./shadowdom.html";
 

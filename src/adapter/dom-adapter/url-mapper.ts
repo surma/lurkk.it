@@ -15,7 +15,7 @@
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
 
-import ItemStack from "../components/item-stack";
+import ItemStack from "./elements/item-stack";
 
 import {
   Node,
@@ -23,7 +23,7 @@ import {
   Trigger,
   TriggerPayloadMap,
   Value
-} from "../fsm/generated.js";
+} from "../../fsm/generated.js";
 
 import {
   getPath,
@@ -31,7 +31,7 @@ import {
   NAVIGATION_CHANNEL,
   NavigationMessage,
   NavigationType
-} from "../utils/router.js";
+} from "../../utils/router.js";
 
 async function onPathChange(path: string) {
   if (path === "/") {
