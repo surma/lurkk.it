@@ -14,11 +14,11 @@
 
 <layer-menu
   class="item"
-  downloaded?="${state.cachedAt >= 0}"
+  downloaded="${state.cachedAt >= 0}"
   slide-width="80"
   slide-zone="380"
-  on-opengesture="${funcs.downloadThread}"
-  data-thread-id$="${state.id}"
+  on:opengesture="${funcs.downloadThread}"
+  data-thread-id="${state.id}"
 >
   <div slot="top" class="top">
     <div class="preview" style="background-image: url(${state.previewImage});">

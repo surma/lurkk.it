@@ -22,13 +22,13 @@
  * vulnerabilities.
  */
 
-import { directive, DirectiveFn, NodePart } from "lit-html";
+import { html } from "htm/preact";
+import { VNode } from "preact";
 
-export const unsafeHTML = (value: any): DirectiveFn<NodePart> =>
-  directive(
-    (part: NodePart): void => {
-      const tmp = document.createElement("template");
-      tmp.innerHTML = value;
-      part.setValue(document.importNode(tmp.content, true));
+export function unsafeHTML(value: any): VNode {
+  return html`<div ...${{
+    dangerouslySetInnerHTML: {
+      __html: value
     }
-  );
+  }} />`;
+}

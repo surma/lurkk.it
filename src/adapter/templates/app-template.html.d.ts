@@ -12,6 +12,6 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { TemplateResult } from "lit-html";
-declare const template: (state: any, funcs?: any) => TemplateResult;
+import { VNode } from "preact";
+declare const template: (state: any, funcs?: any) => VNode;
 export default template;

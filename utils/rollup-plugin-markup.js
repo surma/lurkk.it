@@ -39,7 +39,7 @@ export default function (opts = {}) {
       code = htmlMinifier.minify(code, {...defaultOpts, ...opts});
       if(id.endsWith('template.html')) {
         return `
-          import {html} from "lit-html/lib/lit-extended.js";
+          import {html} from "htm/preact";
           export default (state, funcs) => html\`${code}\`;
         `;
       }

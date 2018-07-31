@@ -12,13 +12,12 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "lit-html/lib/lit-extended.js";
+import { html } from "htm/preact";
 
-import { Comment } from "../../../../model/comment.js";
 import { Thread } from "../../../../model/thread.js";
 import { View, ViewType } from "../../../../model/view.js";
 
-import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
+import { injectStyles } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
 import { unsafeHTML } from "../../../../utils/lit-helpers.js";
 

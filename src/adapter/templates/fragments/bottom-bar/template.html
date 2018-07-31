@@ -14,18 +14,18 @@
 
 <bottom-bar
   id="bottom-bar"
-  loading?="${funcs.isLoading(state)}"
-  on-dblclick="${funcs.toggleBar}"
+  loading="${funcs.isLoading(state)}"
+  on:dblclick="${funcs.toggleBar}"
 >
   <div slot="bar" class="bar">
     <div class="loader"></div>
     <button
       class="button back"
-      on-click=${funcs.back}
+      on:click=${funcs.back}
     >
       ${funcs.icons.backSVG}
     </button>
-    <form on-submit="${funcs.open}">
+    <form on:submit="${funcs.open}">
       <input placeholder="/r/..." class="input" value="${funcs.extractSearchBarValue(funcs.topView(state))}"/>
       <input
         type="submit"
@@ -35,29 +35,28 @@
     </form>
     <button
       class="button download"
-      hidden?=${state.hasDownload}
       on-click=${funcs.download}
     >
       ${funcs.icons.downloadSVG}
     </button>
     <button
-      className="${'button favorite' + (funcs.showFavorite(funcs.topView(state)) ? '' : ' invisible ') + (funcs.isFavoriteSubreddit(state) ? ' favorited ' : '')}"
-      on-click=${funcs.toggleFavorite}
+      class="button favorite ${funcs.showFavorite(funcs.topView(state)) ? '' : 'invisible'} ${funcs.isFavoriteSubreddit(state) ? 'favorited' : ''}"
+      on:click=${funcs.toggleFavorite}
     >
       ${funcs.isFavoriteSubreddit(state) ? funcs.icons.starOnSVG : funcs.icons.starOffSVG}
     </button>
     <button
       class="button refresh"
-      on-click=${funcs.refresh}
+      on:click=${funcs.refresh}
     >
       ${funcs.icons.refreshSVG}
     </button>
   </div>
   <div class="main">
-    <section class="panel favorites" on-touchmove="${(ev) => ev.stopPropagation()}">
+    <section class="panel favorites" on:touchmove="${(ev) => ev.stopPropagation()}">
       <h1>Favorites</h1>
       <ul class="favorites">
-        ${state.value.favorites.sort().map(i => html`<a class="favorite" on-click="${funcs.toggleBar}" href="/r/${i}">/r/${i}</a>`)}
+        ${state.value.favorites.sort().map(i => html`<a class="favorite" on:click="${funcs.toggleBar}" href="/r/${i}">/r/${i}</a>`)}
       </ul>
     </section>
   </div>

@@ -12,7 +12,8 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { render } from "lit-html/lib/lit-extended.js";
+import { html, render } from "htm/preact";
+import { Component } from "preact";
 
 import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
@@ -54,7 +55,7 @@ export class DomAdapter {
   }
 
   private render(state: AppState) {
-    render(appTemplate(state), document.body);
+    render(appTemplate(state) as any, document.body);
   }
 }
 

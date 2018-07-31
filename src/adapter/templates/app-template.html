@@ -16,9 +16,9 @@
   <div id="root">Welcome to LurkIt</div>
   <item-stack
     isNewFunc=${funcs.isNewFunc}
-    on-dismissgesture=${funcs.back}
+    on:dismissgesture=${funcs.back}
   >
     ${state.value.stack.slice(-2).map(funcs.renderView)}
   </item-stack>
+  ${funcs.bottomBar(state, funcs)}
 </main>
-${funcs.bottomBar(state, funcs)}

@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { TemplateResult } from "lit-html";
+import { VNode } from "preact";
 
 import { emitTrigger, getSnapshot } from "westend/utils/fsm-utils.js";
 
@@ -37,22 +37,19 @@ import { AppState, ViewRenderer } from "./types.js";
 
 import { go } from "../../utils/router.js";
 
-const viewRenderers = new Map<ViewType, () => Promise<ViewRenderer>>([
-  [
-    ViewType.THREAD,
-    () => import("./views/thread/renderer.js").then(m => m.default)
-  ],
-  [
-    ViewType.SUBREDDIT,
-    () => import("./views/subreddit/renderer.js").then(m => m.default)
-  ]
+import SubredditRenderer from "./views/subreddit/renderer.js";
+import ThreadRenderer from "./views/thread/renderer.js";
+
+const viewRenderers = new Map<ViewType, ViewRenderer>([
+  [ViewType.THREAD, ThreadRenderer],
+  [ViewType.SUBREDDIT, SubredditRenderer]
 ]);
 
-async function renderView(view: View): Promise<TemplateResult> {
+function renderView(view: View): VNode {
   if (!viewRenderers.has(view.type)) {
     throw new Error("Unknown view type");
   }
-  const viewRenderer = await viewRenderers.get(view.type)!();
+  const viewRenderer = viewRenderers.get(view.type)!;
   return viewRenderer(view);
 }
 

@@ -32,10 +32,18 @@ import itemTemplate from "./item-template.html";
 import styles from "./styles.css";
 import template from "./template.html";
 
-function downloadThread(this: LayerMenu, ev: Event) {
-  this.close();
+function downloadThread(this: LayerMenu, ev: CustomEvent) {
+  const target = ev.target;
+  if (!target || !(target instanceof HTMLElement)) {
+    return;
+  }
+  const menu = target.closest("layer-menu") as LayerMenu | null;
+  if (!menu) {
+    return;
+  }
+  menu.close();
   emitTrigger<Trigger.DOWNLOAD, TriggerPayloadMap>(Trigger.DOWNLOAD, {
-    ids: [this.dataset.threadId!]
+    ids: [menu.dataset.threadId!]
   });
 }
 
