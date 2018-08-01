@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/preact";
+import { html } from "htm/src/integrations/preact";
 import { Component, RenderableProps } from "preact";
 
 import { emitTrigger } from "westend/utils/fsm-utils.js";

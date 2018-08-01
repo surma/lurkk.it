@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "htm/preact";
+import { html, render } from "htm/src/integrations/preact";
 
 import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";

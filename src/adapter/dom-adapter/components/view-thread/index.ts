@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/preact";
+import { html } from "htm/src/integrations/preact";
 import { Component, RenderableProps } from "preact";
 
 import { ThreadView } from "../../../../model/view.js";
@@ -32,20 +32,21 @@ interface Props {
 export default class ThreadViewComponent extends Component<Props, {}> {
   render({ state }: RenderableProps<Props>) {
     return html`
-      <div class="view thread" data-view-id="${state}">
+      <div class="view thread" data-view-id="${state}" style="">
         <div class="post">
           <header class="header">
             <h1 class="title">${state.thread.title}</h1>
-            <p class="meta">/u/${state.thread.author} • /r/${
-      state.thread.subreddit
-    } • ${state.thread.ago}</p>
-            <p class="engagement">${state.thread.points} ${pluralize(
-      "point",
-      state.thread.points
-    )} • ${state.thread.numComments} ${pluralize(
-      "comment",
-      state.thread.numComments
-    )}</p>
+            <p class="meta">
+              /u/${state.thread.author} •
+              /r/${state.thread.subreddit} •
+              ${state.thread.ago}
+            </p>
+            <p class="engagement">
+              ${state.thread.points}
+              ${pluralize("point", state.thread.points)} •
+              ${state.thread.numComments}
+              ${pluralize("comment", state.thread.numComments)}
+            </p>
           </header>
           ${
             state.thread.isLink

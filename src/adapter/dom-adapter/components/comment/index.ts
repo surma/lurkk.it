@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/preact";
+import { html } from "htm/src/integrations/preact";
 import { Component } from "preact";
 
 import { Comment } from "../../../../model/comment.js";

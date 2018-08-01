@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/preact";
+import { html } from "htm/src/integrations/preact";
 import { Component, RenderableProps, VNode } from "preact";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
@@ -23,12 +23,33 @@ defineCE("item-stack", ItemStack);
 import { View, ViewType } from "../../../../model/view.js";
 import { AppState } from "../../types.js";
 
-import SubredditView from "../view-subreddit";
-import ThreadView from "../view-thread";
+import ResolveComponent from "../resolve";
 
 const views = new Map<ViewType, (view: View) => VNode>([
-  [ViewType.THREAD, (view: View) => html`<${ThreadView} state=${view} />`],
-  [ViewType.SUBREDDIT, (view: View) => html`<${SubredditView} state=${view} />`]
+  [
+    ViewType.THREAD,
+    (view: View) => html`
+    <${ResolveComponent}
+      component=${import("../view-thread").then(m => m.default)}
+    >
+      ${({ component }: any) => html`
+        <${component} state=${view} />
+      `}
+    <//>
+  `
+  ],
+  [
+    ViewType.SUBREDDIT,
+    (view: View) => html`
+    <${ResolveComponent}
+      component=${import("../view-subreddit").then(m => m.default)}
+    >
+      ${({ component }: any) => html`
+        <${component} state=${view} />
+      `}
+    <//>
+  `
+  ]
 ]);
 
 function getComponentForView(view: View): VNode {

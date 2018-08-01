@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/preact";
+import { html } from "htm/src/integrations/preact";
 import { Component, RenderableProps } from "preact";
 
 import { SubredditView } from "../../../../model/view.js";
@@ -29,11 +29,11 @@ interface Props {
 export default class SubredditViewComponent extends Component<Props, {}> {
   render({ state }: RenderableProps<Props>) {
     return html`
-      <div class="view subreddit" data-view-id="${state.uid}">
+      <div class="view subreddit" data-view-id="${state.uid}" style="">
         ${state.subreddit.items.map(
           item => html`
-          <${SubredditItemComponent} state=${item} />
-        `
+            <${SubredditItemComponent} state=${item} />
+          `
         )}
       </div>
     `;
