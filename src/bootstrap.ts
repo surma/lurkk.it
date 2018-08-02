@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { DomAdapter } from "./adapter/dom-adapter.js";
+import DomAdapter from "./adapter/dom-adapter";
 
 const worker = new (Worker as any)("worker.js", { type: "module" });
 

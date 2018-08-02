@@ -12,6 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { TemplateResult } from "lit-html";
-declare const template: (state: any, funcs?: any) => TemplateResult;
-export default template;
+export function setInnerHTML(value: string): {} {
+  return {
+    dangerouslySetInnerHTML: {
+      __html: value
+    }
+  };
+}

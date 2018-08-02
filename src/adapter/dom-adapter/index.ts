@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { render } from "lit-html/lib/lit-extended.js";
+import { html, render } from "htm/src/integrations/preact";
 
 import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
@@ -21,24 +21,24 @@ import * as ServiceReady from "westend/utils/service-ready.js";
 
 import * as UrlMapper from "./url-mapper.js";
 
-import { READY_CHANNEL as MODEL_READY_CHANNEL } from "../model/model.js";
+import { READY_CHANNEL as MODEL_READY_CHANNEL } from "../../model/model.js";
 
 import {
   DATA_SOURCE_NAME_CHANNEL,
   DataSourceNameRequest,
   DataSourceNameResponse
-} from "../model/loading.js";
+} from "../../model/loading.js";
 
 import {
   Node,
   READY_CHANNEL as FSM_READY_CHANNEL,
   Value
-} from "../fsm/generated.js";
+} from "../../fsm/generated.js";
 
-import appTemplate from "./templates/app-template.js";
-import { AppState } from "./templates/types.js";
+import App from "./components/app";
+import { AppState } from "./types.js";
 
-export class DomAdapter {
+export default class DomAdapter {
   async init() {
     if (isDebug()) {
       await activateDebugModel();
@@ -54,7 +54,7 @@ export class DomAdapter {
   }
 
   private render(state: AppState) {
-    render(appTemplate(state), document.body);
+    render(html`<${App} state=${state} />`, document.body);
   }
 }
 

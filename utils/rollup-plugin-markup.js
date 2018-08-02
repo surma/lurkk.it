@@ -24,7 +24,6 @@ const defaultOpts = {
 };
 
 const suffixes = [
-  'template.html',
   '.html',
   '.svg'
 ];
@@ -37,12 +36,6 @@ export default function (opts = {}) {
         return;
       }
       code = htmlMinifier.minify(code, {...defaultOpts, ...opts});
-      if(id.endsWith('template.html')) {
-        return `
-          import {html} from "lit-html/lib/lit-extended.js";
-          export default (state, funcs) => html\`${code}\`;
-        `;
-      }
       return `export default \`${code}\`;`;
     }
   };
