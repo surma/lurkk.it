@@ -32,7 +32,10 @@ interface Props {
 export default class ThreadViewComponent extends Component<Props, {}> {
   render({ state }: RenderableProps<Props>) {
     return html`
-      <div class="view thread" data-view-id="${state}" style="">
+      <div class="view thread" data-view-id="${state}" style="${{
+      display: "",
+      transform: ""
+    }}">
         <div class="post">
           <header class="header">
             <h1 class="title">${state.thread.title}</h1>

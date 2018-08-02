@@ -29,7 +29,10 @@ interface Props {
 export default class SubredditViewComponent extends Component<Props, {}> {
   render({ state }: RenderableProps<Props>) {
     return html`
-      <div class="view subreddit" data-view-id="${state.uid}" style="">
+      <div class="view subreddit" data-view-id="${state.uid}" style="${{
+      display: "",
+      transform: ""
+    }}">
         ${state.subreddit.items.map(
           item => html`
             <${SubredditItemComponent} state=${item} />

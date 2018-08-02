@@ -16,16 +16,20 @@ import * as AnimationTools from "../../../../utils/animation.js";
 import shadowDomStyles from "./shadowdom-styles.css";
 import shadowDom from "./shadowdom.html";
 
-export interface IsNewFunc {
-  (el: HTMLElement): boolean;
+export interface IdFunc {
+  (el: HTMLElement): string;
 }
 
-export function newWeakSetNewFunc(): IsNewFunc {
-  const seenItems = new WeakSet<HTMLElement>();
+export function newIdGenerator(): IdFunc {
+  let counter = 0;
+  const counterMap = new WeakMap<HTMLElement, string>();
   return (el: HTMLElement) => {
-    const isNew = !seenItems.has(el);
-    seenItems.add(el);
-    return isNew;
+    let id = counterMap.get(el);
+    if (!id) {
+      id = `${counter++}`;
+      counterMap.set(el, id);
+    }
+    return id;
   };
 }
 
@@ -34,11 +38,12 @@ export default class ItemStack extends HTMLElement {
   autoAnimateThreshold: number = 50;
   animationTime: number = 0.3;
   animationEasing: string = "ease-in-out";
-  isNewFunc: IsNewFunc = newWeakSetNewFunc();
+  idFunc: IdFunc = newIdGenerator();
 
   private dragStart?: number;
   private dragDelta?: number;
-  private dismissedItems = new WeakSet<HTMLElement>();
+  private seenItems = new Set<string>();
+  private dismissedItems = new Set<string>();
 
   constructor() {
     super();
@@ -61,7 +66,7 @@ export default class ItemStack extends HTMLElement {
 
   get topItem(): HTMLElement | null {
     let last = this.lastElementChild as HTMLElement;
-    while (last && this.dismissedItems.has(last)) {
+    while (last && this.isDismissedItem(last)) {
       last = last.previousElementSibling as HTMLElement;
     }
     if (!last) {
@@ -72,12 +77,12 @@ export default class ItemStack extends HTMLElement {
 
   get hasDismissedItems(): boolean {
     const last = this.lastElementChild as HTMLElement;
-    return this.dismissedItems.has(last);
+    return this.isDismissedItem(last);
   }
 
   get numItems(): number {
     const childEls = Array.from(this.children) as HTMLElement[];
-    return childEls.filter(el => !this.dismissedItems.has(el)).length;
+    return childEls.filter(el => !this.isDismissedItem(el)).length;
   }
 
   async dismiss() {
@@ -85,13 +90,29 @@ export default class ItemStack extends HTMLElement {
     if (!item) {
       return;
     }
-    this.dismissedItems.add(item);
+    this.dismissedItems.add(this.idFunc(item));
     await AnimationTools.animateTo(
       item,
       `transform ${this.animationTime}s ${this.animationEasing}`,
       { transform: "translateX(100%)" }
     );
     item.style.display = "none";
+  }
+
+  private isDismissedItem(el: HTMLElement): boolean {
+    const id = this.idFunc(el);
+    if (!id) {
+      return false;
+    }
+    return this.dismissedItems.has(id);
+  }
+
+  private isSeenItem(el: HTMLElement): boolean {
+    const id = this.idFunc(el);
+    if (!id) {
+      return false;
+    }
+    return this.seenItems.has(id);
   }
 
   private onTouchStart(ev: TouchEvent) {
@@ -151,9 +172,10 @@ export default class ItemStack extends HTMLElement {
     const items = (ev.target! as HTMLSlotElement)
       .assignedNodes()
       .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
-    const newItems = items.filter(item => this.isNewFunc(item));
+    const newItems = items.filter(item => !this.isSeenItem(item));
 
     newItems.forEach(async item => {
+      this.seenItems.add(this.idFunc(item));
       item.style.transform = "translateX(100%)";
       await AnimationTools.requestAnimationFramePromise();
       await AnimationTools.animateTo(

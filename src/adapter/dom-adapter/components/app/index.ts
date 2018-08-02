@@ -65,15 +65,11 @@ injectStyles("app", styles);
 
 import BottomBarComponent from "../bottom-bar";
 
-const seenItems = new Set<string>();
-function isNewFunc(item: HTMLElement) {
+function idFunc(item: HTMLElement) {
   if (!("viewId" in item.dataset)) {
-    return false;
+    return "";
   }
-  const viewId = item.dataset.viewId!;
-  const isSeen = seenItems.has(viewId);
-  seenItems.add(viewId);
-  return !isSeen;
+  return item.dataset.viewId!;
 }
 
 function back() {
@@ -89,7 +85,7 @@ export default class App extends Component<Props> {
       <main>
         <div id="root">Welcome to LurkIt</div>
         <item-stack
-          isNewFunc=${isNewFunc}
+          id:func=${idFunc}
           on:dismissgesture=${back}
         >
           ${state.value.stack.map(getComponentForView)}
