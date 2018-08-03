@@ -12,15 +12,18 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import DomAdapter from "./adapter/dom-adapter";
+export default function () {
+  return {
+    name: 'amd-rename',
 
-const worker = new (Worker as any)("worker.js");
-
-new DomAdapter().init();
-
-async function init() {
-  const swLoader = await import("./utils/sw-loader.js");
-  await swLoader.default();
+    // Is this brittle? HELL YEAH.
+    transformBundle(code, _, bundle) {
+      const id = `./${bundle.id}`;
+      code = code.substr('define('.length);
+      if(!code.startsWith('[')) {
+        code = `[], ${code}`;
+      }
+      return `define("${id}", ${code}`;
+    }
+  };
 }
-
-init();
