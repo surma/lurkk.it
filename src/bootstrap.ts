@@ -14,13 +14,13 @@
 
 import DomAdapter from "./adapter/dom-adapter";
 
-const worker = new (Worker as any)("worker.js", { type: "module" });
+const worker = new (Worker as any)("worker.js");
 
 new DomAdapter().init();
 
 async function init() {
-  const { default: initSW } = await import("./utils/sw-loader.js");
-  await initSW();
+  const swLoader = await import("./utils/sw-loader.js");
+  await swLoader.default();
 }
 
 init();
