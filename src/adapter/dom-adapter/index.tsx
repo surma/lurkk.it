@@ -35,7 +35,7 @@ import {
   Value
 } from "../../fsm/generated.js";
 
-import App from "./components/app";
+import AppComponent from "./components/app";
 import { AppState } from "./types.js";
 
 export default class DomAdapter {
@@ -59,7 +59,7 @@ export default class DomAdapter {
 
   private render(state: AppState) {
     render(
-      <App state={state} />,
+      <AppComponent state={state} />,
       document.body,
       document.body.firstElementChild!
     );

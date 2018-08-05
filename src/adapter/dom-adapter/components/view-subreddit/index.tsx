@@ -25,21 +25,21 @@ injectStyles("view-subreddit", styles);
 interface Props {
   state: SubredditView;
 }
-export default class SubredditViewComponent extends Component<Props, {}> {
-  render({ state }: RenderableProps<Props>) {
-    return (
-      <div
-        class="view subreddit"
-        data-view-id={state.uid}
-        style={{
-          display: "",
-          transform: ""
-        }}
-      >
-        {state.subreddit.items.map(item => (
-          <SubredditItemComponent state={item} />
-        ))}
-      </div>
-    );
-  }
+export default function SubredditViewComponent({
+  state
+}: RenderableProps<Props>) {
+  return (
+    <div
+      class="view subreddit"
+      data-view-id={state.uid}
+      style={{
+        display: "",
+        transform: ""
+      }}
+    >
+      {state.subreddit.items.map(item => (
+        <SubredditItemComponent state={item} />
+      ))}
+    </div>
+  );
 }

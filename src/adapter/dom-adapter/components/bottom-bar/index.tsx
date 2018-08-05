@@ -155,66 +155,58 @@ import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 interface Props {
   state: AppState;
 }
-export default class BottomBarComponent extends Component<Props> {
-  render({ state }: RenderableProps<Props>) {
-    const topView = getTopView(state);
-    return (
-      <bottom-bar
-        id="bottom-bar"
-        loading={isLoading(state)}
-        onDblclick={toggleBar}
-      >
-        <div slot="bar" class="bar">
-          <div class="loader" />
-          <button
-            class="button back"
-            onClick={back}
-            {...setInnerHTML(backSVG)}
+export default function BottomBarComponent({ state }: RenderableProps<Props>) {
+  const topView = getTopView(state);
+  return (
+    <bottom-bar
+      id="bottom-bar"
+      loading={isLoading(state)}
+      onDblclick={toggleBar}
+    >
+      <div slot="bar" class="bar">
+        <div class="loader" />
+        <button class="button back" onClick={back} {...setInnerHTML(backSVG)} />
+        <form onSubmit={open}>
+          <input
+            placeholder="/r/..."
+            class="input"
+            value={extractSearchBarValue(topView)}
           />
-          <form onSubmit={open}>
-            <input
-              placeholder="/r/..."
-              class="input"
-              value={extractSearchBarValue(topView)}
-            />
-            <input type="submit" class="button button--primary go" value="Go" />
-          </form>
-          <button
-            class="button download"
-            onClick={download}
-            {...setInnerHTML(downloadSVG)}
-          />
-          <button
-            class={[
-              "button",
-              "favorite",
-              showFavorite(topView) ? "" : "invisible",
-              isFavoriteSubreddit(state) ? "favorited" : ""
-            ].join(" ")}
-            onClick={toggleFavorite}
-            {...setInnerHTML(
-              isFavoriteSubreddit(state) ? starOnSVG : starOffSVG
-            )}
-          />
-          <button
-            class="button refresh"
-            onClick={refresh}
-            {...setInnerHTML(refreshSVG)}
-          />
-        </div>
-        <div class="main">
-          <section class="panel favorites" onTouchMove={onTouchMove}>
-            <h1>Favorites</h1>
-            <ul class="favorites">
-              {state.value.favorites.sort().map(i => (
-                <a class="favorite" onClick={closeBar} href={`/r/${i}`}>
-                  /r/{i}
-                </a>
-              ))}
-            </ul>
-          </section>
-        </div>
-      </bottom-bar>
-    );
-  }
+          <input type="submit" class="button button--primary go" value="Go" />
+        </form>
+        <button
+          class="button download"
+          onClick={download}
+          {...setInnerHTML(downloadSVG)}
+        />
+        <button
+          class={[
+            "button",
+            "favorite",
+            showFavorite(topView) ? "" : "invisible",
+            isFavoriteSubreddit(state) ? "favorited" : ""
+          ].join(" ")}
+          onClick={toggleFavorite}
+          {...setInnerHTML(isFavoriteSubreddit(state) ? starOnSVG : starOffSVG)}
+        />
+        <button
+          class="button refresh"
+          onClick={refresh}
+          {...setInnerHTML(refreshSVG)}
+        />
+      </div>
+      <div class="main">
+        <section class="panel favorites" onTouchMove={onTouchMove}>
+          <h1>Favorites</h1>
+          <ul class="favorites">
+            {state.value.favorites.sort().map(i => (
+              <a class="favorite" onClick={closeBar} href={`/r/${i}`}>
+                /r/{i}
+              </a>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </bottom-bar>
+  );
 }

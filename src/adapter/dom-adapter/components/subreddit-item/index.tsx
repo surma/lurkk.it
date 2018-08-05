@@ -54,43 +54,43 @@ function downloadThread(this: LayerMenu, ev: CustomEvent) {
 interface Props {
   state: Thread;
 }
-export default class SubredditItemComponent extends Component<Props, {}> {
-  render({ state }: RenderableProps<Props>) {
-    return (
-      <layer-menu
-        class="item"
-        downloaded={state.cachedAt >= 0}
-        slide-width="80"
-        slide-zone="380"
-        onOpengesture={downloadThread}
-        data-thread-id={state.id}
-      >
-        <div slot="top" class="top">
-          <div
-            class="preview"
-            style={{
-              backgroundImage: `url(${state.previewImage})`
-            }}
-          >
-            <div class="dlbadge offline" {...setInnerHTML(offlineSVG)} />
-            <div class="dlbadge download" {...setInnerHTML(downloadSVG)} />
-          </div>
-          <a href={`/t/${state.id}`} class="title">
-            {state.title}
-          </a>
-          <div class="meta">
-            /u/{state.author} • /r/{state.subreddit} • {state.ago}
-          </div>
-          <div class="engagement">
-            {state.points} {pluralize("point", state.points)} •
-            {state.numComments} {pluralize("comment", state.numComments)}
-            {state.domain}
-          </div>
+export default function SubredditItemComponent({
+  state
+}: RenderableProps<Props>) {
+  return (
+    <layer-menu
+      class="item"
+      downloaded={state.cachedAt >= 0}
+      slide-width="80"
+      slide-zone="380"
+      onOpengesture={downloadThread}
+      data-thread-id={state.id}
+    >
+      <div slot="top" class="top">
+        <div
+          class="preview"
+          style={{
+            backgroundImage: `url(${state.previewImage})`
+          }}
+        >
+          <div class="dlbadge offline" {...setInnerHTML(offlineSVG)} />
+          <div class="dlbadge download" {...setInnerHTML(downloadSVG)} />
         </div>
-        <div class="bottom">
-          <div class="action" {...setInnerHTML(downloadSVG)} />
+        <a href={`/t/${state.id}`} class="title">
+          {state.title}
+        </a>
+        <div class="meta">
+          /u/{state.author} • /r/{state.subreddit} • {state.ago}
         </div>
-      </layer-menu>
-    );
-  }
+        <div class="engagement">
+          {state.points} {pluralize("point", state.points)} •
+          {state.numComments} {pluralize("comment", state.numComments)}
+          {state.domain}
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="action" {...setInnerHTML(downloadSVG)} />
+      </div>
+    </layer-menu>
+  );
 }

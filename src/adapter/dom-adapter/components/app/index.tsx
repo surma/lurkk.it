@@ -82,16 +82,14 @@ function back() {
 interface Props extends ComponentProps {
   state: AppState;
 }
-export default class App extends Component<Props> {
-  render({ state }: RenderableProps<Props>) {
-    return (
-      <main>
-        <div id="root">Welcome to LurkIt</div>
-        <item-stack idFunc={idFunc} onDismissgesture={back}>
-          {state.value.stack.map(getComponentForView)}
-        </item-stack>
-        <BottomBarComponent state={state} />
-      </main>
-    );
-  }
+export default function AppComponent({ state }: RenderableProps<Props>) {
+  return (
+    <main>
+      <div id="root">Welcome to LurkIt</div>
+      <item-stack idFunc={idFunc} onDismissgesture={back}>
+        {state.value.stack.map(getComponentForView)}
+      </item-stack>
+      <BottomBarComponent state={state} />
+    </main>
+  );
 }

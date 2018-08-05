@@ -22,19 +22,17 @@ import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 interface Props {
   state: Comment;
 }
-export default class CommentComponent extends Component<Props, {}> {
-  render({ state }: Props) {
-    return (
-      <li class="comment">
-        <div class="content" {...setInnerHTML(state.htmlBody)} />
-        <div class="meta">
-          /u/{state.author} • {state.points} {pluralize("point", state.points)}{" "}
-          • {state.ago}
-        </div>
-        <ul class="comments replies">
-          {state.replies.map(comment => <CommentComponent state={comment} />)}
-        </ul>
-      </li>
-    );
-  }
+export default function CommentComponent({ state }: Props) {
+  return (
+    <li class="comment">
+      <div class="content" {...setInnerHTML(state.htmlBody)} />
+      <div class="meta">
+        /u/{state.author} • {state.points} {pluralize("point", state.points)} •{" "}
+        {state.ago}
+      </div>
+      <ul class="comments replies">
+        {state.replies.map(comment => <CommentComponent state={comment} />)}
+      </ul>
+    </li>
+  );
 }

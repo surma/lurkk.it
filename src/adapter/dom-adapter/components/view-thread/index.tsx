@@ -28,50 +28,45 @@ import CommentComponent from "../comment";
 interface Props {
   state: ThreadView;
 }
-export default class ThreadViewComponent extends Component<Props, {}> {
-  render({ state }: RenderableProps<Props>) {
-    return (
-      <div
-        class="view thread"
-        data-view-id={state.uid}
-        style={{
-          display: "",
-          transform: ""
-        }}
-      >
-        <div class="post">
-          <header class="header">
-            <h1 class="title">{state.thread.title}</h1>
-            <p class="meta">
-              /u/{state.thread.author} • /r/{state.thread.subreddit} •
-              {state.thread.ago}
-            </p>
-            <p class="engagement">
-              {state.thread.points}
-              {pluralize("point", state.thread.points)} •
-              {state.thread.numComments}
-              {pluralize("comment", state.thread.numComments)}
-            </p>
-          </header>
-          {state.thread.isLink ? (
-            <a
-              href={state.thread.link}
-              class="content link"
-              style={{
-                backgroundImage: `url(${state.thread.previewImage});`
-              }}
-            />
-          ) : (
-            <div
-              class="content text"
-              {...setInnerHTML(state.thread.htmlBody!)}
-            />
-          )}
-        </div>
-        <ul class="comments">
-          {state.comments.map(comment => <CommentComponent state={comment} />)}
-        </ul>
+export default function ThreadViewComponent({ state }: RenderableProps<Props>) {
+  return (
+    <div
+      class="view thread"
+      data-view-id={state.uid}
+      style={{
+        display: "",
+        transform: ""
+      }}
+    >
+      <div class="post">
+        <header class="header">
+          <h1 class="title">{state.thread.title}</h1>
+          <p class="meta">
+            /u/{state.thread.author} • /r/{state.thread.subreddit} •
+            {state.thread.ago}
+          </p>
+          <p class="engagement">
+            {state.thread.points}
+            {pluralize("point", state.thread.points)} •
+            {state.thread.numComments}
+            {pluralize("comment", state.thread.numComments)}
+          </p>
+        </header>
+        {state.thread.isLink ? (
+          <a
+            href={state.thread.link}
+            class="content link"
+            style={{
+              backgroundImage: `url(${state.thread.previewImage});`
+            }}
+          />
+        ) : (
+          <div class="content text" {...setInnerHTML(state.thread.htmlBody!)} />
+        )}
       </div>
-    );
-  }
+      <ul class="comments">
+        {state.comments.map(comment => <CommentComponent state={comment} />)}
+      </ul>
+    </div>
+  );
 }
