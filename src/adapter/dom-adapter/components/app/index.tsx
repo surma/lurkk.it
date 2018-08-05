@@ -12,13 +12,20 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/src/integrations/preact";
-import { Component, RenderableProps, VNode } from "preact";
+import { Component, ComponentProps, h, RenderableProps, VNode } from "preact";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
 import ItemStack from "../../elements/item-stack";
 defineCE("item-stack", ItemStack);
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      ["item-stack"]: Partial<ItemStack> & { [x: string]: any };
+    }
+  }
+}
 
 import { View, ViewType } from "../../../../model/view.js";
 import { AppState } from "../../types.js";
@@ -28,27 +35,23 @@ import ResolveComponent from "../resolve";
 const views = new Map<ViewType, (view: View) => VNode>([
   [
     ViewType.THREAD,
-    (view: View) => html`
-    <${ResolveComponent}
-      component=${import("../view-thread").then(m => m.default)}
-    >
-      ${({ component }: any) => html`
-        <${component} state=${view} />
-      `}
-    <//>
-  `
+    (view: View) => (
+      <ResolveComponent
+        Component={import("../view-thread").then(m => m.default)}
+      >
+        {({ Component }: any) => <Component state={view} />}
+      </ResolveComponent>
+    )
   ],
   [
     ViewType.SUBREDDIT,
-    (view: View) => html`
-    <${ResolveComponent}
-      component=${import("../view-subreddit").then(m => m.default)}
-    >
-      ${({ component }: any) => html`
-        <${component} state=${view} />
-      `}
-    <//>
-  `
+    (view: View) => (
+      <ResolveComponent
+        Component={import("../view-subreddit").then(m => m.default)}
+      >
+        {({ Component }: any) => <Component state={view} />}
+      </ResolveComponent>
+    )
   ]
 ]);
 
@@ -76,22 +79,19 @@ function back() {
   history.back();
 }
 
-interface Props {
+interface Props extends ComponentProps {
   state: AppState;
 }
 export default class App extends Component<Props> {
   render({ state }: RenderableProps<Props>) {
-    return html`
+    return (
       <main>
         <div id="root">Welcome to LurkIt</div>
-        <item-stack
-          id:func=${idFunc}
-          on:dismissgesture=${back}
-        >
-          ${state.value.stack.map(getComponentForView)}
+        <item-stack idFunc={idFunc} onDismissgesture={back}>
+          {state.value.stack.map(getComponentForView)}
         </item-stack>
-        <${BottomBarComponent} state=${state} />
+        <BottomBarComponent state={state} />
       </main>
-    `;
+    );
   }
 }

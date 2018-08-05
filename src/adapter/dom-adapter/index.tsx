@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html, render } from "htm/src/integrations/preact";
+import { h, render } from "preact";
 
 import { State } from "westend/src/state-machine/state-machine.js";
 import * as FsmUtils from "westend/utils/fsm-utils.js";
@@ -46,7 +46,11 @@ export default class DomAdapter {
     FsmUtils.onChange<Node, Value>(this.onFsmChange.bind(this));
     await ServiceReady.waitFor(FSM_READY_CHANNEL);
     await UrlMapper.init();
-    this.render(await FsmUtils.getSnapshot<Node, Value>());
+    const snapshot = await FsmUtils.getSnapshot<Node, Value>();
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+    this.render(snapshot);
   }
 
   private onFsmChange(snapshot: State<Node, Value>) {
@@ -54,7 +58,11 @@ export default class DomAdapter {
   }
 
   private render(state: AppState) {
-    render(html`<${App} state=${state} />`, document.body);
+    render(
+      <App state={state} />,
+      document.body,
+      document.body.firstElementChild!
+    );
   }
 }
 

@@ -12,8 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/src/integrations/preact";
-import { Component } from "preact";
+import { Component, h } from "preact";
 
 import { Comment } from "../../../../model/comment.js";
 
@@ -25,24 +24,17 @@ interface Props {
 }
 export default class CommentComponent extends Component<Props, {}> {
   render({ state }: Props) {
-    return html`
+    return (
       <li class="comment">
-        <div
-          class="content"
-          ...${setInnerHTML(state.htmlBody)}
-        ></div>
+        <div class="content" {...setInnerHTML(state.htmlBody)} />
         <div class="meta">
-          /u/${state.author} • ${state.points} ${pluralize(
-      "point",
-      state.points
-    )}
+          /u/{state.author} • {state.points} {pluralize("point", state.points)}{" "}
+          • {state.ago}
         </div>
         <ul class="comments replies">
-          ${state.replies.map(
-            comment => html`<${CommentComponent} state=${comment} />`
-          )}
+          {state.replies.map(comment => <CommentComponent state={comment} />)}
         </ul>
       </li>
-    `;
+    );
   }
 }

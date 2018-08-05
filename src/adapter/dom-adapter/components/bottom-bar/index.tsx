@@ -12,8 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { html } from "htm/src/integrations/preact";
-import { Component, RenderableProps } from "preact";
+import { Component, h, RenderableProps } from "preact";
 
 import { emitTrigger, getSnapshot } from "westend/utils/fsm-utils.js";
 
@@ -28,6 +27,13 @@ import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
 import BottomBar from "../../elements/bottom-bar";
 defineCE("bottom-bar", BottomBar);
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      ["bottom-bar"]: Partial<BottomBar> & { [x: string]: any };
+    }
+  }
+}
 
 import ItemStack from "../../elements/item-stack";
 
@@ -152,66 +158,63 @@ interface Props {
 export default class BottomBarComponent extends Component<Props> {
   render({ state }: RenderableProps<Props>) {
     const topView = getTopView(state);
-    return html`
+    return (
       <bottom-bar
         id="bottom-bar"
-        loading=${isLoading(state)}
-        on:dblclick=${toggleBar}
+        loading={isLoading(state)}
+        onDblclick={toggleBar}
       >
         <div slot="bar" class="bar">
-          <div class="loader"></div>
+          <div class="loader" />
           <button
             class="button back"
-            on:click=${back}
-            ...${setInnerHTML(backSVG)}
-          >
-          </button>
-          <form on:submit=${open}>
-            <input placeholder="/r/..." class="input" value=${extractSearchBarValue(
-              topView
-            )} />
+            onClick={back}
+            {...setInnerHTML(backSVG)}
+          />
+          <form onSubmit={open}>
             <input
-              type="submit"
-              class="button button--primary go"
-              value="Go"
+              placeholder="/r/..."
+              class="input"
+              value={extractSearchBarValue(topView)}
             />
+            <input type="submit" class="button button--primary go" value="Go" />
           </form>
           <button
             class="button download"
-            on:click=${download}
-            ...${setInnerHTML(downloadSVG)}
-          >
-          </button>
+            onClick={download}
+            {...setInnerHTML(downloadSVG)}
+          />
           <button
-            class="button favorite ${
-              showFavorite(topView) ? "" : "invisible"
-            } ${isFavoriteSubreddit(state) ? "favorited" : ""}"
-            on:click=${toggleFavorite}
-            ...${setInnerHTML(
+            class={[
+              "button",
+              "favorite",
+              showFavorite(topView) ? "" : "invisible",
+              isFavoriteSubreddit(state) ? "favorited" : ""
+            ].join(" ")}
+            onClick={toggleFavorite}
+            {...setInnerHTML(
               isFavoriteSubreddit(state) ? starOnSVG : starOffSVG
             )}
-          >
-          </button>
+          />
           <button
             class="button refresh"
-            on:click=${refresh}
-            ...${setInnerHTML(refreshSVG)}
-          >
-          </button>
+            onClick={refresh}
+            {...setInnerHTML(refreshSVG)}
+          />
         </div>
         <div class="main">
-          <section class="panel favorites" on:touchmove=${onTouchMove}>
+          <section class="panel favorites" onTouchMove={onTouchMove}>
             <h1>Favorites</h1>
             <ul class="favorites">
-              ${state.value.favorites.sort().map(
-                i => html`
-                  <a class="favorite" on:click=${closeBar} href="/r/${i}">/r/${i}</a>
-                `
-              )}
+              {state.value.favorites.sort().map(i => (
+                <a class="favorite" onClick={closeBar} href={`/r/${i}`}>
+                  /r/{i}
+                </a>
+              ))}
             </ul>
           </section>
         </div>
       </bottom-bar>
-    `;
+    );
   }
 }
