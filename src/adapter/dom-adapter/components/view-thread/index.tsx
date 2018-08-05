@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h, RenderableProps } from "preact";
+import { h, RenderableProps } from "preact";
 
-import { ThreadView } from "../../../../model/view.js";
+import { ViewType } from "../../../../model/view.js";
 
 import { injectStyles } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
@@ -25,10 +25,13 @@ injectStyles("view-thread", styles);
 
 import CommentComponent from "../comment";
 
-interface Props {
-  state: ThreadView;
-}
-export default function ThreadViewComponent({ state }: RenderableProps<Props>) {
+import { ViewComponentProps } from "../../types.js";
+export default function ThreadViewComponent({
+  state
+}: RenderableProps<ViewComponentProps>) {
+  if (state.type !== ViewType.THREAD) {
+    throw new Error("Invalid state object for view");
+  }
   return (
     <div
       class="view thread"

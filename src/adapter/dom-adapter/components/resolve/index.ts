@@ -14,50 +14,28 @@
 
 import { Component, RenderableProps, VNode } from "preact";
 
-export default class ResolveComponent<Props> extends Component<Props, Props> {
-  private numPending = 0;
-
-  constructor(props: Props) {
-    super();
-    this.waitOn({}, props);
-  }
-
-  componentWillReceiveProps(props: Props) {
-    this.waitOn(this.props, props);
-  }
-
-  waitOn(oldProps: Partial<Props>, newProps: Partial<Props>) {
-    for (const prop of Object.keys(newProps) as Array<keyof Props>) {
-      const promise = newProps[prop];
-      if (oldProps[prop] === promise) {
-        continue;
+export interface Props<T> {
+  promise: Promise<T>;
+  onResolve: (v: T) => VNode;
+}
+export interface State {
+  rendered?: VNode;
+}
+export default class ResolveComponent<T> extends Component<Props<T>, State> {
+  componentWillReceiveProps(props: Props<T>) {
+    props.promise.then(v => {
+      // If the promise has changed in the meantime, ignore the resolution.
+      if (this.props.promise !== props.promise) {
+        return;
       }
-      // Only handle then-ables
-      if (!isPromise(promise)) {
-        continue;
-      }
-      promise.then(value => {
-        // Promises are passed in via `props`,
-        // `state` holds the resolved values
-        this.setState({ [prop]: value } as any);
-        this.numPending--;
-      });
-      this.numPending++;
-    }
+      this.setState({ rendered: props.onResolve(v) });
+    });
   }
 
-  render({ children }: RenderableProps<Props>, state: Props) {
-    if (this.numPending > 0) {
+  render(props: RenderableProps<Props<T>>, state: State) {
+    if (!state.rendered) {
       return null;
     }
-    const f = children && children.find(c => typeof c === "function");
-    if (!f) {
-      throw new Error("Resolve needs a function as its only child");
-    }
-    return ((f as any) as (state: Props) => VNode)(state);
+    return state.rendered;
   }
-}
-
-function isPromise(p: any): p is Promise<{}> {
-  return p && "then" in p && typeof p.then === "function";
 }

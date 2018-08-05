@@ -12,7 +12,14 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, ComponentProps, h, RenderableProps, VNode } from "preact";
+import {
+  Component,
+  ComponentFactory,
+  ComponentProps,
+  h,
+  RenderableProps,
+  VNode
+} from "preact";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
@@ -28,39 +35,24 @@ declare global {
 }
 
 import { View, ViewType } from "../../../../model/view.js";
-import { AppState } from "../../types.js";
+import { AppState, ViewComponentProps } from "../../types.js";
 
 import ResolveComponent from "../resolve";
 
-const views = new Map<ViewType, (view: View) => VNode>([
-  [
-    ViewType.THREAD,
-    (view: View) => (
-      <ResolveComponent
-        Component={import("../view-thread").then(m => m.default)}
-      >
-        {({ Component }: any) => <Component state={view} />}
-      </ResolveComponent>
-    )
-  ],
-  [
-    ViewType.SUBREDDIT,
-    (view: View) => (
-      <ResolveComponent
-        Component={import("../view-subreddit").then(m => m.default)}
-      >
-        {({ Component }: any) => <Component state={view} />}
-      </ResolveComponent>
-    )
-  ]
+type ViewComponentLoader = () => Promise<ComponentFactory<ViewComponentProps>>;
+const viewComponentLoaders = new Map<ViewType, ViewComponentLoader>([
+  [ViewType.THREAD, () => import("../view-thread").then(m => m.default)],
+  [ViewType.SUBREDDIT, () => import("../view-subreddit").then(m => m.default)]
 ]);
 
-function getComponentForView(view: View): VNode {
-  if (!views.has(view.type)) {
+function loadViewComponent(
+  view: View
+): Promise<ComponentFactory<ViewComponentProps>> {
+  if (!viewComponentLoaders.has(view.type)) {
     throw new Error("Unknown view type");
   }
-  const viewComponentFactory = views.get(view.type)!;
-  return viewComponentFactory(view);
+  const viewLoader = viewComponentLoaders.get(view.type)!;
+  return viewLoader();
 }
 
 import styles from "./styles.css";
@@ -87,7 +79,12 @@ export default function AppComponent({ state }: RenderableProps<Props>) {
     <main>
       <div id="root">Welcome to LurkIt</div>
       <item-stack idFunc={idFunc} onDismissgesture={back}>
-        {state.value.stack.map(getComponentForView)}
+        {state.value.stack.map(view => (
+          <ResolveComponent<ComponentFactory<ViewComponentProps>>
+            promise={loadViewComponent(view)}
+            onResolve={Component => <Component state={view} />}
+          />
+        ))}
       </item-stack>
       <BottomBarComponent state={state} />
     </main>

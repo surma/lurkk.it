@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h, RenderableProps } from "preact";
+import { h, RenderableProps } from "preact";
 
-import { SubredditView } from "../../../../model/view.js";
+import { ViewType } from "../../../../model/view.js";
 
 import { injectStyles } from "../../../../utils/dom-helpers.js";
 
@@ -22,12 +22,13 @@ import SubredditItemComponent from "../subreddit-item/";
 import styles from "./styles.css";
 injectStyles("view-subreddit", styles);
 
-interface Props {
-  state: SubredditView;
-}
+import { ViewComponentProps } from "../../types.js";
 export default function SubredditViewComponent({
   state
-}: RenderableProps<Props>) {
+}: RenderableProps<ViewComponentProps>) {
+  if (state.type !== ViewType.SUBREDDIT) {
+    throw new Error("Invalid state object for view");
+  }
   return (
     <div
       class="view subreddit"
