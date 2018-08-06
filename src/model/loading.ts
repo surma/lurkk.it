@@ -24,9 +24,9 @@ import { Thread, ThreadID } from "./thread.js";
 
 import * as RedditDataSource from "./data-source/reddit.js";
 
-export const dataSources = new Map<string, Promise<DataSource>>([
-  ["reddit", Promise.resolve(cacheWrapper(RedditDataSource))],
-  ["mock", import("./data-source/mock.js")]
+export const dataSources = new Map<string, () => Promise<DataSource>>([
+  ["reddit", async () => cacheWrapper(RedditDataSource)],
+  ["mock", () => import("./data-source/mock.js")]
 ]);
 
 export let dataSourceName = "reddit";
@@ -35,7 +35,8 @@ function getDataSource(): Promise<DataSource> {
   if (!dataSources.has(dataSourceName)) {
     throw new Error(`Invalid data source ${dataSourceName}`);
   }
-  return dataSources.get(dataSourceName)!;
+  const dataSource = dataSources.get(dataSourceName)!;
+  return dataSource();
 }
 
 export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
