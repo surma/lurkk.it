@@ -13,7 +13,7 @@
  */
 
 :root {
-  --loader-size: var(--base);
+  --loader-size: 1rem
 }
 
 main {

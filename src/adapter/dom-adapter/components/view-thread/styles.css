@@ -35,12 +35,12 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: calc(2 * var(--base) * var(--padding)) calc(var(--base) * var(--padding));
+  padding: calc(2 * var(--padding)) var(--padding);
 }
 
 .thread .post .content {
   background-color: var(--primary-dd);
-  padding: calc(2 * var(--base) * var(--padding)) calc(var(--base) * var(--padding));
+  padding: calc(2 * var(--padding)) var(--padding);
   width: 100%;
 }
 
@@ -55,28 +55,28 @@
 .thread .post .title {
   display: block;
   font-weight: bold;
-  font-size: calc(var(--base) * var(--big-font));
-  padding-bottom: calc(2 * var(--base) * var(--padding));
+  font-size: var(--big-font);
+  padding-bottom: calc(2 * var(--padding));
 }
 
 .thread .meta, .thread .engagement {
-  font-size: calc(var(--base) * var(--small-font));
+  font-size: var(--small-font);
   opacity: calc(var(--opacity-step) * var(--opacity-step));
 }
 
 .thread > .comments {
-  padding-top: calc(var(--base) * var(--padding));
-  padding-right: calc(var(--base) * var(--padding));
+  padding-top: var(--padding);
+  padding-right: var(--padding);
 }
 
 .thread .comments .comment {
-  padding-left: calc(var(--base) * var(--padding));
+  padding-left: var(--padding);
   overflow-x: auto;
 }
 
 .thread .comment > .comments {
   border-left: 1px solid var(--primary-dd);
-  margin-top: calc(var(--base) * var(--padding));
+  margin-top: var(--padding);
 }
 
 .thread .content b, strong {
@@ -88,5 +88,5 @@
 }
 
 .thread .content p {
-  margin: calc(var(--base) * var(--padding)) 0;
+  margin: var(--padding) 0;
 }

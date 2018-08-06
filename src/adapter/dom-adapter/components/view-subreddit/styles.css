@@ -13,22 +13,22 @@
  */
 
 :root {
-  --badge-size: 0.6;
-  --badge-icon-size: 0.8;
+  --subreddit-item-size: 20rem;
+  --subreddit-badge-size: calc(0.6 * var(--subreddit-item-size));
+  --subreddit-badge-icon-size: calc(0.8 * var(--subreddit-item-size));
 }
 .view.subreddit {
   background-color: var(--primary-b);
 
-  --item-height: 20;
 }
 
 .subreddit .item {
   position: relative;
   background-color: var(--primary-b);
-  min-height: calc(var(--base) * var(--item-height));
+  min-height: var(--subreddit-item-size);
 
   border-bottom: 1px solid black;
-  border-image: linear-gradient(90deg,var(--primary-d) 0%, var(--primary-b) 66%) 1;
+  border-image: linear-gradient(90deg, var(--primary-d) 0%, var(--primary-b) 66%) 1;
 }
 
 .subreddit .item .top {
@@ -36,12 +36,12 @@
   height: 100%;
   width: 100%;
 
-  padding: calc(var(--base) * var(--padding));
+  padding: var(--padding);
   padding-right: 0;
 
   display: grid;
   grid-template-rows: 1fr min-content min-content;
-  grid-template-columns: 1fr minmax(calc(var(--base) * var(--item-height)), auto);
+  grid-template-columns: 1fr minmax(var(--subreddit-item-size), auto);
 }
 
 .subreddit .item .bottom {
@@ -51,7 +51,7 @@
   align-items: center;
   background-color: var(--primary1);
   fill: var(--primary1-b);
-  padding-right: calc(var(--base) * var(--padding));
+  padding-right: var(--padding);
 }
 
 .subreddit .item .top .preview {
@@ -61,7 +61,7 @@
   grid-area: 1 / -1 / -1 / -2;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
-  min-height: calc(var(--base) * var(--item-height));
+  min-height: var(--subreddit-item-size);
   position: relative;
 }
 
@@ -78,14 +78,15 @@
     display: block;
     float: right;
     width: 25%;
-    height: calc(var(--base) * var(--item-height) * 0.4);
+    /* FIXME(@surma): This needs to be done better */
+    height: calc(var(--subreddit-item-size) * 0.4);
     shape-outside: polygon(0 0, 100% 0, 100% 100%);
   }
 }
 
 .subreddit .item .top .meta,
 .subreddit .item .top .engagement {
-  font-size: calc(var(--base) * var(--small-font));
+  font-size: var(--small-font);
   opacity: calc(var(--opacity-step) * var(--opacity-step));
   grid-area: 2 / 1;
 }
@@ -101,8 +102,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: calc(var(--base) * var(--item-height) * var(--badge-size));
-  height: calc(var(--base) * var(--item-height) * var(--badge-size));
+  width: calc(var(--base) * var(--subreddit-item-size) * var(--subreddit-badge-size));
+  height: calc(var(--base) * var(--subreddit-item-size) * var(--subreddit-badge-size));
   background-color: var(--secondary1);
   fill: var(--secondary1-b);
   clip-path: polygon(0 0, 100% 0, 100% 100%);
@@ -111,13 +112,13 @@
 }
 
 .subreddit .item .dlbadge svg {
-  /* Width = Height = Radius of triangle incircle = side length / (1 + sqrt(2)/2) */
-  --size: calc(var(--base) * var(--item-height) * var(--badge-size) / (1 + var(--sqrt2) / 2));
+  /* Radius of right triangle incircle = triangle side length / (1 + sqrt(2)/2) */
+  --size: calc(var(--subreddit-badge-size) / (1 + var(--sqrt2) / 2));
   position: absolute;
-  top: calc(var(--size) * (1 - var(--badge-icon-size)) / 2);
-  right: calc(var(--size) * (1 - var(--badge-icon-size)) / 2);
-  width: calc(var(--size) * var(--badge-icon-size));
-  height: calc(var(--size) * var(--badge-icon-size));
+  top: calc(var(--size) * (1 - var(--subreddit-badge-icon-size)) / 2);
+  right: calc(var(--size) * (1 - var(--subreddit-badge-icon-size)) / 2);
+  width: calc(var(--size) * var(--subreddit-badge-icon-size));
+  height: calc(var(--size) * var(--subreddit-badge-icon-size));
 }
 
 .subreddit .item[downloaded] .dlbadge.offline {
