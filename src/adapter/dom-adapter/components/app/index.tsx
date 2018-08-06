@@ -71,12 +71,17 @@ function back() {
   history.back();
 }
 
+function isLoading(state: AppState) {
+  return state.value.loading.length > 0;
+}
+
 interface Props extends ComponentProps {
   state: AppState;
 }
 export default function AppComponent({ state }: RenderableProps<Props>) {
   return (
-    <main>
+    <main class={state.value.loading.length > 0 ? "loading" : ""}>
+      <div class="loader" />
       <div id="root">Welcome to LurkIt</div>
       <item-stack idFunc={idFunc} onDismissgesture={back}>
         {state.value.stack.map(view => (

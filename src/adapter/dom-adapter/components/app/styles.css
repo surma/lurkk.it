@@ -12,6 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+:root {
+  --loader-size: var(--base);
+}
+
 main {
   width: 100%;
   height: 100%;
@@ -31,6 +35,37 @@ main > * {
   max-width: 100vw;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-bottom: 10%;
+  padding-bottom: 10vh;
   contain: strict;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+
+.loader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: var(--loader-size);
+  width: 200%;
+  background: none;
+  z-index: 1;
+}
+
+.loading .loader {
+  background-image: linear-gradient(
+    90deg,
+    var(--primary-dd) 0%,
+    var(--secondary1) 25%,
+    var(--primary-dd) 50%,
+    var(--secondary1) 75%,
+    var(--primary-dd) 100%
+  );
+  animation: slide 1s linear infinite;
 }

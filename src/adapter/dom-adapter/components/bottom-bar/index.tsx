@@ -80,10 +80,6 @@ function open() {
   return false;
 }
 
-function isLoading(state: AppState) {
-  return state.value.loading.length > 0;
-}
-
 function getTopView(state: AppState): View | undefined {
   return state.value.stack[state.value.stack.length - 1];
 }
@@ -158,13 +154,8 @@ interface Props {
 export default function BottomBarComponent({ state }: RenderableProps<Props>) {
   const topView = getTopView(state);
   return (
-    <bottom-bar
-      id="bottom-bar"
-      loading={isLoading(state)}
-      onDblclick={toggleBar}
-    >
+    <bottom-bar id="bottom-bar" onDblclick={toggleBar}>
       <div slot="bar" class="bar">
-        <div class="loader" />
         <button class="button back" onClick={back} {...setInnerHTML(backSVG)} />
         <form onSubmit={open}>
           <input
