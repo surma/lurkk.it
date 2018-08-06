@@ -3,7 +3,7 @@ import nodeResolve from "rollup-plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
 import css from "./utils/rollup-plugin-css";
 import markup from "./utils/rollup-plugin-markup";
-import codesplitloader from "./utils/rollup-plugin-codesplitloader/index.js";
+import loadz0r from "rollup-plugin-loadz0r";
 
 import { readFileSync } from "fs";
 
@@ -31,10 +31,8 @@ export default {
     nodeResolve(),
     css(),
     markup(),
-    codesplitloader({
-      loader: readFileSync("./utils/rollup-plugin-codesplitloader/loader.js")
-    })
-    // terser(),
+    loadz0r(),
+    terser()
   ],
   experimentalCodeSplitting: true
 };
