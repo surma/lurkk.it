@@ -83,8 +83,8 @@ export default function SubredditItemComponent({
           /u/{state.author} • /r/{state.subreddit} • {state.ago}
         </div>
         <div class="engagement">
-          {state.points} {pluralize("point", state.points)} •
-          {state.numComments} {pluralize("comment", state.numComments)}
+          {state.points} {pluralize("point", state.points)} •{" "}
+          {state.numComments} {pluralize("comment", state.numComments)}{" "}
           {state.domain}
         </div>
       </div>
