@@ -192,7 +192,8 @@ export default function BottomBarComponent({ state }: RenderableProps<Props>) {
           <ul class="favorites">
             {state.value.favorites.sort().map(i => (
               <a class="favorite" onClick={closeBar} href={`/r/${i}`}>
-                /r/{i}
+                /r/
+                {i}
               </a>
             ))}
           </ul>

@@ -80,7 +80,9 @@ export default function SubredditItemComponent({
           {state.title}
         </a>
         <div class="meta">
-          /u/{state.author} • /r/{state.subreddit} • {state.ago}
+          /u/
+          {state.author} • /r/
+          {state.subreddit} • {state.ago}
         </div>
         <div class="engagement">
           {state.points} {pluralize("point", state.points)} •{" "}

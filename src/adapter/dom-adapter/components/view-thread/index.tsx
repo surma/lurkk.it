@@ -45,8 +45,9 @@ export default function ThreadViewComponent({
         <header class="header">
           <h1 class="title">{state.thread.title}</h1>
           <p class="meta">
-            /u/{state.thread.author} • /r/{state.thread.subreddit} •
-            {state.thread.ago}
+            /u/
+            {state.thread.author} • /r/
+            {state.thread.subreddit} •{state.thread.ago}
           </p>
           <p class="engagement">
             {state.thread.points}
@@ -68,7 +69,9 @@ export default function ThreadViewComponent({
         )}
       </div>
       <ul class="comments">
-        {state.comments.map(comment => <CommentComponent state={comment} />)}
+        {state.comments.map(comment => (
+          <CommentComponent state={comment} />
+        ))}
       </ul>
     </div>
   );

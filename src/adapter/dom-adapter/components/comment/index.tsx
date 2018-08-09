@@ -27,11 +27,14 @@ export default function CommentComponent({ state }: Props) {
     <li class="comment">
       <div class="content" {...setInnerHTML(state.htmlBody)} />
       <div class="meta">
-        /u/{state.author} • {state.points} {pluralize("point", state.points)} •{" "}
+        /u/
+        {state.author} • {state.points} {pluralize("point", state.points)} •{" "}
         {state.ago}
       </div>
       <ul class="comments replies">
-        {state.replies.map(comment => <CommentComponent state={comment} />)}
+        {state.replies.map(comment => (
+          <CommentComponent state={comment} />
+        ))}
       </ul>
     </li>
   );
