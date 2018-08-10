@@ -30,7 +30,9 @@ defineCE("bottom-bar", BottomBar);
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["bottom-bar"]: Partial<BottomBar> & { [x: string]: any };
+      ["bottom-bar"]: Partial<BottomBar & { children: any }> & {
+        [x: string]: any;
+      };
     }
   }
 }

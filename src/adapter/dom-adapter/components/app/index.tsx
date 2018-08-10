@@ -29,7 +29,9 @@ defineCE("item-stack", ItemStack);
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["item-stack"]: Partial<ItemStack> & { [x: string]: any };
+      ["item-stack"]: Partial<ItemStack & { children: any }> & {
+        [x: string]: any;
+      };
     }
   }
 }

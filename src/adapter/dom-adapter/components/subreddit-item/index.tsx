@@ -28,7 +28,9 @@ defineCE("layer-menu", LayerMenu);
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["layer-menu"]: Partial<LayerMenu> & { [x: string]: any };
+      ["layer-menu"]: Partial<LayerMenu & { children: any }> & {
+        [x: string]: any;
+      };
     }
   }
 }
