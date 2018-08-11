@@ -26,7 +26,7 @@ export {
   cacheDate
 } from "./loading.js";
 
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as ServiceReady from "../utils/service-ready.js";
 import { init as loadingInit } from "./loading.js";
 
 export const READY_CHANNEL = "model.ready";

@@ -15,9 +15,9 @@
 import { h, render } from "preact";
 
 import { State } from "westend/src/state-machine/state-machine.js";
-import * as FsmUtils from "westend/utils/fsm-utils.js";
-import * as RequestResponseBus from "westend/utils/request-response-bus.js";
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as FsmUtils from "../../utils/fsm-utils.js";
+import * as RequestResponseBus from "../../utils/request-response-bus.js";
+import * as ServiceReady from "../../utils/service-ready.js";
 
 import * as UrlMapper from "./url-mapper.js";
 
