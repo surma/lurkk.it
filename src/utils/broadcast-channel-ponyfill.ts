@@ -26,8 +26,6 @@ class UUIDCache {
   }
 }
 
-type Listener = (msg: MessageWrapper) => void;
-
 interface MessageWrapper {
   uuid: string;
   channel: string;
@@ -37,19 +35,29 @@ interface MessageWrapper {
 interface Channel {
   postMessage(msg: any): void;
 }
-
 const backchannels: Channel[] = [];
-const localListeners: Map<string, Listener[]> = new Map();
 
-if (isWorkerScope(self)) {
-  backchannels.push(self);
-  self.addEventListener("message", dedupedLocalBroadcast());
-}
+type Listener = (msg: MessageWrapper) => void;
+const localListeners: Map<string, Listener[]> = new Map();
 
 export interface Endpoint<T> {
   send(payload?: T): void;
   listen(callback: (msg?: T) => void): void;
   close(): void;
+}
+
+function isMessage(data: any): data is MessageWrapper {
+  return data && data.uuid && data.channel;
+}
+
+if (isWorkerScope(self)) {
+  backchannels.push(self);
+  const dedupedLocalBroadcast = generateDedupedLocalBroadcast();
+  self.addEventListener("message", evt => {
+    if (isMessage(evt.data)) {
+      dedupedLocalBroadcast(evt.data);
+    }
+  });
 }
 
 function uuid() {
@@ -68,6 +76,25 @@ function isWorkerScope(x: any): x is DedicatedWorkerGlobalScope {
 function remoteBroadcast(msg: MessageWrapper) {
   for (const backchannel of backchannels) {
     backchannel.postMessage(msg);
+  }
+}
+
+function generateDedupedLocalBroadcast() {
+  const uuids = new UUIDCache();
+  return (msg: MessageWrapper) => {
+    if (!uuids.has(msg.uuid)) {
+      uuids.add(msg.uuid);
+      localBroadcast(msg);
+    }
+  };
+}
+
+function localBroadcast(msg: MessageWrapper) {
+  const listeners = localListeners.get(msg.channel);
+  if (listeners) {
+    for (const listener of listeners) {
+      listener(msg);
+    }
   }
 }
 
@@ -105,29 +132,6 @@ export async function get<T>(channel: string): Promise<Endpoint<T>> {
   };
 }
 
-function dedupedLocalBroadcast() {
-  const uuids = new UUIDCache();
-  return (evt: MessageEvent) => {
-    if (!evt.data || !evt.data.channel || !evt.data.uuid) {
-      return;
-    }
-    const msg = evt.data as MessageWrapper;
-    if (!uuids.has(msg.uuid)) {
-      uuids.add(msg.uuid);
-      localBroadcast(msg);
-    }
-  };
-}
-
-function localBroadcast(msg: MessageWrapper) {
-  const listeners = localListeners.get(msg.channel);
-  if (listeners) {
-    for (const listener of listeners) {
-      listener(msg);
-    }
-  }
-}
-
 // I can’t just extend `Worker`, as it is currently not exposed in Workers
 // themselves.
 export const BroadcastWorker: Constructor<Worker> = function(
@@ -137,9 +141,12 @@ export const BroadcastWorker: Constructor<Worker> = function(
   const worker = new Worker(src);
   backchannels.push(worker);
 
-  const localBroadcast = dedupedLocalBroadcast();
+  const localBroadcast = generateDedupedLocalBroadcast();
   worker.addEventListener("message", evt => {
-    localBroadcast(evt);
+    if (!isMessage(evt.data)) {
+      return;
+    }
+    localBroadcast(evt.data);
     remoteBroadcast(evt.data);
   });
 
