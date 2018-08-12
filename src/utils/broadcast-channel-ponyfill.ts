@@ -12,19 +12,43 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-type Listener<T = {}> = (payload?: T) => void;
+// This is currently equivalent to a Set, but I created a wrapper so we could
+// switch to a ringbuffer or something later on.
+class UUIDCache {
+  private cache = new Set<string>();
+
+  has(uuid: string) {
+    return this.cache.has(uuid);
+  }
+
+  add(uuid: string) {
+    this.cache.add(uuid);
+  }
+}
+
+type Listener = (msg: MessageWrapper) => void;
+
+interface MessageWrapper {
+  uuid: string;
+  channel: string;
+  payload?: {};
+}
+
+interface Channel {
+  postMessage(msg: any): void;
+}
 
 const backchannels: Channel[] = [];
 const localListeners: Map<string, Listener[]> = new Map();
 
 if (isWorkerScope(self)) {
   backchannels.push(self);
-  self.addEventListener("message", dedupedMessageListener());
+  self.addEventListener("message", dedupedLocalBroadcast());
 }
 
 export interface Endpoint<T> {
   send(payload?: T): void;
-  listen(callback: Listener<T>): void;
+  listen(callback: (msg?: T) => void): void;
   close(): void;
 }
 
@@ -41,17 +65,14 @@ function isWorkerScope(x: any): x is DedicatedWorkerGlobalScope {
   return "importScripts" in x;
 }
 
-interface MessageWrapper {
-  uuid: string;
-  channel: string;
-  payload?: {};
-}
-
-interface Channel {
-  postMessage(msg: any): void;
+function remoteBroadcast(msg: MessageWrapper) {
+  for (const backchannel of backchannels) {
+    backchannel.postMessage(msg);
+  }
 }
 
 export async function get<T>(channel: string): Promise<Endpoint<T>> {
+  const uuids = new UUIDCache();
   return {
     send(payload?: T) {
       const msg: MessageWrapper = {
@@ -59,14 +80,24 @@ export async function get<T>(channel: string): Promise<Endpoint<T>> {
         payload,
         uuid: uuid()
       };
-      processMessage(msg);
+      uuids.add(msg.uuid);
+      localBroadcast(msg);
+      remoteBroadcast(msg);
     },
-    listen(callback: Listener<T>) {
+    listen(callback: (msg?: T) => void) {
       let listeners = localListeners.get(channel);
       if (!listeners) {
         localListeners.set(channel, (listeners = []));
       }
-      listeners.push(callback as any);
+      listeners.push(msg => {
+        if (uuids.has(msg.uuid)) {
+          return;
+        }
+        if (msg.channel !== channel) {
+          return;
+        }
+        callback(msg.payload as any);
+      });
     },
     close() {
       // FIXME
@@ -74,8 +105,8 @@ export async function get<T>(channel: string): Promise<Endpoint<T>> {
   };
 }
 
-function dedupedMessageListener() {
-  const uuids = new Set<string>();
+function dedupedLocalBroadcast() {
+  const uuids = new UUIDCache();
   return (evt: MessageEvent) => {
     if (!evt.data || !evt.data.channel || !evt.data.uuid) {
       return;
@@ -83,19 +114,16 @@ function dedupedMessageListener() {
     const msg = evt.data as MessageWrapper;
     if (!uuids.has(msg.uuid)) {
       uuids.add(msg.uuid);
-      processMessage(msg);
+      localBroadcast(msg);
     }
   };
 }
 
-function processMessage(msg: MessageWrapper) {
-  for (const backchannel of backchannels) {
-    backchannel.postMessage(msg);
-  }
+function localBroadcast(msg: MessageWrapper) {
   const listeners = localListeners.get(msg.channel);
   if (listeners) {
     for (const listener of listeners) {
-      listener(msg.payload);
+      listener(msg);
     }
   }
 }
@@ -109,7 +137,11 @@ export const BroadcastWorker: Constructor<Worker> = function(
   const worker = new Worker(src);
   backchannels.push(worker);
 
-  worker.addEventListener("message", dedupedMessageListener());
+  const localBroadcast = dedupedLocalBroadcast();
+  worker.addEventListener("message", evt => {
+    localBroadcast(evt);
+    remoteBroadcast(evt.data);
+  });
 
   Reflect.setPrototypeOf(this, Reflect.getPrototypeOf(worker));
   Object.assign(this, worker);
