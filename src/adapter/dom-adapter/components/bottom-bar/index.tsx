@@ -14,7 +14,7 @@
 
 import { Component, h, RenderableProps } from "preact";
 
-import { emitTrigger, getSnapshot } from "westend/utils/fsm-utils.js";
+import { emitTrigger, getSnapshot } from "../../../../utils/fsm-utils.js";
 
 import {
   Node,
