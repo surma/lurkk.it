@@ -73,7 +73,7 @@ export async function cacheDate(id: SubredditID): Promise<number> {
   return dataSource.cacheDate(id);
 }
 
-import * as RequestResponseBus from "../utils/request-response-bus.js";
+import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 
 export type DataSourceNameRequest = string;
 export type DataSourceNameResponse = void;

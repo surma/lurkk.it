@@ -86,7 +86,7 @@ export default function AppComponent({ state }: RenderableProps<Props>) {
       <div class="loader" />
       <div id="root">Welcome to LurkIt</div>
       <item-stack idFunc={idFunc} onDismissgesture={back}>
-        {state.value.stack.map(view => (
+        {state.value.stack.slice(-2).map(view => (
           <ResolveComponent<ComponentFactory<ViewComponentProps>>
             promise={loadViewComponent(view)}
             onResolve={Component => <Component state={view} />}

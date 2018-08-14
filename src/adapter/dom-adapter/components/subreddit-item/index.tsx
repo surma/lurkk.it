@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h, RenderableProps } from "preact";
+import { h, RenderableProps } from "preact";
 
-import { emitTrigger } from "../../../../utils/fsm-utils.js";
+import { emitTrigger } from "westend/utils/fsm-utils.js";
 
 import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
 import { Thread } from "../../../../model/thread.js";

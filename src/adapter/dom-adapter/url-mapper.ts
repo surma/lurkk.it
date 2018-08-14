@@ -12,8 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as MessageBus from "../../utils/broadcast-channel-ponyfill.js";
-import * as FsmUtils from "../../utils/fsm-utils.js";
+import * as MessageBus from "westend/src/message-bus/message-bus.js";
+
+import * as FsmUtils from "westend/utils/fsm-utils.js";
 
 import ItemStack from "./elements/item-stack";
 
