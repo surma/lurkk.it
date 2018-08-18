@@ -84,9 +84,9 @@ export default function SubredditItemComponent({
           style={
             state.images.length > 0
               ? {
-                  backgroundImage: `url(${decodeHTML(
+                  backgroundImage: `url(${
                     state.images.sort((a, b) => a.width - b.width)[0].url
-                  )})`
+                  })`
                 }
               : {}
           }

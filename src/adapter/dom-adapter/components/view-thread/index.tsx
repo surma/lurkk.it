@@ -64,10 +64,10 @@ export default function ThreadViewComponent({
             style={
               state.thread.images.length > 0
                 ? {
-                    backgroundImage: `url(${decodeHTML(
+                    backgroundImage: `url(${
                       state.thread.images.sort((a, b) => b.width - a.width)[0]
                         .url
-                    )});`
+                    })`
                   }
                 : {}
             }

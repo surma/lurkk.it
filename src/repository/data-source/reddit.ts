@@ -20,6 +20,7 @@ import {
   ThreadItem as StorageThreadItem
 } from "../storage-model/thread.js";
 
+import { decodeHTML } from "../../utils/dom-helpers.js";
 import { optional } from "../../utils/js-helpers.js";
 
 export interface Subreddit {
@@ -136,7 +137,7 @@ function sanitizeUrl(url: string) {
 }
 
 function imageForStorage(img: Image): StorageImage[] {
-  const r = img.resolutions.slice();
+  const r = img.resolutions.map(img => ({ ...img, url: decodeHTML(img.url) }));
   r.push(img.source);
   return r;
 }
