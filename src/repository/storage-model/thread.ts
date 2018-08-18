@@ -12,11 +12,28 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Comment } from "../comment.js";
-import { Subreddit, SubredditID } from "../subreddit.js";
-import { Thread, ThreadID } from "../thread.js";
+import { Comment } from "./comment.js";
 
-export interface DataSource {
-  loadThread(id: ThreadID): Promise<[Thread, Comment[]]>;
-  loadSubreddit(id: SubredditID): Promise<Subreddit>;
+export interface Image {
+  url: string;
+  width: number;
+  height: number;
 }
+
+export interface ThreadItem {
+  author: string;
+  body?: string;
+  created: number;
+  cachedAt: number;
+  downvotes: number;
+  id: string;
+  link?: string;
+  nsfw: boolean;
+  numComments: number;
+  images: Image[];
+  subreddit: string;
+  title: string;
+  upvotes: number;
+}
+
+export type Thread = [ThreadItem, Comment[]];

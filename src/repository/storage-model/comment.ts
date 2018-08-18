@@ -12,15 +12,12 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export type CommentID = string;
 export interface Comment {
-  ago: string;
   author: string;
-  body: string;
+  created: number;
   downvotes: number;
-  htmlBody: string;
-  id: CommentID;
-  points: number;
+  body: string;
+  id: string;
   replies: Comment[];
   upvotes: number;
 }

@@ -12,24 +12,27 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h } from "preact";
+import { h } from "preact";
 
-import { Comment } from "../../../../model/comment.js";
+import { Comment } from "../../../../repository/storage-model/comment.js";
 
+import { decodeHTML } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 interface Props {
   state: Comment;
 }
 export default function CommentComponent({ state }: Props) {
+  const points = state.upvotes - state.downvotes;
+  const agoString = ago(state.created);
   return (
     <li class="comment">
-      <div class="content" {...setInnerHTML(state.htmlBody)} />
+      <div class="content" {...setInnerHTML(decodeHTML(state.body))} />
       <div class="meta">
         /u/
-        {state.author} • {state.points} {pluralize("point", state.points)} •{" "}
-        {state.ago}
+        {state.author} • {points} {pluralize("point", points)} • {agoString}
       </div>
       <ul class="comments replies">
         {state.replies.map(comment => (

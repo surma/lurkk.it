@@ -46,7 +46,7 @@ import { go } from "../../../../utils/router.js";
 import styles from "./styles.css";
 injectStyles("bottom-bar-component", styles);
 
-import { View, ViewType } from "../../../../model/view.js";
+import { View, ViewType } from "../../../../repository/view.js";
 
 import backSVG from "../../../../icons/back.svg";
 import downloadSVG from "../../../../icons/download.svg";

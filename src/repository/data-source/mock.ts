@@ -12,29 +12,17 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Comment } from "./comment.js";
-import { Subreddit } from "./subreddit.js";
-import { Thread } from "./thread.js";
+import {
+  processLoadSubredditAPIResponse,
+  processLoadThreadAPIResponse
+} from "./reddit.js";
 
-export interface ViewBase {
-  type: ViewType;
-  uid: string;
+export async function loadSubreddit(id: string) {
+  const rawData = await fetch("/subreddit.json").then(r => r.json());
+  return processLoadSubredditAPIResponse(id, rawData);
 }
 
-export enum ViewType {
-  SUBREDDIT,
-  THREAD
+export async function loadThread(id: string) {
+  const rawData = await fetch("/thread.json").then(r => r.json());
+  return processLoadThreadAPIResponse(id, rawData);
 }
-
-export interface SubredditView extends ViewBase {
-  type: ViewType.SUBREDDIT;
-  subreddit: Subreddit;
-}
-
-export interface ThreadView extends ViewBase {
-  type: ViewType.THREAD;
-  thread: Thread;
-  comments: Comment[];
-}
-
-export type View = SubredditView | ThreadView;

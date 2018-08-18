@@ -12,11 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Thread } from "./thread.js";
+import { Subreddit } from "../storage-model/subreddit.js";
+import { Thread } from "../storage-model/thread.js";
 
-export type SubredditID = string;
-export interface Subreddit {
-  cachedAt: number;
-  id: SubredditID;
-  items: Thread[];
+export interface DataSource {
+  loadThread(id: string): Promise<Thread>;
+  loadSubreddit(id: string): Promise<Subreddit>;
 }

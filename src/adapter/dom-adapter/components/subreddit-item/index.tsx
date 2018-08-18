@@ -17,10 +17,11 @@ import { h, RenderableProps } from "preact";
 import { emitTrigger } from "westend/utils/fsm-utils.js";
 
 import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
-import { Thread } from "../../../../model/thread.js";
+import { ThreadItem } from "../../../../repository/storage-model/thread.js";
 
-import { defineCE } from "../../../../utils/dom-helpers.js";
+import { decodeHTML, defineCE } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 import LayerMenu from "../../elements/layer-menu";
@@ -54,11 +55,20 @@ function downloadThread(this: LayerMenu, ev: CustomEvent) {
 }
 
 interface Props {
-  state: Thread;
+  state: ThreadItem;
 }
 export default function SubredditItemComponent({
   state
 }: RenderableProps<Props>) {
+  const agoString = ago(state.created);
+  const points = state.upvotes - state.downvotes;
+  let domain = "self";
+  if (state.link) {
+    domain = new URL(state.link).hostname
+      .split(".")
+      .slice(-2)
+      .join(".");
+  }
   return (
     <layer-menu
       class="item"
@@ -71,9 +81,15 @@ export default function SubredditItemComponent({
       <div slot="top" class="top">
         <div
           class="preview"
-          style={{
-            backgroundImage: `url(${state.previewImage})`
-          }}
+          style={
+            state.images.length > 0
+              ? {
+                  backgroundImage: `url(${decodeHTML(
+                    state.images.sort((a, b) => a.width - b.width)[0].url
+                  )})`
+                }
+              : {}
+          }
         >
           <div class="dlbadge offline" {...setInnerHTML(offlineSVG)} />
           <div class="dlbadge download" {...setInnerHTML(downloadSVG)} />
@@ -84,12 +100,11 @@ export default function SubredditItemComponent({
         <div class="meta">
           /u/
           {state.author} • /r/
-          {state.subreddit} • {state.ago}
+          {state.subreddit} • {agoString}
         </div>
         <div class="engagement">
-          {state.points} {pluralize("point", state.points)} •{" "}
-          {state.numComments} {pluralize("comment", state.numComments)}{" "}
-          {state.domain}
+          {points} {pluralize("point", points)} • {state.numComments}{" "}
+          {pluralize("comment", state.numComments)} • {domain}
         </div>
       </div>
       <div class="bottom">

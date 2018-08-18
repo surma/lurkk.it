@@ -12,15 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Comment } from "./comment.js";
-import {
-  CacheableDataSource,
-  cacheWrapper,
-  isCacheableDataSource
-} from "./data-source/cache-wrapper.js";
+import { cacheWrapper, isCacheableDataSource } from "./cache-wrapper.js";
 import { DataSource } from "./data-source/data-source.js";
-import { Subreddit, SubredditID } from "./subreddit.js";
-import { Thread, ThreadID } from "./thread.js";
+import { Subreddit } from "./storage-model/subreddit.js";
+import { Thread } from "./storage-model/thread.js";
 
 import * as RedditDataSource from "./data-source/reddit.js";
 
@@ -39,17 +34,17 @@ function getDataSource(): Promise<DataSource> {
   return dataSource();
 }
 
-export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
+export async function loadSubreddit(id: string): Promise<Subreddit> {
   const dataSource = await getDataSource();
   return dataSource.loadSubreddit(id);
 }
 
-export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
+export async function loadThread(id: string): Promise<Thread> {
   const dataSource = await getDataSource();
   return dataSource.loadThread(id);
 }
 
-export async function refreshThread(id: ThreadID): Promise<void> {
+export async function refreshThread(id: string): Promise<void> {
   const dataSource = await getDataSource();
   if (!isCacheableDataSource(dataSource)) {
     return;
@@ -57,7 +52,7 @@ export async function refreshThread(id: ThreadID): Promise<void> {
   await dataSource.refreshThread(id);
 }
 
-export async function refreshSubreddit(id: SubredditID): Promise<void> {
+export async function refreshSubreddit(id: string): Promise<void> {
   const dataSource = await getDataSource();
   if (!isCacheableDataSource(dataSource)) {
     return;
@@ -65,13 +60,20 @@ export async function refreshSubreddit(id: SubredditID): Promise<void> {
   await dataSource.refreshSubreddit(id);
 }
 
-export async function cacheDate(id: SubredditID): Promise<number> {
+export async function cacheDate(id: string): Promise<number> {
   const dataSource = await getDataSource();
   if (!isCacheableDataSource(dataSource)) {
     return -1;
   }
-  return dataSource.cacheDate(id);
+  return dataSource.cacheDateForThread(id);
 }
+
+export {
+  getFavorites,
+  addFavorite,
+  delFavorite,
+  toggleFavorite
+} from "./favorites.js";
 
 import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 
@@ -79,6 +81,8 @@ export type DataSourceNameRequest = string;
 export type DataSourceNameResponse = void;
 export const DATA_SOURCE_NAME_CHANNEL = "datasourcename";
 
+import * as ServiceReady from "westend/utils/service-ready.js";
+export const READY_CHANNEL = "repository.ready";
 export async function init() {
   RequestResponseBus.register<DataSourceNameRequest, DataSourceNameResponse>(
     DATA_SOURCE_NAME_CHANNEL,
@@ -86,4 +90,5 @@ export async function init() {
       dataSourceName = newDataSourceName;
     }
   );
+  ServiceReady.signal(READY_CHANNEL);
 }

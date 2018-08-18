@@ -14,10 +14,11 @@
 
 import { h, RenderableProps } from "preact";
 
-import { ViewType } from "../../../../model/view.js";
+import { ViewType } from "../../../../repository/view.js";
 
-import { injectStyles } from "../../../../utils/dom-helpers.js";
+import { decodeHTML, injectStyles } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 import styles from "./styles.css";
@@ -32,6 +33,8 @@ export default function ThreadViewComponent({
   if (state.type !== ViewType.THREAD) {
     throw new Error("Invalid state object for view");
   }
+  const agoString = ago(state.thread.created);
+  const points = state.thread.upvotes - state.thread.downvotes;
   return (
     <div
       class="view thread"
@@ -47,25 +50,33 @@ export default function ThreadViewComponent({
           <p class="meta">
             /u/
             {state.thread.author} • /r/
-            {state.thread.subreddit} •{state.thread.ago}
+            {state.thread.subreddit} • {agoString}
           </p>
           <p class="engagement">
-            {state.thread.points}
-            {pluralize("point", state.thread.points)} •
-            {state.thread.numComments}
+            {points} {pluralize("point", points)} • {state.thread.numComments}{" "}
             {pluralize("comment", state.thread.numComments)}
           </p>
         </header>
-        {state.thread.isLink ? (
+        {state.thread.link ? (
           <a
             href={state.thread.link}
             class="content link"
-            style={{
-              backgroundImage: `url(${state.thread.previewImage});`
-            }}
+            style={
+              state.thread.images.length > 0
+                ? {
+                    backgroundImage: `url(${decodeHTML(
+                      state.thread.images.sort((a, b) => b.width - a.width)[0]
+                        .url
+                    )});`
+                  }
+                : {}
+            }
           />
         ) : (
-          <div class="content text" {...setInnerHTML(state.thread.htmlBody!)} />
+          <div
+            class="content text"
+            {...setInnerHTML(decodeHTML(state.thread.body!))}
+          />
         )}
       </div>
       <ul class="comments">

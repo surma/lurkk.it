@@ -16,7 +16,7 @@ import { State as FsmState } from "westend/src/state-machine/state-machine.js";
 import { Node, Value } from "../../fsm/generated.js";
 export type AppState = FsmState<Node, Value>;
 
-import { View } from "../../model/view.js";
+import { View } from "../../repository/view.js";
 export interface ViewComponentProps {
   state: View;
 }

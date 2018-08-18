@@ -12,25 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-export type ThreadID = string;
-export interface Thread {
-  ago: string;
-  author: string;
-  body?: string;
-  created: number;
+import { ThreadItem } from "./thread.js";
+
+export interface Subreddit {
   cachedAt: number;
-  domain: string;
-  downvotes: number;
-  fullImage?: string;
-  htmlBody?: string;
-  id: ThreadID;
-  isLink: boolean;
-  link?: string;
-  nsfw: boolean;
-  numComments: number;
-  points: number;
-  previewImage?: string;
-  subreddit: string;
-  title: string;
-  upvotes: number;
+  id: string;
+  items: ThreadItem[];
 }

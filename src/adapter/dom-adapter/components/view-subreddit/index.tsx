@@ -14,7 +14,7 @@
 
 import { h, RenderableProps } from "preact";
 
-import { ViewType } from "../../../../model/view.js";
+import { ViewType } from "../../../../repository/view.js";
 
 import { injectStyles } from "../../../../utils/dom-helpers.js";
 

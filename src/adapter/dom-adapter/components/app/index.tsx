@@ -36,7 +36,7 @@ declare global {
   }
 }
 
-import { View, ViewType } from "../../../../model/view.js";
+import { View, ViewType } from "../../../../repository/view.js";
 import { AppState, ViewComponentProps } from "../../types.js";
 
 import ResolveComponent from "../resolve";

@@ -13,7 +13,7 @@
  */
 
 // For some reason the `declare` ServiceWorker line errors without an import.
-import { ThreadID } from "./model/thread.js";
+import { Thread } from "./repository/storage-model/thread.js";
 
 declare var self: ServiceWorkerGlobalScope;
 

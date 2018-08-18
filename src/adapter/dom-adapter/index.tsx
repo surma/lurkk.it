@@ -21,13 +21,13 @@ import * as ServiceReady from "westend/utils/service-ready.js";
 
 import * as UrlMapper from "./url-mapper.js";
 
-import { READY_CHANNEL as MODEL_READY_CHANNEL } from "../../model/model.js";
+import { READY_CHANNEL as REPOSITORY_READY_CHANNEL } from "../../repository";
 
 import {
   DATA_SOURCE_NAME_CHANNEL,
   DataSourceNameRequest,
   DataSourceNameResponse
-} from "../../model/loading.js";
+} from "../../repository";
 
 import {
   Node,
@@ -72,7 +72,7 @@ function isDebug() {
 
 async function activateDebugModel() {
   console.log("Switching model to debug");
-  await ServiceReady.waitFor(MODEL_READY_CHANNEL);
+  await ServiceReady.waitFor(REPOSITORY_READY_CHANNEL);
   (await RequestResponseBus.get<DataSourceNameRequest, DataSourceNameResponse>(
     DATA_SOURCE_NAME_CHANNEL
   )).sendRequest("mock");

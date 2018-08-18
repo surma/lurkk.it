@@ -12,28 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as ServiceReady from "westend/utils/service-ready.js";
-
-export {
-  getFavorites,
-  addFavorite,
-  delFavorite,
-  toggleFavorite
-} from "./favorites.js";
-export {
-  loadSubreddit,
-  loadThread,
-  refreshThread,
-  refreshSubreddit,
-  cacheDate
-} from "./loading.js";
-
-import { init as loadingInit } from "./loading.js";
-
-export const READY_CHANNEL = "model.ready";
-
-export async function init() {
-  await loadingInit();
-
-  ServiceReady.signal(READY_CHANNEL);
+export function optional<T>(thing: T | null | undefined | void): T | undefined {
+  if (thing === null || thing === undefined) {
+    return undefined;
+  }
+  return thing;
 }

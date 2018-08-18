@@ -14,22 +14,21 @@
 
 import { del, get, set } from "idb-keyval";
 
-import { Comment } from "../comment.js";
-import { Subreddit, SubredditID } from "../subreddit.js";
-import { Thread, ThreadID } from "../thread.js";
-import { DataSource } from "./data-source.js";
+import { DataSource } from "./data-source/data-source.js";
+import { Subreddit } from "./storage-model/subreddit.js";
+import { Thread } from "./storage-model/thread.js";
 
-type ThreadData = [Thread, Comment[]];
 export interface CacheableDataSource extends DataSource {
-  refreshSubreddit(id: SubredditID): Promise<void>;
-  refreshThread(id: ThreadID): Promise<void>;
-  cacheDate(id: ThreadID): Promise<number>;
+  refreshSubreddit(id: string): Promise<void>;
+  refreshThread(id: string): Promise<void>;
+  cacheDateForThread(id: string): Promise<number>;
 }
+
 export function cacheWrapper(source: DataSource): CacheableDataSource {
   return {
-    async loadThread(id: ThreadID): Promise<ThreadData> {
+    async loadThread(id: string): Promise<Thread> {
       const key = `thread-${id}`;
-      const cached = (await get(key)) as ThreadData;
+      const cached = (await get(key)) as Thread;
       if (!cached) {
         const live = await source.loadThread(id);
         live[0].cachedAt = Date.now();
@@ -38,7 +37,7 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
       }
       return cached;
     },
-    async loadSubreddit(id: SubredditID): Promise<Subreddit> {
+    async loadSubreddit(id: string): Promise<Subreddit> {
       const key = `subreddit-${id}`;
       let result = (await get(key)) as Subreddit;
       if (!result) {
@@ -47,13 +46,13 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
         await set(key, result);
       }
       for (const item of result.items) {
-        item.cachedAt = await this.cacheDate(item.id);
+        item.cachedAt = await this.cacheDateForThread(item.id);
       }
       return result;
     },
-    async refreshSubreddit(id: SubredditID): Promise<void> {
+    async refreshSubreddit(id: string): Promise<void> {
       const key = `subreddit-${id}`;
-      const old = (await get(key)) as ThreadData;
+      const old = (await get(key)) as Subreddit;
       await del(key);
       try {
         await this.loadSubreddit(id);
@@ -62,9 +61,9 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
         await set(key, old);
       }
     },
-    async refreshThread(id: ThreadID): Promise<void> {
+    async refreshThread(id: string): Promise<void> {
       const key = `thread-${id}`;
-      const old = (await get(key)) as ThreadData;
+      const old = (await get(key)) as Thread;
       await del(key);
       try {
         await this.loadThread(id);
@@ -73,9 +72,9 @@ export function cacheWrapper(source: DataSource): CacheableDataSource {
         await set(key, old);
       }
     },
-    async cacheDate(id: ThreadID): Promise<number> {
+    async cacheDateForThread(id: string): Promise<number> {
       const key = `thread-${id}`;
-      const thread = (await get(key)) as ThreadData | null;
+      const thread = (await get(key)) as Thread | null;
       if (!thread) {
         return -1;
       }
@@ -89,9 +88,3 @@ export function isCacheableDataSource(
 ): source is CacheableDataSource {
   return "refreshSubreddit" in source && "refreshThread" in source;
 }
-
-(self as any).mangleRAll = async function() {
-  const s = (await get(`subreddit-all`)) as Subreddit;
-  s.items[0].title += "LOL";
-  await set("subreddit-all", s);
-};
