@@ -35,6 +35,7 @@ export default function ThreadViewComponent({
   }
   const agoString = ago(state.thread.created);
   const points = state.thread.upvotes - state.thread.downvotes;
+  const images = state.thread.images.sort((a, b) => b.width - a.width);
   return (
     <div
       class="view thread"
@@ -62,12 +63,10 @@ export default function ThreadViewComponent({
             href={state.thread.link}
             class="content link"
             style={
-              state.thread.images.length > 0
+              images.length > 0
                 ? {
-                    backgroundImage: `url(${
-                      state.thread.images.sort((a, b) => b.width - a.width)[0]
-                        .url
-                    })`
+                    backgroundImage: `url(${images[0].url}`,
+                    paddingTop: `${(images[0].height / images[0].width) * 100}%`
                   }
                 : {}
             }
