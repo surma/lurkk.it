@@ -14,47 +14,43 @@
 
 import { h, render } from "preact";
 
-import { State } from "westend/src/state-machine/state-machine.js";
-import * as FsmUtils from "westend/utils/fsm-utils.js";
+import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
+import {
+  AppState,
+  CHANGE_CHANNEL as DOM_STATE_CHANGE_CHANNEL,
+  READY_CHANNEL as UI_THREAD_READY_CHANNEL,
+  State
+} from "./types.js";
+
 import * as UrlMapper from "./url-mapper.js";
 
-import { READY_CHANNEL as REPOSITORY_READY_CHANNEL } from "../../repository";
+import { READY_CHANNEL as REPOSITORY_READY_CHANNEL } from "../../repository/index.js";
 
 import {
   DATA_SOURCE_NAME_CHANNEL,
   DataSourceNameRequest,
   DataSourceNameResponse
-} from "../../repository";
+} from "../../repository/index.js";
 
-import {
-  Node,
-  READY_CHANNEL as FSM_READY_CHANNEL,
-  Value
-} from "../../fsm/generated.js";
-
-import AppComponent from "./components/app";
-import { AppState } from "./types.js";
+import AppComponent from "./components/app/index.js";
 
 export default class DomAdapter {
   async init() {
     if (isDebug()) {
       await activateDebugModel();
     }
-    FsmUtils.onChange<Node, Value>(this.onFsmChange.bind(this));
-    await ServiceReady.waitFor(FSM_READY_CHANNEL);
+    const bus = await MessageBus.get<State>(DOM_STATE_CHANGE_CHANNEL);
+    bus.listen(msg => {
+      if (!msg) {
+        return;
+      }
+      this.render(msg);
+    });
     await UrlMapper.init();
-    const snapshot = await FsmUtils.getSnapshot<Node, Value>();
-    while (document.body.firstChild) {
-      document.body.removeChild(document.body.firstChild);
-    }
-    this.render(snapshot);
-  }
-
-  private onFsmChange(snapshot: State<Node, Value>) {
-    this.render(snapshot);
+    ServiceReady.signal(UI_THREAD_READY_CHANNEL);
   }
 
   private render(state: AppState) {

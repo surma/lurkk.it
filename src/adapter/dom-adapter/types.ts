@@ -20,3 +20,8 @@ import { View } from "../../repository/view.js";
 export interface ViewComponentProps {
   state: View;
 }
+
+export interface State extends FsmState<Node, Value> {}
+
+export const READY_CHANNEL = "dom-adapter.ui-thread.ready";
+export const CHANGE_CHANNEL = "dom-adapter.off-thread.change";

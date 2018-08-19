@@ -15,15 +15,14 @@
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 
 import * as FsmUtils from "westend/utils/fsm-utils.js";
+import * as ServiceReady from "westend/utils/service-ready.js";
 
 import ItemStack from "./elements/item-stack";
 
 import {
-  Node,
   READY_CHANNEL as FSM_READY_CHANNEL,
   Trigger,
-  TriggerPayloadMap,
-  Value
+  TriggerPayloadMap
 } from "../../fsm/generated.js";
 
 import {
@@ -35,6 +34,7 @@ import {
 } from "../../utils/router.js";
 
 async function onPathChange(path: string) {
+  await ServiceReady.waitFor(FSM_READY_CHANNEL);
   if (path === "/") {
     go("/r/all", { replace: true });
     return;

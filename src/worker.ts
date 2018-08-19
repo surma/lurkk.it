@@ -19,9 +19,12 @@ import { init as repositoryInit } from "./repository";
 
 import { fsm, init as fsmInit, READY_CHANNEL } from "./fsm/generated.js";
 
+import { init as domAdapterInit } from "./adapter/dom-adapter/off-thread.js";
+
 (async function() {
-  await repositoryInit();
-  await fsmInit();
+  repositoryInit();
+  fsmInit();
+  domAdapterInit();
 
   FsmUtils.exposeChangeListener(fsm);
   FsmUtils.exposeGetSnapshot(fsm);

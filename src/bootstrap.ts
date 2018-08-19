@@ -13,7 +13,7 @@
  */
 
 import { BroadcastWorker } from "westend/src/message-bus/message-bus.js";
-import DomAdapter from "./adapter/dom-adapter";
+import DomAdapter from "./adapter/dom-adapter/ui-thread.js";
 
 // tslint:disable-next-line:no-unused-expression This boots a worker, duh
 new BroadcastWorker("worker.js");
