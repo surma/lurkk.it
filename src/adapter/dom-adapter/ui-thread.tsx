@@ -53,7 +53,7 @@ export default class DomAdapter {
     ServiceReady.signal(UI_THREAD_READY_CHANNEL);
   }
 
-  private render(state: AppState) {
+  private render(state: State) {
     render(
       <AppComponent state={state} />,
       document.body,

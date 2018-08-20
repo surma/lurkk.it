@@ -18,11 +18,21 @@ import { ViewType } from "../../../../repository/view.js";
 
 import { injectStyles } from "../../../../utils/dom-helpers.js";
 
-import SubredditItemComponent from "../subreddit-item/";
+import SubredditItemComponent, {
+  State as SubredditItemComponentState
+} from "../subreddit-item/";
 import styles from "./styles.css";
 injectStyles("view-subreddit", styles);
 
+import { SubredditView } from "../../../../repository/view.js";
 import { ViewComponentProps } from "../../types.js";
+
+export interface State extends SubredditView {
+  items: SubredditItemComponentState[];
+}
+export interface Props extends SubredditView {
+  state: State;
+}
 export default function SubredditViewComponent({
   state
 }: RenderableProps<ViewComponentProps>) {
@@ -38,7 +48,7 @@ export default function SubredditViewComponent({
         transform: ""
       }}
     >
-      {state.subreddit.items.map(item => (
+      {state.items.map(item => (
         <SubredditItemComponent state={item} />
       ))}
     </div>

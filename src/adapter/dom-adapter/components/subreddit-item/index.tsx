@@ -36,8 +36,10 @@ declare global {
   }
 }
 
-import downloadSVG from "../../../../icons/download.svg";
-import offlineSVG from "../../../../icons/offline.svg";
+import rawDownloadSVG from "../../../../icons/download.svg";
+const downloadSVG = setInnerHTML(rawDownloadSVG);
+import rawOfflineSVG from "../../../../icons/offline.svg";
+const offlineSVG = setInnerHTML(rawOfflineSVG);
 
 function downloadThread(this: LayerMenu, ev: CustomEvent) {
   const target = ev.target;
@@ -54,21 +56,20 @@ function downloadThread(this: LayerMenu, ev: CustomEvent) {
   });
 }
 
-interface Props {
-  state: ThreadItem;
+export interface State extends ThreadItem {
+  ago: string;
+  points: number;
+  pointsLabel: string;
+  commentsLabel: string;
+  domain?: string;
+  previewImage: string;
+}
+export interface Props {
+  state: State;
 }
 export default function SubredditItemComponent({
   state
 }: RenderableProps<Props>) {
-  const agoString = ago(state.created);
-  const points = state.upvotes - state.downvotes;
-  let domain = "self";
-  if (state.link) {
-    domain = new URL(state.link).hostname
-      .split(".")
-      .slice(-2)
-      .join(".");
-  }
   return (
     <layer-menu
       class="item"
@@ -81,18 +82,12 @@ export default function SubredditItemComponent({
       <div slot="top" class="top">
         <div
           class="preview"
-          style={
-            state.images.length > 0
-              ? {
-                  backgroundImage: `url(${
-                    state.images.sort((a, b) => a.width - b.width)[0].url
-                  })`
-                }
-              : {}
-          }
+          style={{
+            backgroundImage: state.previewImage
+          }}
         >
-          <div class="dlbadge offline" {...setInnerHTML(offlineSVG)} />
-          <div class="dlbadge download" {...setInnerHTML(downloadSVG)} />
+          <div class="dlbadge offline" {...offlineSVG} />
+          <div class="dlbadge download" {...downloadSVG} />
         </div>
         <a href={`/t/${state.id}`} class="title">
           {state.title}
@@ -100,15 +95,15 @@ export default function SubredditItemComponent({
         <div class="meta">
           /u/
           {state.author} • /r/
-          {state.subreddit} • {agoString}
+          {state.subreddit} • {state.ago}
         </div>
         <div class="engagement">
-          {points} {pluralize("point", points)} • {state.numComments}{" "}
-          {pluralize("comment", state.numComments)} • {domain}
+          {state.points} {state.pointsLabel} • {state.numComments}{" "}
+          {state.commentsLabel} • {state.domain}
         </div>
       </div>
       <div class="bottom">
-        <div class="action" {...setInnerHTML(downloadSVG)} />
+        <div class="action" {...downloadSVG} />
       </div>
     </layer-menu>
   );
