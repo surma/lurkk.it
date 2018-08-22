@@ -14,11 +14,11 @@
 
 import { get, set } from "idb-keyval";
 
-import { SubredditID } from "./subreddit.js";
+export type Favorites = string[];
 
 const FAVORITES_KEY = "favorites";
-export async function getFavorites(): Promise<SubredditID[]> {
-  const favorites = (await get(FAVORITES_KEY)) as SubredditID[] | null;
+export async function getFavorites(): Promise<Favorites> {
+  const favorites = (await get(FAVORITES_KEY)) as Favorites | null;
   if (!favorites) {
     await set(FAVORITES_KEY, []);
     return [];
@@ -26,8 +26,8 @@ export async function getFavorites(): Promise<SubredditID[]> {
   return favorites;
 }
 
-export async function addFavorite(id: SubredditID): Promise<void> {
-  let favorites = (await get(FAVORITES_KEY)) as SubredditID[] | null;
+export async function addFavorite(id: string): Promise<void> {
+  let favorites = (await get(FAVORITES_KEY)) as Favorites | null;
   if (!favorites) {
     favorites = [];
   }
@@ -37,8 +37,8 @@ export async function addFavorite(id: SubredditID): Promise<void> {
   await set(FAVORITES_KEY, favorites);
 }
 
-export async function delFavorite(id: SubredditID): Promise<void> {
-  let favorites = (await get(FAVORITES_KEY)) as SubredditID[] | null;
+export async function delFavorite(id: string): Promise<void> {
+  let favorites = (await get(FAVORITES_KEY)) as Favorites | null;
   if (!favorites) {
     favorites = [];
   }
@@ -46,8 +46,8 @@ export async function delFavorite(id: SubredditID): Promise<void> {
   await set(FAVORITES_KEY, favorites);
 }
 
-export async function toggleFavorite(id: SubredditID): Promise<void> {
-  let favorites = (await get(FAVORITES_KEY)) as SubredditID[] | null;
+export async function toggleFavorite(id: string): Promise<void> {
+  let favorites = (await get(FAVORITES_KEY)) as Favorites | null;
   if (!favorites) {
     favorites = [];
   }

@@ -12,17 +12,29 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { BroadcastWorker } from "westend/src/message-bus/message-bus.js";
-import DomAdapter from "./adapter/dom-adapter/ui-thread.js";
+import { Comment } from "./storage-model/comment.js";
+import { Subreddit } from "./storage-model/subreddit.js";
+import { ThreadItem } from "./storage-model/thread.js";
 
-// tslint:disable-next-line:no-unused-expression This boots a worker, duh
-new BroadcastWorker("worker.js");
-
-new DomAdapter().init();
-
-async function init() {
-  const swLoader = await import("./utils/sw-loader.js");
-  await swLoader.default();
+export interface ViewBase {
+  type: ViewType;
+  uid: string;
 }
 
-init();
+export enum ViewType {
+  SUBREDDIT,
+  THREAD
+}
+
+export interface SubredditView extends ViewBase {
+  type: ViewType.SUBREDDIT;
+  subreddit: Subreddit;
+}
+
+export interface ThreadView extends ViewBase {
+  type: ViewType.THREAD;
+  thread: ThreadItem;
+  comments: Comment[];
+}
+
+export type View = SubredditView | ThreadView;

@@ -16,7 +16,29 @@ import { State as FsmState } from "westend/src/state-machine/state-machine.js";
 import { Node, Value } from "../../fsm/generated.js";
 export type AppState = FsmState<Node, Value>;
 
-import { View } from "../../model/view.js";
-export interface ViewComponentProps {
-  state: View;
+import {
+  Props as SubredditViewComponentProps,
+  State as SubredditViewComponentState
+} from "./components/view-subreddit";
+import {
+  Props as ThreadViewComponentProps,
+  State as ThreadViewComponentState
+} from "./components/view-thread";
+export type ViewComponentState =
+  | SubredditViewComponentState
+  | ThreadViewComponentState;
+export type ViewComponentProps =
+  | SubredditViewComponentProps
+  | ThreadViewComponentProps;
+
+export interface State extends FsmState<Node, Value> {
+  stack: ViewComponentState[];
+  isLoading: boolean;
+  topView?: ViewComponentState;
+  isFavoriteSubreddit: boolean;
+  showFavoriteButton: boolean;
+  searchBarValue: string;
 }
+
+export const READY_CHANNEL = "dom-adapter.ui-thread.ready";
+export const CHANGE_CHANNEL = "dom-adapter.off-thread.change";

@@ -12,16 +12,19 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as FsmUtils from "./utils/fsm-utils.js";
-import * as ServiceReady from "./utils/service-ready.js";
+import * as FsmUtils from "westend/utils/fsm-utils.js";
+import * as ServiceReady from "westend/utils/service-ready.js";
 
-import { init as modelInit } from "./model/model.js";
+import { init as repositoryInit } from "./repository";
 
 import { fsm, init as fsmInit, READY_CHANNEL } from "./fsm/generated.js";
 
+import { init as domAdapterInit } from "./adapter/dom-adapter/off-thread.js";
+
 (async function() {
-  await modelInit();
-  await fsmInit();
+  repositoryInit();
+  fsmInit();
+  domAdapterInit();
 
   FsmUtils.exposeChangeListener(fsm);
   FsmUtils.exposeGetSnapshot(fsm);

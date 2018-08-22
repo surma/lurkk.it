@@ -49,7 +49,6 @@
   padding: 0;
   background-size: cover;
   background-position: 50% 50%;
-  min-height: 25vh;
 }
 
 .thread .post .title {

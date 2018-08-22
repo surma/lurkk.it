@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h, RenderableProps } from "preact";
+import { h, RenderableProps } from "preact";
 
-import { emitTrigger, getSnapshot } from "../../../../utils/fsm-utils.js";
+import { emitTrigger, getSnapshot } from "westend/utils/fsm-utils.js";
 
 import {
   Node,
@@ -39,34 +39,20 @@ declare global {
 
 import ItemStack from "../../elements/item-stack";
 
-import { AppState } from "../../types.js";
+import { State } from "../../types.js";
 
 import { go } from "../../../../utils/router.js";
 
 import styles from "./styles.css";
 injectStyles("bottom-bar-component", styles);
 
-import { View, ViewType } from "../../../../model/view.js";
+import { View, ViewType } from "../../../../repository/view.js";
 
 import backSVG from "../../../../icons/back.svg";
 import downloadSVG from "../../../../icons/download.svg";
 import refreshSVG from "../../../../icons/refresh.svg";
 import starOffSVG from "../../../../icons/star_off.svg";
 import starOnSVG from "../../../../icons/star_on.svg";
-
-function extractSearchBarValue(view?: View): string {
-  if (!view) {
-    return "";
-  }
-  switch (view.type) {
-    case ViewType.SUBREDDIT:
-      return `/r/${view.subreddit.id}`;
-    case ViewType.THREAD:
-      return `/r/${view.thread.subreddit}`;
-    default:
-      return "";
-  }
-}
 
 function open() {
   const input = document.querySelector(
@@ -80,10 +66,6 @@ function open() {
   closeBar();
   input.blur();
   return false;
-}
-
-function getTopView(state: AppState): View | undefined {
-  return state.value.stack[state.value.stack.length - 1];
 }
 
 function toggleBar(evt: Event) {
@@ -106,34 +88,20 @@ async function refresh() {
   emitTrigger<Trigger.REFRESH, TriggerPayloadMap>(Trigger.REFRESH, {});
 }
 
-function showFavorite(view?: View) {
-  if (!view) {
-    return false;
-  }
-  return view.type === ViewType.SUBREDDIT;
-}
-
 async function toggleFavorite() {
   // FIXME (@surma): This shouldn’t be necessary.
-  const state = await getSnapshot<Node, Value>();
-  const topV = getTopView(state);
-  if (!topV || topV.type !== ViewType.SUBREDDIT) {
-    return;
-  }
-  emitTrigger<Trigger.TOGGLE_FAVORITE, TriggerPayloadMap>(
-    Trigger.TOGGLE_FAVORITE,
-    {
-      id: topV.subreddit.id
-    }
-  );
-}
-
-function isFavoriteSubreddit(state: AppState) {
-  const view = getTopView(state);
-  if (!view || view.type !== ViewType.SUBREDDIT) {
-    return;
-  }
-  return state.value.favorites.includes(view.subreddit.id);
+  // Fix this via observables and getLast()
+  // const state = await getSnapshot<Node, Value>();
+  // const topV = getTopView(state);
+  // if (!topV || topV.type !== ViewType.SUBREDDIT) {
+  //   return;
+  // }
+  // emitTrigger<Trigger.TOGGLE_FAVORITE, TriggerPayloadMap>(
+  //   Trigger.TOGGLE_FAVORITE,
+  //   {
+  //     id: topV.subreddit.id
+  //   }
+  // );
 }
 
 function back() {
@@ -151,10 +119,9 @@ function download() {
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 interface Props {
-  state: AppState;
+  state: State;
 }
 export default function BottomBarComponent({ state }: RenderableProps<Props>) {
-  const topView = getTopView(state);
   return (
     <bottom-bar id="bottom-bar" onDblclick={toggleBar}>
       <div slot="bar" class="bar">
@@ -163,7 +130,7 @@ export default function BottomBarComponent({ state }: RenderableProps<Props>) {
           <input
             placeholder="/r/..."
             class="input"
-            value={extractSearchBarValue(topView)}
+            value={state.searchBarValue}
           />
           <input type="submit" class="button button--primary go" value="Go" />
         </form>
@@ -176,11 +143,11 @@ export default function BottomBarComponent({ state }: RenderableProps<Props>) {
           class={[
             "button",
             "favorite",
-            showFavorite(topView) ? "" : "invisible",
-            isFavoriteSubreddit(state) ? "favorited" : ""
+            state.showFavoriteButton ? "" : "invisible",
+            state.isFavoriteSubreddit ? "favorited" : ""
           ].join(" ")}
           onClick={toggleFavorite}
-          {...setInnerHTML(isFavoriteSubreddit(state) ? starOnSVG : starOffSVG)}
+          {...setInnerHTML(state.isFavoriteSubreddit ? starOnSVG : starOffSVG)}
         />
         <button
           class="button refresh"

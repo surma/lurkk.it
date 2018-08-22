@@ -12,36 +12,40 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Comment } from "../comment.js";
-import { Subreddit, SubredditID } from "../subreddit.js";
-import { Thread, ThreadID } from "../thread.js";
+import { Comment as StorageComment } from "../storage-model/comment.js";
+import { Subreddit as StorageSubreddit } from "../storage-model/subreddit.js";
+import {
+  Image as StorageImage,
+  Thread as StorageThread,
+  ThreadItem as StorageThreadItem
+} from "../storage-model/thread.js";
 
 import { decodeHTML } from "../../utils/dom-helpers.js";
-import { ago } from "../../utils/mini-moment.js";
+import { optional } from "../../utils/js-helpers.js";
 
-export interface ApiSubreddit {
+export interface Subreddit {
   data: {
     modhash: string;
     dist: number;
-    children: ApiThreadEntity[];
+    children: ThreadItem[];
   };
   kind: "Listing";
 }
 
-export interface ApiPreviewImageVersion {
+export interface ImageVersion {
   height: number;
   url: string;
   width: number;
 }
 
-export interface ApiPreviewImage {
-  source: ApiPreviewImageVersion;
-  resolutions: ApiPreviewImageVersion[];
+export interface Image {
+  source: ImageVersion;
+  resolutions: ImageVersion[];
   variants: {};
   id: string;
 }
 
-export interface ApiThreadEntity {
+export interface ThreadItem {
   data: {
     author: string;
     created_utc: number;
@@ -57,9 +61,9 @@ export interface ApiThreadEntity {
     name: string;
     num_comments: number;
     over_18: boolean;
-    preview: {
+    preview?: {
       enabled: boolean;
-      images: ApiPreviewImage[];
+      images: Image[];
     };
     score: number;
     selftext: string;
@@ -76,7 +80,7 @@ export interface ApiThreadEntity {
   kind: "t3";
 }
 
-export interface ApiComment {
+export interface Comment {
   data: {
     author: string;
     body: string;
@@ -101,7 +105,7 @@ export interface ApiComment {
           data: {
             modhash: "";
             dist: null;
-            children: ApiComment[];
+            children: Comment[];
           };
         }
       | "";
@@ -109,13 +113,13 @@ export interface ApiComment {
   kind: "t1";
 }
 
-export type ApiThread = [
+export type Thread = [
   {
     kind: "Listing";
     data: {
       modhash: "";
       dist: null;
-      children: ApiThreadEntity[];
+      children: ThreadItem[];
     };
   },
   {
@@ -123,93 +127,97 @@ export type ApiThread = [
     data: {
       modhash: "";
       dist: null;
-      children: ApiComment[];
+      children: Comment[];
     };
   }
 ];
 
-export function sanitizeUrl(url: string) {
+function sanitizeUrl(url: string) {
   return url.split("&amp;").join("&");
 }
 
-export function apiThreadEntityToThread(te: ApiThreadEntity): Thread {
-  const thread: Thread = {
-    ago: ago(te.data.created_utc),
-    author: te.data.author,
-    body: te.data.selftext,
+function imageForStorage(img: Image): StorageImage[] {
+  const r = img.resolutions.map(img => ({ ...img, url: decodeHTML(img.url) }));
+  r.push(img.source);
+  return r;
+}
+
+function threadItemForStorage(ti: ThreadItem): StorageThreadItem {
+  const thread: StorageThreadItem = {
+    author: ti.data.author,
+    body: optional(ti.data.selftext_html),
     cachedAt: -1,
-    created: te.data.created_utc,
-    domain: te.data.domain,
-    downvotes: te.data.downs,
-    htmlBody: decodeHTML(te.data.selftext_html || ""),
-    id: te.data.name,
-    isLink: !te.data.is_self,
-    link: te.data.url,
-    nsfw: te.data.over_18,
-    numComments: te.data.num_comments,
-    points: te.data.score,
-    subreddit: te.data.subreddit,
-    title: te.data.title,
-    upvotes: te.data.ups
+    created: ti.data.created_utc,
+    downvotes: ti.data.downs,
+    id: ti.data.name,
+    images: ti.data.preview ? imageForStorage(ti.data.preview.images[0]) : [],
+    link: !ti.data.is_self ? ti.data.url : undefined,
+    nsfw: ti.data.over_18,
+    numComments: ti.data.num_comments,
+    subreddit: ti.data.subreddit,
+    title: ti.data.title,
+    upvotes: ti.data.ups
   };
 
-  if (te.data.preview && te.data.preview.images.length >= 1) {
-    thread.fullImage = sanitizeUrl(te.data.preview.images[0].source.url);
-
-    const previewCandidate = te.data.preview.images[0].resolutions.find(
-      variant => variant.height <= 200
-    );
-    if (previewCandidate) {
-      thread.previewImage = sanitizeUrl(previewCandidate.url);
-    }
-  }
   return thread;
 }
 
-export function apiCommentsToComment(
-  comments: ApiComment[],
+function commentForStorage(
+  comments: Comment[],
   parentId: string
-): Comment[] {
+): StorageComment[] {
   return comments
     .filter(comment => comment.kind === "t1")
     .filter(comment => comment.data.parent_id === parentId)
     .map(comment => ({
-      ago: ago(comment.data.created_utc),
       author: comment.data.author,
-      body: comment.data.body,
+      body: comment.data.body_html,
       comment: comment.data.body,
+      created: comment.data.created_utc,
       downvotes: comment.data.downs,
-      htmlBody: decodeHTML(comment.data.body_html),
       id: comment.data.name,
       points: comment.data.score,
-      replies:
-        comment.data.replies === ""
-          ? []
-          : apiCommentsToComment(
-              comment.data.replies.data.children,
-              comment.data.name
-            ),
+      replies: !comment.data.replies
+        ? []
+        : commentForStorage(
+            comment.data.replies.data.children,
+            comment.data.name
+          ),
       upvotes: comment.data.ups
     }));
 }
 
-export async function loadSubreddit(id: SubredditID): Promise<Subreddit> {
-  const rawData = await fetch(`https://www.reddit.com/r/${id}/.json`).then(r =>
-    r.json()
-  );
+export async function loadSubreddit(id: string): Promise<StorageSubreddit> {
+  const rawData: Subreddit = await fetch(
+    `https://www.reddit.com/r/${id}/.json`
+  ).then(r => r.json());
+  return processLoadSubredditAPIResponse(id, rawData);
+}
+
+export function processLoadSubredditAPIResponse(
+  id: string,
+  rawData: Subreddit
+): StorageSubreddit {
   return {
     cachedAt: -1,
     id,
-    items: rawData.data.children.map(apiThreadEntityToThread)
+    items: rawData.data.children.map(threadItemForStorage)
   };
 }
 
-export async function loadThread(id: ThreadID): Promise<[Thread, Comment[]]> {
-  const rawData = await fetch(
+export async function loadThread(id: string): Promise<StorageThread> {
+  const rawData: Thread = await fetch(
     `https://www.reddit.com/${id.substr(3)}/.json`
   ).then(r => r.json());
+  return processLoadThreadAPIResponse(id, rawData);
+}
+
+export function processLoadThreadAPIResponse(
+  id: string,
+  rawData: Thread
+): StorageThread {
   return [
-    apiThreadEntityToThread(rawData[0].data.children[0]),
-    apiCommentsToComment(rawData[1].data.children, id)
+    threadItemForStorage(rawData[0].data.children[0]),
+    commentForStorage(rawData[1].data.children, id)
   ];
 }

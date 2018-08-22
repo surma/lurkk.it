@@ -16,10 +16,10 @@
   // It’s too hard to make generated code linter compliant
   /* tslint:disable */
 
-  import { Subreddit, SubredditID } from "../model/subreddit.js";
-  import { Thread, ThreadID } from "../model/thread.js";
-  import { View, ViewType } from "../model/view.js";
-  import * as Model from "../model/model.js";
+  import { Subreddit } from "../repository/storage-model/subreddit.js";
+  import { Thread } from "../repository/storage-model/thread.js";
+  import { View, ViewType } from "../repository/view.js";
+  import * as Repository from "../repository";
 
   import {
     AnyNode,
@@ -50,25 +50,25 @@ nodes:
 triggers:
   - name: VIEW_SUBREDDIT
     payload:
-      id: SubredditID
+      id: string
   - name: VIEW_THREAD
     payload:
-      id: ThreadID
+      id: string
   - name: DISMISS
   - name: REFRESH
   - name: DOWNLOAD
     payload:
-      ids: ThreadID[]
+      ids: string[]
   - name: TOGGLE_FAVORITE
     payload:
-      id: SubredditID
+      id: string
 
 --- |
   export type LoadingEntry = string;
 
   export interface Value {
     loading: LoadingEntry[];
-    favorites: SubredditID[];
+    favorites: string[];
     stack: View[];
   }
 
@@ -81,39 +81,39 @@ triggers:
     }
   );
 
-  function showLoadingBar(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
+  function startLoading(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
     const value = fsm.value;
     value.loading.push(loadingEntry);
     fsm.setValue(value);
   }
 
-  function hideLoadingBar(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
+  function stopLoading(fsm: StateMachine<Node, TriggerPayloadMap, Value>, loadingEntry: LoadingEntry) {
     const value = fsm.value;
     value.loading = value.loading.filter(f => f !== loadingEntry);
     fsm.setValue(value);
   }
 
   const loadThread: Effect<Node, Trigger.VIEW_THREAD, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
-    showLoadingBar(fsm, payload.id);
-    const [thread, comments] = await Model.loadThread(payload.id);
+    startLoading(fsm, payload.id);
+    const [thread, comments] = await Repository.loadThread(payload.id);
     fsm.value.stack.push({
       type: ViewType.THREAD,
       uid: genUid(),
       thread,
       comments
     });
-    hideLoadingBar(fsm, payload.id);
+    stopLoading(fsm, payload.id);
   }
 
   const loadSubreddit: Effect<Node, Trigger.VIEW_SUBREDDIT, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
-    showLoadingBar(fsm, payload.id);
-    const subreddit = await Model.loadSubreddit(payload.id);
+    startLoading(fsm, payload.id);
+    const subreddit = await Repository.loadSubreddit(payload.id);
     fsm.value.stack.push({
       type: ViewType.SUBREDDIT,
       uid: genUid(),
       subreddit
     });
-    hideLoadingBar(fsm, payload.id);
+    stopLoading(fsm, payload.id);
   }
 
   const dismiss: Effect<Node, Trigger.DISMISS, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
@@ -124,14 +124,14 @@ triggers:
     if(fsm.value.stack.length <= 0) {
       return;
     }
-    showLoadingBar(fsm, "refresh");
+    startLoading(fsm, "refresh");
     const topView = fsm.value.stack.pop()!;
     fsm.setValue(fsm.value);
     let id;
     switch(topView.type) {
       case ViewType.THREAD:
         id = topView.thread.id;
-        await Model.refreshThread(id);
+        await Repository.refreshThread(id);
         fsm.emitTrigger<Trigger.VIEW_THREAD>(
           Trigger.VIEW_THREAD,
           { id }
@@ -139,22 +139,22 @@ triggers:
         break;
       case ViewType.SUBREDDIT:
         id = topView.subreddit.id;
-        await Model.refreshSubreddit(id);
+        await Repository.refreshSubreddit(id);
         fsm.emitTrigger<Trigger.VIEW_SUBREDDIT>(
           Trigger.VIEW_SUBREDDIT,
           { id }
         );
         break;
     }
-    hideLoadingBar(fsm, "refresh");
+    stopLoading(fsm, "refresh");
   }
 
   const download: Effect<Node, Trigger.DOWNLOAD, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
     for(const id of payload.ids) {
       Promise.resolve().then(async () => {
-        showLoadingBar(fsm, `download-${id}`);
-        await Model.refreshThread(id);
-        const cacheDate = await Model.cacheDate(id);
+        startLoading(fsm, `download-${id}`);
+        await Repository.refreshThread(id);
+        const cacheDate = await Repository.cacheDate(id);
         fsm.value.stack
           .forEach(view => {
             if(view.type !== ViewType.SUBREDDIT) {
@@ -164,14 +164,14 @@ triggers:
               .filter(item => item.id === id)
               .forEach(item => item.cachedAt = cacheDate);
           });
-        hideLoadingBar(fsm, `download-${id}`);
+        stopLoading(fsm, `download-${id}`);
       });
     }
   }
 
   const toggleFavorite: Effect<Node, Trigger.TOGGLE_FAVORITE, TriggerPayloadMap, Value> = async (fsm, trigger, payload) => {
-    await Model.toggleFavorite(payload.id);
-    fsm.value.favorites = await Model.getFavorites();
+    await Repository.toggleFavorite(payload.id);
+    fsm.value.favorites = await Repository.getFavorites();
   }
 
 ---
@@ -205,5 +205,5 @@ transitions:
   export const READY_CHANNEL = "fsm.ready";
 
   export async function init() {
-    fsm.value.favorites = await Model.getFavorites();
+    fsm.value.favorites = await Repository.getFavorites();
   }

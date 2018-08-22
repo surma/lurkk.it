@@ -14,10 +14,11 @@
 
 import { h, RenderableProps } from "preact";
 
-import { ViewType } from "../../../../model/view.js";
+import { ViewType } from "../../../../repository/view.js";
 
-import { injectStyles } from "../../../../utils/dom-helpers.js";
+import { decodeHTML, injectStyles } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 import styles from "./styles.css";
@@ -25,7 +26,21 @@ injectStyles("view-thread", styles);
 
 import CommentComponent from "../comment";
 
+import { ThreadView } from "../../../../repository/view.js";
 import { ViewComponentProps } from "../../types.js";
+
+export interface State extends ThreadView {
+  ago: string;
+  points: number;
+  pointsLabel: string;
+  commentsLabel: string;
+  previewImage: string;
+  previewRatio: string;
+  body: {};
+}
+export interface Props {
+  state: State;
+}
 export default function ThreadViewComponent({
   state
 }: RenderableProps<ViewComponentProps>) {
@@ -47,25 +62,24 @@ export default function ThreadViewComponent({
           <p class="meta">
             /u/
             {state.thread.author} • /r/
-            {state.thread.subreddit} •{state.thread.ago}
+            {state.thread.subreddit} • {state.ago}
           </p>
           <p class="engagement">
-            {state.thread.points}
-            {pluralize("point", state.thread.points)} •
-            {state.thread.numComments}
-            {pluralize("comment", state.thread.numComments)}
+            {state.points} {state.pointsLabel} • {state.thread.numComments}{" "}
+            {state.commentsLabel}
           </p>
         </header>
-        {state.thread.isLink ? (
+        {state.thread.link ? (
           <a
             href={state.thread.link}
             class="content link"
             style={{
-              backgroundImage: `url(${state.thread.previewImage});`
+              backgroundImage: state.previewImage,
+              paddingTop: state.previewRatio
             }}
           />
         ) : (
-          <div class="content text" {...setInnerHTML(state.thread.htmlBody!)} />
+          <div class="content text" {...state.body} />
         )}
       </div>
       <ul class="comments">

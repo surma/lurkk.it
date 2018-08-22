@@ -12,15 +12,16 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { Component, h, RenderableProps } from "preact";
+import { h, RenderableProps } from "preact";
 
-import { emitTrigger } from "../../../../utils/fsm-utils.js";
+import { emitTrigger } from "westend/utils/fsm-utils.js";
 
 import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
-import { Thread } from "../../../../model/thread.js";
+import { ThreadItem } from "../../../../repository/storage-model/thread.js";
 
-import { defineCE } from "../../../../utils/dom-helpers.js";
+import { decodeHTML, defineCE } from "../../../../utils/dom-helpers.js";
 import { pluralize } from "../../../../utils/lang-helpers.js";
+import { ago } from "../../../../utils/mini-moment.js";
 import { setInnerHTML } from "../../../../utils/preact-helpers.js";
 
 import LayerMenu from "../../elements/layer-menu";
@@ -35,8 +36,10 @@ declare global {
   }
 }
 
-import downloadSVG from "../../../../icons/download.svg";
-import offlineSVG from "../../../../icons/offline.svg";
+import rawDownloadSVG from "../../../../icons/download.svg";
+const downloadSVG = setInnerHTML(rawDownloadSVG);
+import rawOfflineSVG from "../../../../icons/offline.svg";
+const offlineSVG = setInnerHTML(rawOfflineSVG);
 
 function downloadThread(this: LayerMenu, ev: CustomEvent) {
   const target = ev.target;
@@ -53,8 +56,16 @@ function downloadThread(this: LayerMenu, ev: CustomEvent) {
   });
 }
 
-interface Props {
-  state: Thread;
+export interface State extends ThreadItem {
+  ago: string;
+  points: number;
+  pointsLabel: string;
+  commentsLabel: string;
+  domain?: string;
+  previewImage: string;
+}
+export interface Props {
+  state: State;
 }
 export default function SubredditItemComponent({
   state
@@ -72,11 +83,11 @@ export default function SubredditItemComponent({
         <div
           class="preview"
           style={{
-            backgroundImage: `url(${state.previewImage})`
+            backgroundImage: state.previewImage
           }}
         >
-          <div class="dlbadge offline" {...setInnerHTML(offlineSVG)} />
-          <div class="dlbadge download" {...setInnerHTML(downloadSVG)} />
+          <div class="dlbadge offline" {...offlineSVG} />
+          <div class="dlbadge download" {...downloadSVG} />
         </div>
         <a href={`/t/${state.id}`} class="title">
           {state.title}
@@ -87,13 +98,12 @@ export default function SubredditItemComponent({
           {state.subreddit} • {state.ago}
         </div>
         <div class="engagement">
-          {state.points} {pluralize("point", state.points)} •{" "}
-          {state.numComments} {pluralize("comment", state.numComments)}{" "}
-          {state.domain}
+          {state.points} {state.pointsLabel} • {state.numComments}{" "}
+          {state.commentsLabel} • {state.domain}
         </div>
       </div>
       <div class="bottom">
-        <div class="action" {...setInnerHTML(downloadSVG)} />
+        <div class="action" {...downloadSVG} />
       </div>
     </layer-menu>
   );

@@ -12,14 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {
-  Component,
-  ComponentFactory,
-  ComponentProps,
-  h,
-  RenderableProps,
-  VNode
-} from "preact";
+import { ComponentFactory, h, RenderableProps } from "preact";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
@@ -36,8 +29,8 @@ declare global {
   }
 }
 
-import { View, ViewType } from "../../../../model/view.js";
-import { AppState, ViewComponentProps } from "../../types.js";
+import { View, ViewType } from "../../../../repository/view.js";
+import { State, ViewComponentProps } from "../../types.js";
 
 import ResolveComponent from "../resolve";
 
@@ -73,23 +66,20 @@ function back() {
   history.back();
 }
 
-function isLoading(state: AppState) {
-  return state.value.loading.length > 0;
+interface Props {
+  state: State;
 }
 
-interface Props extends ComponentProps {
-  state: AppState;
-}
 export default function AppComponent({ state }: RenderableProps<Props>) {
   return (
-    <main class={state.value.loading.length > 0 ? "loading" : ""}>
+    <main class={state.isLoading ? "loading" : ""}>
       <div class="loader" />
       <div id="root">Welcome to LurkIt</div>
       <item-stack idFunc={idFunc} onDismissgesture={back}>
-        {state.value.stack.map(view => (
+        {state.stack.slice(-2).map(view => (
           <ResolveComponent<ComponentFactory<ViewComponentProps>>
             promise={loadViewComponent(view)}
-            onResolve={Component => <Component state={view} />}
+            onResolve={Component => <Component state={view as any} />}
           />
         ))}
       </item-stack>
