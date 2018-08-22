@@ -117,10 +117,9 @@ function viewToViewState(view: View): ViewComponentState {
       let previewImage = "";
       let previewRatio = "33%";
       if (view.thread.images.length > 0) {
-        previewImage = `url(${view.thread.images[0].url})`;
-        previewRatio = `${(view.thread.images[0].height /
-          view.thread.images[0].width) *
-          100}%`;
+        const bigImage = view.thread.images[view.thread.images.length - 1];
+        previewImage = `url(${bigImage.url})`;
+        previewRatio = `${(bigImage.height / bigImage.width) * 100}%`;
       }
       return {
         ...view,

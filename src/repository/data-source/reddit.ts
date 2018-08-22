@@ -139,6 +139,7 @@ function sanitizeUrl(url: string) {
 function imageForStorage(img: Image): StorageImage[] {
   const r = img.resolutions.map(img => ({ ...img, url: decodeHTML(img.url) }));
   r.push(img.source);
+  r.sort((a, b) => a.width * a.height - b.width * b.height);
   return r;
 }
 
