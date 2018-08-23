@@ -24,7 +24,24 @@ export interface CacheableDataSource extends DataSource {
   cacheDateForThread(id: string): Promise<number>;
 }
 
-export function cacheWrapper(source: DataSource): CacheableDataSource {
+async function migrateCache(newVersion: number) {
+  const key = "storage-format-version";
+  const oldVersion = (await get(key)) as number | undefined;
+  switch (oldVersion) {
+    case undefined: {
+      const migrator = await import("./storage-model/migrator/undefined.js");
+      await migrator.default();
+    }
+  }
+  await set(key, newVersion);
+}
+
+const VERSION = 1;
+export async function cacheWrapper(
+  source: DataSource
+): Promise<CacheableDataSource> {
+  await migrateCache(VERSION);
+
   return {
     async loadThread(id: string): Promise<Thread> {
       const key = `thread-${id}`;
