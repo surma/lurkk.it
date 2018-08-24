@@ -136,9 +136,9 @@ export default class LayerMenu extends HTMLElement {
     const start = this.isOpen ? -(this.slideWidth - 1) : 0;
     const min = this.isOpen ? 0 : -(this.slideWidth - 1);
     const max = this.isOpen ? this.slideWidth - 1 : 0;
-    const actualDelta = Math.min(Math.max(this.dragDelta, min), max);
+    this.dragDelta = Math.min(Math.max(this.dragDelta, min), max);
     Object.assign(this.topElementContainer.style, {
-      transform: `translateX(calc(${start}px + ${actualDelta}px))`,
+      transform: `translateX(calc(${start}px + ${this.dragDelta}px))`,
       transition: ""
     });
   }
