@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { ComponentFactory, h, RenderableProps } from "preact";
+import { Component, ComponentFactory, h, RenderableProps } from "preact";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
@@ -70,20 +70,62 @@ interface Props {
   state: State;
 }
 
-export default function AppComponent({ state }: RenderableProps<Props>) {
-  return (
-    <main class={state.isLoading ? "loading" : ""}>
-      <div class="loader" />
-      <div id="root">Welcome to LurkIt</div>
-      <item-stack idFunc={idFunc} onDismissgesture={back}>
-        {state.stack.slice(-2).map(view => (
-          <ResolveComponent<ComponentFactory<ViewComponentProps>>
-            promise={loadViewComponent(view)}
-            onResolve={Component => <Component state={view as any} />}
-          />
-        ))}
-      </item-stack>
-      <BottomBarComponent state={state} />
-    </main>
-  );
+interface ComponentState {
+}
+export default class AppComponent extends Component<Props, ComponentState> {
+  private scrollPositions = new Map();
+
+  constructor() {
+    super();
+    this.onScroll = this.onScroll.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('didMOunt', this.base);
+    this.base!.addEventListener('scroll', this.onScroll, {passive: true});
+  }
+
+  componentWillUnmount() {
+    this.base!.removeEventListener('scroll', this.onScroll);
+  }
+
+  componentDidUpdate() {
+    for(const view of this.base!.querySelectorAll('item-stack') as NodeListOf<HTMLElement>) {
+      const uid = view.dataset['view-uid'];
+      const scrollTop = this.scrollPositions.get(uid);
+      if(!scrollTop) {
+        continue;
+      }
+      view.scrollTop = scrollTop;
+    }
+  }
+
+  render({ state }: RenderableProps<Props>, componenState: ComponentState) {
+    (self as any).app = this;
+    return (
+      <main class={state.isLoading ? "loading" : ""}>
+        <div class="loader" />
+        <div id="root">Welcome to LurkIt</div>
+        <item-stack idFunc={idFunc} onDismissgesture={back}>
+          {state.stack.slice(-2).map(view => (
+            <ResolveComponent<ComponentFactory<ViewComponentProps>>
+              promise={loadViewComponent(view)}
+              onResolve={Component => <Component state={view as any} data-view-uid={view.uid} />}
+            />
+          ))}
+        </item-stack>
+        <BottomBarComponent state={state} />
+      </main>
+    );
+  }
+
+  private onScroll(event: Event) {
+    console.log('scroll', event);
+    const view = event.target as HTMLElement | null;
+    if(!view || !view.dataset['view-uid']) {
+      return;
+    }
+    const uid = view.dataset['view-uid'];
+    this.scrollPositions.set(uid, view.scrollTop);
+  }
 }
