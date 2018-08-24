@@ -15,7 +15,10 @@
 :root {
   --subreddit-item-size: 20rem;
   --subreddit-badge-size: calc(0.6 * var(--subreddit-item-size));
-  --subreddit-badge-icon-size: calc(0.8 * var(--subreddit-item-size));
+  /* Radius of right triangle incircle = triangle side length / (1 + sqrt(2)/2) */
+  --subreddit-badge-icon-space: calc(var(--subreddit-badge-size) / (1 + var(--sqrt2) / 2));
+  --subreddit-badge-icon-size: calc(var(--subreddit-badge-icon-space) * 0.8);
+  --subreddit-badge-icon-padding: calc((var(--subreddit-badge-icon-space) - var(--subreddit-badge-icon-size)) / 2);
 }
 .view.subreddit {
   background-color: var(--primary-b);
@@ -102,8 +105,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: calc(var(--base) * var(--subreddit-item-size) * var(--subreddit-badge-size));
-  height: calc(var(--base) * var(--subreddit-item-size) * var(--subreddit-badge-size));
+  width: var(--subreddit-badge-size);
+  height: var(--subreddit-badge-size);
   background-color: var(--secondary1);
   fill: var(--secondary1-b);
   clip-path: polygon(0 0, 100% 0, 100% 100%);
@@ -112,13 +115,11 @@
 }
 
 .subreddit .item .dlbadge svg {
-  /* Radius of right triangle incircle = triangle side length / (1 + sqrt(2)/2) */
-  --size: calc(var(--subreddit-badge-size) / (1 + var(--sqrt2) / 2));
   position: absolute;
-  top: calc(var(--size) * (1 - var(--subreddit-badge-icon-size)) / 2);
-  right: calc(var(--size) * (1 - var(--subreddit-badge-icon-size)) / 2);
-  width: calc(var(--size) * var(--subreddit-badge-icon-size));
-  height: calc(var(--size) * var(--subreddit-badge-icon-size));
+  top: var(--subreddit-badge-icon-padding);
+  right: var(--subreddit-badge-icon-padding);
+  width: var(--subreddit-badge-icon-size);
+  height: var(--subreddit-badge-icon-size);
 }
 
 .subreddit .item[downloaded] .dlbadge.offline {
