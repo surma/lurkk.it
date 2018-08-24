@@ -17,9 +17,11 @@
   overflow: hidden;
 }
 #top {
-  will-change: transform;
   z-index: 2;
   grid-area: 1/1;
+}
+#top.promoted {
+  will-change: transform;
 }
 ::slotted(*) {
   grid-area: 1/1;

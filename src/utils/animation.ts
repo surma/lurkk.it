@@ -16,6 +16,11 @@ export function requestAnimationFramePromise() {
   return new Promise(resolve => requestAnimationFrame(resolve));
 }
 
+export async function doubleRAF() {
+  await requestAnimationFramePromise();
+  await requestAnimationFramePromise();
+}
+
 export function transitionEndPromise(elem: Element, duration: number = 0) {
   const tep = new Promise(resolve => {
     elem.addEventListener("transitionend", function l(ev: TransitionEvent) {

@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { animateTo } from "../../../../utils/animation.js";
+import { animateTo, doubleRAF } from "../../../../utils/animation.js";
 import shadowDomStyles from "./shadowdom-styles.css";
 import shadowDom from "./shadowdom.html";
 
@@ -108,7 +108,7 @@ export default class LayerMenu extends HTMLElement {
     }
   }
 
-  private onTouchStart(ev: TouchEvent) {
+  private async onTouchStart(ev: TouchEvent) {
     if (ev.touches.length > 1) {
       return;
     }
@@ -117,6 +117,8 @@ export default class LayerMenu extends HTMLElement {
       return;
     }
     ev.preventDefault();
+    this.topElementContainer.classList.add("promoted");
+    await doubleRAF();
     this.dragStart = client;
     this.dragDelta = 0;
   }
@@ -157,6 +159,8 @@ export default class LayerMenu extends HTMLElement {
     } else {
       this.reset();
     }
+    this.topElementContainer.classList.remove("promoted");
+    await doubleRAF();
     this.dragStart = undefined;
   }
 }
