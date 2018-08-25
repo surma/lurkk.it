@@ -111,19 +111,23 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: var(--subreddit-badge-size);
-  height: var(--subreddit-badge-size);
-  background-color: var(--secondary1);
+  width: 0;
+  height: 0;
   fill: var(--secondary1-b);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
   display: grid;
   visibility: hidden;
+
+  border-top: calc(var(--subreddit-badge-size) / 2) solid var(--secondary1);
+  border-right: calc(var(--subreddit-badge-size) / 2) solid var(--secondary1);
+  border-left: calc(var(--subreddit-badge-size) / 2) solid transparent;
+  border-bottom: calc(var(--subreddit-badge-size) / 2) solid transparent;
+
 }
 
 .subreddit .item .dlbadge svg {
   position: absolute;
-  top: var(--subreddit-badge-icon-padding);
-  right: var(--subreddit-badge-icon-padding);
+  top: calc(-1 * var(--subreddit-badge-size) / 2 + var(--subreddit-badge-icon-padding));
+  right: calc(-1 * var(--subreddit-badge-size) / 2 + var(--subreddit-badge-icon-padding));
   width: var(--subreddit-badge-icon-size);
   height: var(--subreddit-badge-icon-size);
 }
