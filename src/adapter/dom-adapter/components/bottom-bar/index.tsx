@@ -54,7 +54,8 @@ import refreshSVG from "../../../../icons/refresh.svg";
 import starOffSVG from "../../../../icons/star_off.svg";
 import starOnSVG from "../../../../icons/star_on.svg";
 
-function open() {
+function open(event: Event) {
+  event.preventDefault();
   const input = document.querySelector(
     "#bottom-bar .input"
   )! as HTMLInputElement;
