@@ -63,8 +63,10 @@ export interface State extends ThreadItem {
   points: number;
   pointsLabel: string;
   commentsLabel: string;
-  domain?: string;
+  domain: string;
+  link: string;
   previewImage: string;
+  threadLink: string;
 }
 export interface Props {
   state: State;
@@ -82,7 +84,8 @@ export default function SubredditItemComponent({
       data-thread-id={state.id}
     >
       <div slot="top" class="top">
-        <div
+        <a
+          href={state.link}
           class="preview"
           style={{
             backgroundImage: state.previewImage
@@ -90,8 +93,8 @@ export default function SubredditItemComponent({
         >
           <div class="dlbadge offline" {...offlineSVG} />
           <div class="dlbadge download" {...downloadSVG} />
-        </div>
-        <a href={`/t/${state.id}`} class="title">
+        </a>
+        <a href={state.threadLink} class="title">
           {state.title}
         </a>
         <div class="meta">

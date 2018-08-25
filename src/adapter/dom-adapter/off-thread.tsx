@@ -100,15 +100,18 @@ function viewToViewState(view: View): ViewComponentState {
           if (item.images.length > 0) {
             previewImage = `url(${item.images[0].url})`;
           }
+          const threadLink = `/t/${item.id}`;
 
           return {
             ...item,
             ago: ago(item.created),
             commentsLabel: pluralize("comment", item.numComments),
             domain: domain(item.link),
+            link: item.link ? item.link : threadLink,
             points,
             pointsLabel: pluralize("point", points),
-            previewImage
+            previewImage,
+            threadLink
           };
         })
       };
