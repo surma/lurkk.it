@@ -34,6 +34,8 @@ import { State, ViewComponentProps } from "../../types.js";
 
 import ResolveComponent from "../resolve";
 
+import ScrollRestoreComponent from "../scroll-restore";
+
 type ViewComponentLoader = () => Promise<ComponentFactory<ViewComponentProps>>;
 const viewComponentLoaders = new Map<ViewType, ViewComponentLoader>([
   [ViewType.THREAD, () => import("../view-thread").then(m => m.default)],
@@ -79,7 +81,11 @@ export default function AppComponent({ state }: RenderableProps<Props>) {
         {state.stack.slice(-2).map(view => (
           <ResolveComponent<ComponentFactory<ViewComponentProps>>
             promise={loadViewComponent(view)}
-            onResolve={Component => <Component state={view as any} />}
+            onResolve={Component => (
+              <ScrollRestoreComponent idFunc={idFunc}>
+                <Component state={view as any} />
+              </ScrollRestoreComponent>
+            )}
           />
         ))}
       </item-stack>
