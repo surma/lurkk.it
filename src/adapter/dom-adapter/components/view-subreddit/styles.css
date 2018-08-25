@@ -25,6 +25,10 @@
 
 }
 
+.view.subreddit ul {
+  will-change: transform;
+}
+
 .subreddit .item {
   position: relative;
   background-color: var(--primary-b);

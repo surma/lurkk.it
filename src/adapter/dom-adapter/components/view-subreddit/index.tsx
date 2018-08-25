@@ -48,9 +48,13 @@ export default function SubredditViewComponent({
         transform: ""
       }}
     >
-      {state.items.map(item => (
-        <SubredditItemComponent state={item} />
-      ))}
+      <ul>
+        {state.items.map(item => (
+          <li>
+            <SubredditItemComponent state={item} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
