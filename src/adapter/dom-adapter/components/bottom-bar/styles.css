@@ -96,6 +96,7 @@
 
 #bottom-bar .panel {
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #bottom-bar .favorites .favorite {
