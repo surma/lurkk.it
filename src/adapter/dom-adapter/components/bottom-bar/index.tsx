@@ -91,17 +91,17 @@ async function refresh() {
 async function toggleFavorite() {
   // FIXME (@surma): This shouldn’t be necessary.
   // Fix this via observables and getLast()
-  // const state = await getSnapshot<Node, Value>();
-  // const topV = getTopView(state);
-  // if (!topV || topV.type !== ViewType.SUBREDDIT) {
-  //   return;
-  // }
-  // emitTrigger<Trigger.TOGGLE_FAVORITE, TriggerPayloadMap>(
-  //   Trigger.TOGGLE_FAVORITE,
-  //   {
-  //     id: topV.subreddit.id
-  //   }
-  // );
+  const state = await getSnapshot<Node, Value>();
+  const topV = state.value.stack[state.value.stack.length - 1];
+  if (!topV || topV.type !== ViewType.SUBREDDIT) {
+    return;
+  }
+  emitTrigger<Trigger.TOGGLE_FAVORITE, TriggerPayloadMap>(
+    Trigger.TOGGLE_FAVORITE,
+    {
+      id: topV.subreddit.id
+    }
+  );
 }
 
 function back() {
