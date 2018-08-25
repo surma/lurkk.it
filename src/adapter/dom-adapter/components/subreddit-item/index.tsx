@@ -56,6 +56,8 @@ function downloadThread(this: LayerMenu, ev: CustomEvent) {
   });
 }
 
+const clientWidth = window.innerWidth;
+
 export interface State extends ThreadItem {
   ago: string;
   points: number;
@@ -75,7 +77,7 @@ export default function SubredditItemComponent({
       class="item"
       downloaded={state.cachedAt >= 0}
       slide-width="80"
-      slide-zone="380"
+      slide-zone={clientWidth - 10}
       onOpengesture={downloadThread}
       data-thread-id={state.id}
     >

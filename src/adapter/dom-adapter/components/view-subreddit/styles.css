@@ -36,6 +36,8 @@
 
   border-bottom: 1px solid black;
   border-image: linear-gradient(90deg, var(--primary-d) 0%, var(--primary-b) 66%) 1;
+
+  contain: paint;
 }
 
 .subreddit .item .top {
