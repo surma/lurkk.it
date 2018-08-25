@@ -37,18 +37,16 @@ import {
 
 import AppComponent from "./components/app/index.js";
 
+import { eat, forEach } from "../../utils/observables.js";
+import stateStream from "./state-stream.js";
+
 export default class DomAdapter {
   async init() {
+    stateStream.pipeThrough(forEach(state => this.render(state))).pipeTo(eat());
+
     if (isDebug()) {
       await activateDebugModel();
     }
-    const bus = await MessageBus.get<State>(DOM_STATE_CHANGE_CHANNEL);
-    bus.listen(msg => {
-      if (!msg) {
-        return;
-      }
-      this.render(msg);
-    });
     await UrlMapper.init();
     ServiceReady.signal(UI_THREAD_READY_CHANNEL);
   }
