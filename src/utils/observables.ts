@@ -16,7 +16,7 @@ import {
   ReadableStreamDefaultController,
   TransformStream as WhatWGTransformStream,
   WritableStream as WhatWGWritableStream
-} from "./whatwg-streams-hack.js";
+} from "westend/src/state-machine/whatwg-streams-hack.js";
 
 declare var ReadableStream: typeof WhatWGReadableStream;
 declare var WritableStream: typeof WhatWGWritableStream;
@@ -24,193 +24,314 @@ declare var TransformStream: typeof WhatWGTransformStream;
 
 export { ReadableStream, WritableStream, TransformStream };
 
+export interface Observable<T> {
+  stream: WhatWGReadableStream<T>;
+}
+
+type EmitterFunc<T> = (t: T) => void | Promise<void>;
+export function create<T>(f: (e: EmitterFunc<T>) => void): Observable<T> {
+  return {
+    stream: new ReadableStream<T>({
+      async start(controller) {
+        await f((v: T) => controller.enqueue(v));
+        controller.close();
+      }
+    })
+  };
+}
+
 export function from<T extends Event = Event>(
   el: HTMLElement,
   evName: string
-): WhatWGReadableStream<T> {
+): Observable<T> {
   let f: ((ev: T) => void) | undefined;
-  return new ReadableStream<T>({
-    start(controller) {
-      f = function(ev: T) {
-        controller.enqueue(ev);
-      };
-      el.addEventListener(evName, f! as any);
-    },
-    cancel() {
-      el.removeEventListener(evName, f! as any);
-    }
-  });
+  return {
+    stream: new ReadableStream<T>({
+      start(controller) {
+        f = function(ev: T) {
+          controller.enqueue(ev);
+        };
+        el.addEventListener(evName, f! as any);
+      },
+      cancel() {
+        el.removeEventListener(evName, f! as any);
+      }
+    })
+  };
 }
 
-export function just<T>(item: T) {
-  return new ReadableStream<T>({
-    start(controller) {
-      controller.enqueue(item);
-      controller.close();
-    }
-  });
+export function just<T>(item: T): Observable<T> {
+  return {
+    stream: new ReadableStream<T>({
+      start(controller) {
+        controller.enqueue(item);
+        controller.close();
+      }
+    })
+  };
 }
 
-export function repeat<T>(items: T | T[]) {
+export function repeat<T>(items: T | T[]): Observable<T> {
   let i = 0;
   if (!Array.isArray(items)) {
     items = [items];
   }
-  return new ReadableStream<T>({
-    pull(controller) {
-      controller.enqueue((items as T[])[i]);
-      i = (i + 1) % (items as T[]).length;
-    }
-  });
+  return {
+    stream: new ReadableStream<T>({
+      pull(controller) {
+        controller.enqueue((items as T[])[i]);
+        i = (i + 1) % (items as T[]).length;
+      }
+    })
+  };
 }
 
-export function countUp() {
+export function countUp(): Observable<number> {
   let i = 0;
-  return new ReadableStream<number>({
-    pull(controller) {
-      controller.enqueue(i++);
-    }
-  });
-}
-
-export function timer(ms: number) {
-  return new ReadableStream<{}>({
-    start(controller) {
-      setInterval(_ => controller.enqueue({}), ms);
-    }
-  });
-}
-
-export function delay<T>(ms: number) {
-  return new TransformStream<T, T>({
-    transform(item, controller) {
-      setTimeout(_ => controller.enqueue(item), ms);
-    }
-  });
-}
-
-export function map<R, W>(f: (w: W) => R) {
-  return new TransformStream<R, W>({
-    transform(item, controller) {
-      controller.enqueue(f(item));
-    }
-  });
-}
-
-export function filter<T>(f: (t: T) => boolean) {
-  return new TransformStream<T, T>({
-    transform(item, controller) {
-      if (f(item)) {
-        controller.enqueue(item);
+  return {
+    stream: new ReadableStream<number>({
+      pull(controller) {
+        controller.enqueue(i++);
       }
-    }
-  });
+    })
+  };
 }
 
-export function take<T>(n: number) {
-  return new TransformStream<T, T>({
-    start(controller) {
-      if (n <= 0) {
-        controller.terminate();
-      }
-    },
-    transform(item, controller) {
-      controller.enqueue(item);
-      n--;
-      if (n <= 0) {
-        controller.terminate();
-      }
-    }
-  });
+export function delay<T>(this: Observable<T>, ms: number): Observable<T> {
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          setTimeout(_ => controller.enqueue(item), ms);
+        }
+      })
+    )
+  };
 }
 
-export function takeLast<T>(n: number) {
+export function map<R, W>(this: Observable<W>, f: (w: W) => R): Observable<R> {
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<R, W>({
+        transform(item, controller) {
+          controller.enqueue(f(item));
+        }
+      })
+    )
+  };
+}
+
+export function filter<T>(
+  this: Observable<T>,
+  f: (t: T) => boolean
+): Observable<T> {
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          if (f(item)) {
+            controller.enqueue(item);
+          }
+        }
+      })
+    )
+  };
+}
+
+export function take<T>(this: Observable<T>, n: number): Observable<T> {
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        start(controller) {
+          if (n <= 0) {
+            controller.terminate();
+          }
+        },
+        transform(item, controller) {
+          controller.enqueue(item);
+          n--;
+          if (n <= 0) {
+            controller.terminate();
+          }
+        }
+      })
+    )
+  };
+}
+
+export function takeLast<T>(this: Observable<T>, n: number): Observable<T> {
   const buffer = new Array<T>(n);
-  return new TransformStream<T, T>({
-    transform(item) {
-      buffer.push(item);
-      buffer.shift();
-    },
-    flush(controller) {
-      buffer.forEach(item => controller.enqueue(item));
-    }
-  });
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item) {
+          buffer.push(item);
+          buffer.shift();
+        },
+        flush(controller) {
+          buffer.forEach(item => controller.enqueue(item));
+        }
+      })
+    )
+  };
 }
 
-export function skip<T>(n: number) {
-  return new TransformStream<T, T>({
-    transform(item, controller) {
-      if (n > 0) {
-        n--;
-        return;
-      }
-      controller.enqueue(item);
-    }
-  });
-}
-
-export function skipLast<T>(n: number) {
-  const buffer: T[] = [];
-  return new TransformStream<T, T>({
-    transform(item, controller) {
-      buffer.push(item);
-      if (buffer.length === n + 1) {
-        controller.enqueue(buffer.shift()!);
-      }
-    }
-  });
-}
-
-export function merge<T>(...os: Array<WhatWGReadableStream<T>>) {
-  return new ReadableStream<T>({
-    async start(controller) {
-      const rs = os.map(o => o.getReader()).map(async r => {
-        while (true) {
-          const { value, done } = await r.read();
-          if (done) {
+export function skip<T>(this: Observable<T>, n: number): Observable<T> {
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          if (n > 0) {
+            n--;
             return;
           }
-          controller.enqueue(value);
+          controller.enqueue(item);
         }
-      });
-      await Promise.all(rs);
-      controller.close();
-    }
-  });
+      })
+    )
+  };
 }
 
-export function concat<T>(...os: Array<WhatWGReadableStream<T>>) {
+export function skipLast<T>(this: Observable<T>, n: number): Observable<T> {
+  const buffer: T[] = [];
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          buffer.push(item);
+          if (buffer.length === n + 1) {
+            controller.enqueue(buffer.shift()!);
+          }
+        }
+      })
+    )
+  };
+}
+
+export function merge<T>(...os: Array<Observable<T>>): Observable<T> {
+  return {
+    stream: new ReadableStream<T>({
+      async start(controller) {
+        const rs = os.map(o => o.stream.getReader()).map(async r => {
+          while (true) {
+            const { value, done } = await r.read();
+            if (done) {
+              return;
+            }
+            controller.enqueue(value);
+          }
+        });
+        await Promise.all(rs);
+        controller.close();
+      }
+    })
+  };
+}
+
+export function concat<T>(...os: Array<Observable<T>>): Observable<T> {
   const ts = new TransformStream<T, T>();
   (async _ => {
     for (const o of os) {
-      await o.pipeTo(ts.writable, { preventClose: true });
+      await o.stream.pipeTo(ts.writable, { preventClose: true });
     }
     ts.writable.getWriter().close();
   })();
-  return ts.readable;
+  return { stream: ts.readable };
 }
 
-export function zip<T>(...os: Array<WhatWGReadableStream<T>>) {
-  const rs = os.map(o => o.getReader());
-  return new ReadableStream<T[]>({
-    async pull(controller) {
-      const values = await Promise.all(rs.map(r => r.read()));
-      if (values.some(v => v.done)) {
-        rs.map(r => r.releaseLock());
-        controller.close();
+export function zip<T>(...os: Array<Observable<T>>): Observable<T[]> {
+  const rs = os.map(o => o.stream.getReader());
+  return {
+    stream: new ReadableStream<T[]>({
+      async pull(controller) {
+        const values = await Promise.all(rs.map(r => r.read()));
+        if (values.some(v => v.done)) {
+          rs.map(r => r.releaseLock());
+          controller.close();
+        }
+        controller.enqueue(values.map(v => v.value));
       }
-      controller.enqueue(values.map(v => v.value));
+    })
+  };
+}
+
+export function eat<T>(this: Observable<T>) {
+  this.stream.pipeTo(new WritableStream<T>());
+}
+
+export function subscribe<T>(
+  this: Observable<T>,
+  f: (t: T) => void | Promise<void>
+): Observable<T> {
+  const [rs1, rs2] = this.stream.tee();
+  this.stream = rs1;
+  const r = rs2.getReader();
+  (async () => {
+    while (true) {
+      const { value, done } = await r.read();
+      if (done) {
+        return;
+      }
+      await f(value);
     }
-  });
+  })();
+  return this;
 }
 
-export function eat<T>(): WhatWGWritableStream<T> {
-  return new WritableStream<T>();
+export function cacheLast<T>(
+  this: Observable<T>
+): Observable<T> & { last: T | undefined } {
+  const o = {
+    last: undefined as T | undefined,
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          controller.enqueue(item);
+          o.last = item;
+        }
+      })
+    )
+  };
+  return o;
 }
 
-export function forEach<T>(f: (t: T) => void) {
-  return map<T, T>(t => {
-    f(t);
-    return t;
-  });
+export function dedupe<T>(
+  this: Observable<T>,
+  id: (t: T) => any = t => t
+): Observable<T> & { last: T } {
+  const filtered = filter.call(this, (i: T) => i !== last.last);
+  const last = cacheLast.call(filtered);
+  return last;
+}
+
+export function blockable<T>(
+  this: Observable<T>
+): Observable<T> & { block: () => void; unblock: () => void } {
+  let blocked = false;
+  let resolver = undefined as ((v: any) => void) | undefined;
+  return {
+    stream: this.stream.pipeThrough(
+      new TransformStream<T, T>({
+        transform(item, controller) {
+          if (!blocked) {
+            return controller.enqueue(item);
+          }
+          return new Promise(resolve => {
+            resolver = resolve;
+          }).then(() => {
+            controller.enqueue(item);
+          });
+        }
+      })
+    ),
+    block() {
+      blocked = true;
+    },
+    unblock() {
+      if (resolver) {
+        resolver(null);
+      }
+      blocked = false;
+    }
+  };
 }

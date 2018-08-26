@@ -14,18 +14,40 @@
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 
-import { ReadableStream } from "../../utils/observables.js";
+import { blockable, cacheLast, create } from "../../utils/observables.js";
 
 import { CHANGE_CHANNEL as DOM_STATE_CHANGE_CHANNEL, State } from "./types.js";
 
-export default new ReadableStream<State>({
-  async start(controller) {
+const rootStream = create<State>(emit => {
+  return new Promise(async () => {
     const bus = await MessageBus.get<State>(DOM_STATE_CHANGE_CHANNEL);
     bus.listen(msg => {
       if (!msg) {
         return;
       }
-      controller.enqueue(msg);
+      emit(msg);
     });
-  }
+  });
 });
+
+const blockableStream = blockable.call(rootStream);
+const lastCachedStream = cacheLast.call(blockableStream);
+
+export function last(): State {
+  return lastCachedStream.last;
+}
+
+const blockers = new Set<string>();
+export function block(id: string) {
+  blockers.add(id);
+  blockableStream.block();
+}
+
+export function unblock(id: string) {
+  blockers.delete(id);
+  if (blockers.size === 0) {
+    blockableStream.unblock();
+  }
+}
+
+export default lastCachedStream;

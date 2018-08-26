@@ -14,16 +14,10 @@
 
 import { h, render } from "preact";
 
-import * as MessageBus from "westend/src/message-bus/message-bus.js";
 import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
-import {
-  AppState,
-  CHANGE_CHANNEL as DOM_STATE_CHANGE_CHANNEL,
-  READY_CHANNEL as UI_THREAD_READY_CHANNEL,
-  State
-} from "./types.js";
+import { READY_CHANNEL as UI_THREAD_READY_CHANNEL, State } from "./types.js";
 
 import * as UrlMapper from "./url-mapper.js";
 
@@ -37,12 +31,12 @@ import {
 
 import AppComponent from "./components/app/index.js";
 
-import { eat, forEach } from "../../utils/observables.js";
+import { subscribe } from "../../utils/observables.js";
 import stateStream from "./state-stream.js";
 
 export default class DomAdapter {
   async init() {
-    stateStream.pipeThrough(forEach(state => this.render(state))).pipeTo(eat());
+    subscribe.call(stateStream, this.render);
 
     if (isDebug()) {
       await activateDebugModel();
