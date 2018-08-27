@@ -57,6 +57,8 @@ injectStyles("app", styles);
 
 import BottomBarComponent from "../bottom-bar";
 
+import { block, unblock } from "../../state-stream.js";
+
 function idFunc(item: HTMLElement) {
   if (!("viewId" in item.dataset)) {
     return "";
@@ -68,6 +70,14 @@ function back() {
   history.back();
 }
 
+function blockRender() {
+  block("itemstack-animation");
+}
+
+function unblockRender() {
+  unblock("itemstack-animation");
+}
+
 interface Props {
   state: State;
 }
@@ -77,7 +87,12 @@ export default function AppComponent({ state }: RenderableProps<Props>) {
     <main class={state.isLoading ? "loading" : ""}>
       <div class="loader" />
       <div id="root">Welcome to LurkIt</div>
-      <item-stack idFunc={idFunc} onDismissgesture={back}>
+      <item-stack
+        idFunc={idFunc}
+        onDismissgesture={back}
+        onViewtransitionstart={blockRender}
+        onViewtransitionend={unblockRender}
+      >
         {state.stack.slice(-2).map(view => (
           <ResolveComponent<ComponentFactory<ViewComponentProps>>
             promise={loadViewComponent(view)}

@@ -91,12 +91,16 @@ export default class ItemStack extends HTMLElement {
       return;
     }
     this.dismissedItems.add(this.idFunc(item));
+    this.dispatchEvent(
+      new CustomEvent("viewtransitionstart", { bubbles: true })
+    );
     await AnimationTools.animateTo(
       item,
       `transform ${this.animationTime}s ${this.animationEasing}`,
       { transform: "translateX(100%)" }
     );
     item.style.display = "none";
+    this.dispatchEvent(new CustomEvent("viewtransitionend", { bubbles: true }));
   }
 
   private isDismissedItem(el: HTMLElement): boolean {
@@ -168,13 +172,17 @@ export default class ItemStack extends HTMLElement {
     this.dragStart = undefined;
   }
 
-  private onSlotChange(ev: Event) {
+  private async onSlotChange(ev: Event) {
     const items = (ev.target! as HTMLSlotElement)
       .assignedNodes()
       .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
     const newItems = items.filter(item => !this.isSeenItem(item));
-
-    newItems.forEach(async item => {
+    if (newItems.length > 0) {
+      this.dispatchEvent(
+        new CustomEvent("viewtransitionstart", { bubbles: true })
+      );
+    }
+    const anims = newItems.map(async item => {
       this.seenItems.add(this.idFunc(item));
       item.style.transform = "translateX(100%)";
       await AnimationTools.requestAnimationFramePromise();
@@ -188,5 +196,11 @@ export default class ItemStack extends HTMLElement {
         transition: ""
       });
     });
+    await Promise.all(anims);
+    if (newItems.length > 0) {
+      this.dispatchEvent(
+        new CustomEvent("viewtransitionend", { bubbles: true })
+      );
+    }
   }
 }
