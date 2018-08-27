@@ -12,8 +12,9 @@
   "scripts": {
     "build:fsm": "node node_modules/westend/utils/fsm-generator.js -c -- src/fsm/spec.yaml",
     "copy-static": "cpx 'static/**' dist",
-    "build": "npm run build:fsm && rollup -c && npm run copy-static",
-    "serve": "http-server dist -c0",
+    "gzip": "gzip -k9nr dist",
+    "build": "npm run build:fsm && rollup -c && npm run copy-static && npm run gzip",
+    "serve": "http-server dist -c0 -g",
     "deploy": "npm run build && firebase deploy",
     "fmt": "prettier --write 'src/**/*.{ts,tsx}' *.{js,json,md} && npm run lintfix",
     "lint": "tslint -t verbose -c tslint.json 'src/**/*.{ts,tsx}'",
