@@ -88,6 +88,9 @@ async function refresh() {
 
 async function toggleFavorite() {
   const lastState = last();
+  if (!lastState) {
+    return;
+  }
   const topView = lastState.stack[lastState.stack.length - 1];
   if (!topView || topView.type !== ViewType.SUBREDDIT) {
     return;

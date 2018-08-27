@@ -13,16 +13,28 @@
 
 import {
   ReadableStream as WhatWGReadableStream,
-  ReadableStreamDefaultController,
   TransformStream as WhatWGTransformStream,
   WritableStream as WhatWGWritableStream
 } from "westend/src/state-machine/whatwg-streams-hack.js";
 
-declare var ReadableStream: typeof WhatWGReadableStream;
-declare var WritableStream: typeof WhatWGWritableStream;
-declare var TransformStream: typeof WhatWGTransformStream;
+let ReadableStream: typeof WhatWGReadableStream = (self as any).ReadableStream;
+let WritableStream: typeof WhatWGWritableStream = (self as any).WritableStream;
+let TransformStream: typeof WhatWGTransformStream = (self as any)
+  .TransformStream;
 
 export { ReadableStream, WritableStream, TransformStream };
+
+export function setReadableStreamConstructor(c: typeof WhatWGReadableStream) {
+  ReadableStream = c;
+}
+
+export function setWritableStreamConstructor(c: typeof WhatWGWritableStream) {
+  WritableStream = c;
+}
+
+export function setTransformStreamConstructor(c: typeof WhatWGTransformStream) {
+  TransformStream = c;
+}
 
 export interface Observable<T> {
   stream: WhatWGReadableStream<T>;
@@ -278,16 +290,15 @@ export function subscribe<T>(
   return this;
 }
 
-export function cacheLast<T>(
-  this: Observable<T>
-): Observable<T> & { last: T | undefined } {
+export type CachedObservable<T> = Observable<T> & { cache: T | undefined };
+export function cacheLast<T>(this: Observable<T>): CachedObservable<T> {
   const o = {
-    last: undefined as T | undefined,
+    cache: undefined as T | undefined,
     stream: this.stream.pipeThrough(
       new TransformStream<T, T>({
         transform(item, controller) {
           controller.enqueue(item);
-          o.last = item;
+          o.cache = item;
         }
       })
     )
@@ -304,9 +315,11 @@ export function dedupe<T>(
   return last;
 }
 
-export function blockable<T>(
-  this: Observable<T>
-): Observable<T> & { block: () => void; unblock: () => void } {
+export type BlockableObservable<T> = Observable<T> & {
+  block: () => void;
+  unblock: () => void;
+};
+export function blockable<T>(this: Observable<T>): BlockableObservable<T> {
   let blocked = false;
   let resolver = undefined as ((v: any) => void) | undefined;
   return {

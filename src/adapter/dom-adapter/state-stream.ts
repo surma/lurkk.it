@@ -14,40 +14,69 @@
 
 import * as MessageBus from "westend/src/message-bus/message-bus.js";
 
-import { blockable, cacheLast, create } from "../../utils/observables.js";
+import {
+  blockable,
+  BlockableObservable,
+  CachedObservable,
+  cacheLast,
+  create,
+  ReadableStream,
+  setReadableStreamConstructor,
+  setTransformStreamConstructor,
+  setWritableStreamConstructor,
+  TransformStream,
+  WritableStream
+} from "../../utils/observables.js";
 
 import { CHANGE_CHANNEL as DOM_STATE_CHANGE_CHANNEL, State } from "./types.js";
 
-const rootStream = create<State>(emit => {
-  return new Promise(async () => {
-    const bus = await MessageBus.get<State>(DOM_STATE_CHANGE_CHANNEL);
-    bus.listen(msg => {
-      if (!msg) {
-        return;
-      }
-      emit(msg);
+let blockableState: BlockableObservable<State> | undefined;
+let lastCachedState: CachedObservable<State> | undefined;
+export async function init() {
+  if (!ReadableStream || !WritableStream || !TransformStream) {
+    setReadableStreamConstructor(
+      (await import("@mattiasbuelens/web-streams-polyfill")).ReadableStream
+    );
+    setWritableStreamConstructor(
+      (await import("@mattiasbuelens/web-streams-polyfill")).WritableStream
+    );
+    setTransformStreamConstructor(
+      (await import("@mattiasbuelens/web-streams-polyfill")).TransformStream
+    );
+  }
+  const root = create<State>(emit => {
+    return new Promise(async () => {
+      const bus = await MessageBus.get<State>(DOM_STATE_CHANGE_CHANNEL);
+      bus.listen(msg => {
+        if (!msg) {
+          return;
+        }
+        emit(msg);
+      });
     });
   });
-});
 
-const blockableStream = blockable.call(rootStream);
-const lastCachedStream = cacheLast.call(blockableStream);
+  blockableState = blockable.call(root) as BlockableObservable<State>;
+  lastCachedState = cacheLast.call(blockableState);
+}
 
-export function last(): State {
-  return lastCachedStream.last;
+export function last(): State | undefined {
+  return lastCachedState!.cache;
 }
 
 const blockers = new Set<string>();
 export function block(id: string) {
   blockers.add(id);
-  blockableStream.block();
+  blockableState!.block();
 }
 
 export function unblock(id: string) {
   blockers.delete(id);
   if (blockers.size === 0) {
-    blockableStream.unblock();
+    blockableState!.unblock();
   }
 }
 
-export default lastCachedStream;
+export function getStateObservable() {
+  return lastCachedState;
+}

@@ -32,11 +32,12 @@ import {
 import AppComponent from "./components/app/index.js";
 
 import { subscribe } from "../../utils/observables.js";
-import stateStream from "./state-stream.js";
+import { getStateObservable, init as stateStreamInit } from "./state-stream.js";
 
 export default class DomAdapter {
   async init() {
-    subscribe.call(stateStream, this.render);
+    await stateStreamInit();
+    subscribe.call(getStateObservable(), this.render);
 
     if (isDebug()) {
       await activateDebugModel();
