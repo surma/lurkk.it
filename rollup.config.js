@@ -15,7 +15,7 @@ export default {
   output: {
     dir: "dist",
     format: "amd",
-    sourcemap: process.env.SOURCEMAPS ? "inline" : false
+    sourcemap: true
   },
   plugins: [
     typescript({
