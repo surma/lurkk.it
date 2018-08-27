@@ -13,6 +13,7 @@
  */
 
 import CleanCSS from "clean-css";
+import MagicString from "magic-string";
 
 export default function () {
   const cssMinifier = new CleanCSS();
@@ -24,8 +25,9 @@ export default function () {
       if (!id.endsWith('.css')) {
         return;
       }
-      code = cssMinifier.minify(code).styles;
-      return `export default ${JSON.stringify(code)};`;
+      const magic = new MagicString(JSON.stringify(cssMinifier.minify(code).styles));
+      magic.prepend('export default').append(';');
+      return {code: magic.toString(), map: magic.generateMap({hires: true})};
     }
   };
 }

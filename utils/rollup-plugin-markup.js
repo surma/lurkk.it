@@ -13,6 +13,7 @@
  */
 
 import htmlMinifier from "html-minifier";
+import MagicString from "magic-string";
 
 const defaultOpts = {
   caseSensitive: true,
@@ -35,8 +36,9 @@ export default function (opts = {}) {
       if (!suffixes.some(suffix => id.endsWith(suffix))) {
         return;
       }
-      code = htmlMinifier.minify(code, {...defaultOpts, ...opts});
-      return `export default \`${code}\`;`;
+      const magic = new MagicString(htmlMinifier.minify(code, {...defaultOpts, ...opts}));
+      magic.prepend('export default `').append('`;');
+      return {code: magic.toString(), map: magic.generateMap({hires: true})};
     }
   };
 }

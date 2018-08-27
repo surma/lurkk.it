@@ -36,6 +36,7 @@
     "html-minifier": "^3.5.19",
     "http-server": "^0.11.1",
     "idb-keyval": "^3.1.0",
+    "magic-string": "^0.25.0",
     "preact": "^8.3.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.64.1",
