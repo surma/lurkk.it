@@ -15,14 +15,16 @@
 import { BroadcastWorker } from "westend/src/message-bus/message-bus.js";
 import DomAdapter from "./adapter/dom-adapter/ui-thread.js";
 
-// tslint:disable-next-line:no-unused-expression This boots a worker, duh
-new BroadcastWorker("worker.js");
-
-new DomAdapter().init();
-
 async function init() {
-  const swLoader = await import("./utils/sw-loader.js");
-  await swLoader.default();
+  // tslint:disable-next-line:no-unused-expression This boots a worker, duh
+  new BroadcastWorker("worker.js");
+
+  new DomAdapter().init();
+
+  if (!new URL(location.toString()).searchParams.has("no-sw")) {
+    const swLoader = await import("./utils/sw-loader.js");
+    await swLoader.default();
+  }
 }
 
 init();
