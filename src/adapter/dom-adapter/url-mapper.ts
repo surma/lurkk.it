@@ -19,6 +19,10 @@ import * as ServiceReady from "westend/utils/service-ready.js";
 
 import ItemStack from "./elements/item-stack";
 
+import { next } from "../../utils/observables.js";
+import { getLast, getStateObservable } from "./state-stream.js";
+import { State } from "./types.js";
+
 import {
   READY_CHANNEL as FSM_READY_CHANNEL,
   Trigger,
@@ -36,7 +40,11 @@ import {
 async function onPathChange(path: string) {
   await ServiceReady.waitFor(FSM_READY_CHANNEL);
   if (path === "/") {
-    go("/r/all", { replace: true });
+    let state = getLast();
+    if (!state) {
+      state = (await next.call(getStateObservable())) as State;
+    }
+    go(state!.frontpage, { replace: true });
     return;
   }
   if (path.startsWith("/r/")) {

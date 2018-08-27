@@ -18,7 +18,7 @@ import { emitTrigger } from "westend/utils/fsm-utils.js";
 
 import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
 
-import { last } from "../../state-stream.js";
+import { getLast } from "../../state-stream.js";
 
 import { defineCE, injectStyles } from "../../../../utils/dom-helpers.js";
 
@@ -87,7 +87,7 @@ async function refresh() {
 }
 
 async function toggleFavorite() {
-  const lastState = last();
+  const lastState = getLast();
   if (!lastState) {
     return;
   }

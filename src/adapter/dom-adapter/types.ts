@@ -38,6 +38,7 @@ interface Favorite {
 export interface State extends FsmState<Node, Value> {
   stack: ViewComponentState[];
   favorites: Favorite[];
+  frontpage: string;
   isLoading: boolean;
   topView?: ViewComponentState;
   isFavoriteSubreddit: boolean;

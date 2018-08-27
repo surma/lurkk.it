@@ -348,3 +348,16 @@ export function blockable<T>(this: Observable<T>): BlockableObservable<T> {
     }
   };
 }
+
+export async function next<T>(this: Observable<T>): Promise<T | null> {
+  const [rs1, rs2] = this.stream.tee();
+  this.stream = rs1;
+  const r = rs2.getReader();
+  const { value, done } = await r.read();
+  r.releaseLock();
+  rs2.cancel("done with it");
+  if (done) {
+    return null;
+  }
+  return value;
+}

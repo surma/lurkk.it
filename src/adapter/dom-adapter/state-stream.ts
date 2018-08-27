@@ -60,7 +60,7 @@ export async function init() {
   lastCachedState = cacheLast.call(blockableState);
 }
 
-export function last(): State | undefined {
+export function getLast(): State | undefined {
   return lastCachedState!.cache;
 }
 

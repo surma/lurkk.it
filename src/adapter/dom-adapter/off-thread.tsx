@@ -142,6 +142,7 @@ function viewToViewState(view: View): ViewComponentState {
 function map(state: FsmState<Node, Value>): DomState {
   const stack = state.value.stack.map(viewToViewState);
   const topView = stack[stack.length - 1];
+  let frontpage = "/r/all";
   const favorites = state.value.favorites.sort().map(r => {
     r = `/r/${r}`;
     return {
@@ -150,14 +151,16 @@ function map(state: FsmState<Node, Value>): DomState {
     };
   });
   if (favorites.length >= 2) {
+    frontpage = `/r/${state.value.favorites.join("+")}`;
     favorites.unshift({
       label: "Frontpage",
-      link: `/r/${state.value.favorites.join("+")}`
+      link: frontpage
     });
   }
   return {
     ...state,
     favorites,
+    frontpage,
     isFavoriteSubreddit: isFavoriteSubreddit(state),
     isLoading: state.value.loading.length > 0,
     searchBarValue: extractSearchBarValue(topView),
