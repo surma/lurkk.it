@@ -156,7 +156,7 @@ function threadItemForStorage(ti: ThreadItem): StorageThreadItem {
     nsfw: ti.data.over_18,
     numComments: ti.data.num_comments,
     subreddit: ti.data.subreddit,
-    title: ti.data.title,
+    title: decodeHTML(ti.data.title),
     upvotes: ti.data.ups
   };
 

@@ -18,6 +18,8 @@ import { DataSource } from "./data-source/data-source.js";
 import { Subreddit } from "./storage-model/subreddit.js";
 import { Thread } from "./storage-model/thread.js";
 
+const VERSION = 2;
+
 export interface CacheableDataSource extends DataSource {
   refreshSubreddit(id: string): Promise<void>;
   refreshThread(id: string): Promise<void>;
@@ -32,11 +34,14 @@ async function migrateCache(newVersion: number) {
       const migrator = await import("./storage-model/migrator/undefined.js");
       await migrator.default();
     }
+    case 1: {
+      const migrator = await import("./storage-model/migrator/1.js");
+      await migrator.default();
+    }
   }
   await set(key, newVersion);
 }
 
-const VERSION = 1;
 export async function cacheWrapper(
   source: DataSource
 ): Promise<CacheableDataSource> {
