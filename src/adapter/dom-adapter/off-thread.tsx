@@ -142,8 +142,22 @@ function viewToViewState(view: View): ViewComponentState {
 function map(state: FsmState<Node, Value>): DomState {
   const stack = state.value.stack.map(viewToViewState);
   const topView = stack[stack.length - 1];
+  const favorites = state.value.favorites.sort().map(r => {
+    r = `/r/${r}`;
+    return {
+      label: r,
+      link: r
+    };
+  });
+  if (favorites.length >= 2) {
+    favorites.unshift({
+      label: "Frontpage",
+      link: `/r/${state.value.favorites.join("+")}`
+    });
+  }
   return {
     ...state,
+    favorites,
     isFavoriteSubreddit: isFavoriteSubreddit(state),
     isLoading: state.value.loading.length > 0,
     searchBarValue: extractSearchBarValue(topView),

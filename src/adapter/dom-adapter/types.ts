@@ -31,8 +31,13 @@ export type ViewComponentProps =
   | SubredditViewComponentProps
   | ThreadViewComponentProps;
 
+interface Favorite {
+  link: string;
+  label: string;
+}
 export interface State extends FsmState<Node, Value> {
   stack: ViewComponentState[];
+  favorites: Favorite[];
   isLoading: boolean;
   topView?: ViewComponentState;
   isFavoriteSubreddit: boolean;

@@ -158,10 +158,9 @@ export default function BottomBarComponent({ state }: RenderableProps<Props>) {
         <section class="panel favorites" onTouchMove={onTouchMove}>
           <h1>Favorites</h1>
           <ul class="favorites">
-            {state.value.favorites.sort().map(i => (
-              <a class="favorite" onClick={closeBar} href={`/r/${i}`}>
-                /r/
-                {i}
+            {state.favorites.map(i => (
+              <a class="favorite" onClick={closeBar} href={i.link}>
+                {i.label}
               </a>
             ))}
           </ul>
