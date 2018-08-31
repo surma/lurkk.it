@@ -13,18 +13,45 @@
  */
 
 import { BroadcastWorker } from "westend/src/message-bus/message-bus.js";
+import * as RequestResponseBus from "westend/utils/request-response-bus.js";
+import * as ServiceReady from "westend/utils/service-ready.js";
+
 import DomAdapter from "./adapter/dom-adapter/ui-thread.js";
 
-async function init() {
-  // tslint:disable-next-line:no-unused-expression This boots a worker, duh
-  new BroadcastWorker("worker.js");
+import { READY_CHANNEL as REPOSITORY_READY_CHANNEL } from "./repository/index.js";
+import {
+  DATA_SOURCE_NAME_CHANNEL,
+  DataSourceNameRequest,
+  DataSourceNameResponse
+} from "./repository/index.js";
 
+async function init() {
   new DomAdapter().init();
 
-  if (!new URL(location.toString()).searchParams.has("no-sw")) {
+  const parsedURL = new URL(location.toString());
+  if (!parsedURL.searchParams.has("ui-thread-only")) {
+    // tslint:disable-next-line:no-unused-expression This boots a worker, duh
+    new BroadcastWorker("worker.js");
+  } else {
+    const script = document.createElement("script");
+    script.src = "worker.js";
+    document.head.appendChild(script);
+  }
+  if (!parsedURL.searchParams.has("no-sw")) {
     const swLoader = await import("./utils/sw-loader.js");
     await swLoader.default();
   }
+  if (parsedURL.searchParams.has("mock")) {
+    await activateMockAPI();
+  }
+}
+
+async function activateMockAPI() {
+  console.log("Switching to mock API");
+  await ServiceReady.waitFor(REPOSITORY_READY_CHANNEL);
+  (await RequestResponseBus.get<DataSourceNameRequest, DataSourceNameResponse>(
+    DATA_SOURCE_NAME_CHANNEL
+  )).sendRequest("mock");
 }
 
 init();

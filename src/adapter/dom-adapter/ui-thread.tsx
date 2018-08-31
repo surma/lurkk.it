@@ -14,20 +14,11 @@
 
 import { h, render } from "preact";
 
-import * as RequestResponseBus from "westend/utils/request-response-bus.js";
 import * as ServiceReady from "westend/utils/service-ready.js";
 
 import { READY_CHANNEL as UI_THREAD_READY_CHANNEL, State } from "./types.js";
 
 import * as UrlMapper from "./url-mapper.js";
-
-import { READY_CHANNEL as REPOSITORY_READY_CHANNEL } from "../../repository/index.js";
-
-import {
-  DATA_SOURCE_NAME_CHANNEL,
-  DataSourceNameRequest,
-  DataSourceNameResponse
-} from "../../repository/index.js";
 
 import AppComponent from "./components/app/index.js";
 
@@ -39,9 +30,6 @@ export default class DomAdapter {
     await stateStreamInit();
     subscribe.call(getStateObservable(), this.render);
 
-    if (new URL(location.href.toString()).searchParams.has("debug")) {
-      await activateMockAPI();
-    }
     await UrlMapper.init();
     ServiceReady.signal(UI_THREAD_READY_CHANNEL);
   }
@@ -53,12 +41,4 @@ export default class DomAdapter {
       document.body.firstElementChild!
     );
   }
-}
-
-async function activateMockAPI() {
-  console.log("Switching to mock API");
-  await ServiceReady.waitFor(REPOSITORY_READY_CHANNEL);
-  (await RequestResponseBus.get<DataSourceNameRequest, DataSourceNameResponse>(
-    DATA_SOURCE_NAME_CHANNEL
-  )).sendRequest("mock");
 }
