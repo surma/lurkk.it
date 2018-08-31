@@ -39,8 +39,8 @@ export default class DomAdapter {
     await stateStreamInit();
     subscribe.call(getStateObservable(), this.render);
 
-    if (isDebug()) {
-      await activateDebugModel();
+    if (new URL(location.href.toString()).searchParams.has("debug")) {
+      await activateMockAPI();
     }
     await UrlMapper.init();
     ServiceReady.signal(UI_THREAD_READY_CHANNEL);
@@ -55,12 +55,8 @@ export default class DomAdapter {
   }
 }
 
-function isDebug() {
-  return new URL(location.href.toString()).searchParams.has("debug");
-}
-
-async function activateDebugModel() {
-  console.log("Switching model to debug");
+async function activateMockAPI() {
+  console.log("Switching to mock API");
   await ServiceReady.waitFor(REPOSITORY_READY_CHANNEL);
   (await RequestResponseBus.get<DataSourceNameRequest, DataSourceNameResponse>(
     DATA_SOURCE_NAME_CHANNEL

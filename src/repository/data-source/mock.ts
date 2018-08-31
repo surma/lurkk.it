@@ -17,12 +17,13 @@ import {
   processLoadThreadAPIResponse
 } from "./reddit.js";
 
+import subredditMock from "./subreddit-mock-data.js";
+import threadMock from "./thread-mock-data.js";
+
 export async function loadSubreddit(id: string) {
-  const rawData = await fetch("/subreddit.json").then(r => r.json());
-  return processLoadSubredditAPIResponse(id, rawData);
+  return processLoadSubredditAPIResponse(id, subredditMock);
 }
 
 export async function loadThread(id: string) {
-  const rawData = await fetch("/thread.json").then(r => r.json());
-  return processLoadThreadAPIResponse(id, rawData);
+  return processLoadThreadAPIResponse(id, threadMock as any);
 }
