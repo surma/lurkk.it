@@ -75,13 +75,13 @@ export {
   toggleFavorite
 } from "./favorites.js";
 
-import * as RequestResponseBus from "westend/utils/request-response-bus.js";
+import * as RequestResponseBus from "../../westend/utils/request-response-bus.js";
 
 export type DataSourceNameRequest = string;
 export type DataSourceNameResponse = void;
 export const DATA_SOURCE_NAME_CHANNEL = "datasourcename";
 
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as ServiceReady from "../../westend/utils/service-ready.js";
 export const READY_CHANNEL = "repository.ready";
 export async function init() {
   RequestResponseBus.register<DataSourceNameRequest, DataSourceNameResponse>(

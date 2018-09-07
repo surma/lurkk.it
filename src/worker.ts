@@ -12,8 +12,8 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as FsmUtils from "westend/utils/fsm-utils.js";
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as FsmUtils from "../westend/utils/fsm-utils.js";
+import * as ServiceReady from "../westend/utils/service-ready.js";
 
 import { init as repositoryInit } from "./repository";
 

@@ -12,6 +12,12 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
+import {
+  BroadcastWorkerConstructor,
+  Endpoint
+} from "./message-bus_interface.js";
+export { Endpoint } from "./message-bus_interface.js";
+
 // This is currently equivalent to a Set, but I created a wrapper so we could
 // switch to a ringbuffer or something later on.
 class UUIDCache {
@@ -39,12 +45,6 @@ const backchannels: Channel[] = [];
 
 type Listener = (msg: MessageWrapper) => void;
 const localListeners: Map<string, Listener[]> = new Map();
-
-export interface Endpoint<T> {
-  send(payload?: T): void;
-  listen(callback: (msg?: T) => void): void;
-  close(): void;
-}
 
 function isMessage(data: any): data is MessageWrapper {
   return data && data.uuid && data.channel;
@@ -134,7 +134,7 @@ export async function get<T>(channel: string): Promise<Endpoint<T>> {
 
 // I can’t just extend `Worker`, as it is currently not exposed in Workers
 // themselves.
-export const BroadcastWorker: Constructor<Worker> = function(
+export const BroadcastWorker: BroadcastWorkerConstructor = function(
   this: Worker,
   src: string
 ) {

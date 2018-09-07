@@ -14,7 +14,7 @@
 
 import { h, render } from "preact";
 
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as ServiceReady from "../../../westend/utils/service-ready.js";
 
 import { READY_CHANNEL as UI_THREAD_READY_CHANNEL, State } from "./types.js";
 

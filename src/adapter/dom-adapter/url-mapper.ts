@@ -12,10 +12,10 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as MessageBus from "westend/src/message-bus/message-bus.js";
+import * as MessageBus from "../../../westend/src/message-bus/message-bus.js";
 
-import * as FsmUtils from "westend/utils/fsm-utils.js";
-import * as ServiceReady from "westend/utils/service-ready.js";
+import * as FsmUtils from "../../../westend/utils/fsm-utils.js";
+import * as ServiceReady from "../../../westend/utils/service-ready.js";
 
 import ItemStack from "./elements/item-stack";
 

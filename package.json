@@ -10,7 +10,7 @@
     "tslint": "^5.11.0"
   },
   "scripts": {
-    "build:fsm": "node node_modules/westend/utils/fsm-generator.js -c -- src/fsm/spec.yaml",
+    "build:fsm": "node westend/utils/fsm-generator.js -c -- src/fsm/spec.yaml",
     "copy-static": "cpx 'static/**' dist",
     "gzip": "gzip -k9nr dist",
     "build": "npm run build:fsm && rollup -c && npm run copy-static && npm run gzip",
@@ -41,12 +41,10 @@
     "preact": "^8.3.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.64.1",
-    "rollup-plugin-babel": "^4.0.0-beta.8",
     "rollup-plugin-loadz0r": "^0.3.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1",
     "rollup-plugin-typescript2": "^0.16.1",
-    "typescript": "^3.0.1",
-    "westend": "git+ssh://git@github.com/PolymerLabs/westend.git#master"
+    "typescript": "^3.0.1"
   }
 }

@@ -14,7 +14,7 @@
 
 import { h, RenderableProps } from "preact";
 
-import { emitTrigger } from "westend/utils/fsm-utils.js";
+import { emitTrigger } from "../../../../../westend/utils/fsm-utils.js";
 
 import { Trigger, TriggerPayloadMap } from "../../../../fsm/generated.js";
 import { ThreadItem } from "../../../../repository/storage-model/thread.js";

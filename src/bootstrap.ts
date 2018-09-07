@@ -12,9 +12,9 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import { BroadcastWorker } from "westend/src/message-bus/message-bus.js";
-import * as RequestResponseBus from "westend/utils/request-response-bus.js";
-import * as ServiceReady from "westend/utils/service-ready.js";
+import { BroadcastWorker } from "../westend/src/message-bus/message-bus.js";
+import * as RequestResponseBus from "../westend/utils/request-response-bus.js";
+import * as ServiceReady from "../westend/utils/service-ready.js";
 
 import DomAdapter from "./adapter/dom-adapter/ui-thread.js";
 

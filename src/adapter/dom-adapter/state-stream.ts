@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import * as MessageBus from "westend/src/message-bus/message-bus.js";
+import * as MessageBus from "../../../westend/src/message-bus/message-bus.js";
 
 import {
   blockable,

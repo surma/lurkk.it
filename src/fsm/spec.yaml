@@ -30,7 +30,7 @@
     NoTrigger,
     StateMachine,
     State
-  } from "westend/src/state-machine/state-machine.js";
+  } from "../../westend/src/state-machine/state-machine.js";
 
   function genUid() {
     let uid = "";

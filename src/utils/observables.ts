@@ -15,7 +15,7 @@ import {
   ReadableStream as WhatWGReadableStream,
   TransformStream as WhatWGTransformStream,
   WritableStream as WhatWGWritableStream
-} from "westend/src/state-machine/whatwg-streams-hack.js";
+} from "../../westend/src/state-machine/whatwg-streams-hack.js";
 
 let ReadableStream: typeof WhatWGReadableStream = (self as any).ReadableStream;
 let WritableStream: typeof WhatWGWritableStream = (self as any).WritableStream;
