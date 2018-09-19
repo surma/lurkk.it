@@ -1,0 +1,19 @@
+{
+  "env": {
+    "browser": true
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-console": "off",
+    "no-shadowed-variable": "off",
+    "arrow-parens": "off",
+    "trailing-comma": "off",
+    "member-access": ["on", "no-public"],
+    "callable-types": "off",
+    "no-empty-interface": "off",
+    "only-arrow-functions": "off"
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}

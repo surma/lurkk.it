@@ -1,0 +1,43 @@
+{
+  "name": "lurkk.it",
+  "version": "0.1.0",
+  "description": "",
+  "devDependencies": {
+    "@commitlint/cli": "^7.1.2",
+    "@commitlint/config-conventional": "^7.1.2",
+    "eslint": "^5.6.0",
+    "husky": "^1.0.0-rc.14",
+    "prettier": "^1.14.3"
+  },
+  "scripts": {
+    "copy-static": "cpx 'static/**' dist",
+    "gzip": "gzip -k9nr dist",
+    "build": "rollup -c && npm run copy-static",
+    "serve": "http-server dist -c0 -g",
+    "deploy": "npm run build && firebase deploy",
+    "fmt": "prettier --write 'src/**/*.{js,jsx}' *.{js,json,md} && npm run lintfix",
+    "lint": "eslint -c eslint.json 'src/**/*.{js,jsx}'",
+    "lintfix": "eslint -c eslint.json --fix 'src/**/*.{js,jsx}'",
+    "fmt_test": "test $(prettier -l 'src/**/*.{js,jsx}' *.{js,json,md} | wc -l) -eq 0",
+    "test": "npm run fmt_test && npm run lint && npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "commit-msg": "commitlint -e $GIT_PARAMS"
+    }
+  },
+  "author": "Surma",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "cpx": "^1.5.0",
+    "http-server": "^0.11.1",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.66.0",
+    "rollup-plugin-loadz0r": "^0.4.1",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-svelte": "^4.3.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "svelte": "^2.13.4"
+  }
+}
