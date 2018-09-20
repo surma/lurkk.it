@@ -1,7 +1,7 @@
 import App from "./components/app/app.html";
 
 new App({
-  target: document.querySelector("main"),
+  target: document.body,
   data: {
     name: "world"
   }

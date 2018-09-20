@@ -16,8 +16,11 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "function": "test"
       }
     ]
+  },
+  "functions": {
+    "source": "."
   }
 }
