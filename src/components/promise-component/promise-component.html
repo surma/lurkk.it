@@ -1,0 +1,24 @@
+{#if resolved}
+<svelte:component this="{value}">
+  <slot>
+  </slot>
+</svelte:component>
+{/if}
+
+<script>
+  export default {
+    async oncreate() {
+      const value = await this.options.data.promise;
+      this.set({
+        value,
+        resolved: true
+      });
+    },
+    data() {
+      return {
+        resolve: false,
+        value: false
+      };
+    }
+  };
+</script>
