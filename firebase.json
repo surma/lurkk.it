@@ -21,6 +21,6 @@
     ]
   },
   "functions": {
-    "source": "."
+    "source": "functions"
   }
 }
